@@ -28,6 +28,12 @@ int initAllegro() {
         return 1;
     }
 
+    // Initialize keyboard
+    if (!al_install_keyboard()){
+        fprintf(stderr, "Failed to initialize keyboard.\n");
+        return 0;
+    }
+
     // Initialize the font add-on
     al_init_font_addon();
 
@@ -53,6 +59,16 @@ int initAllegro() {
 
     al_set_window_title(display, "Jogo sem Título");
 
+    // Initialize the mouse
+    if (!al_install_mouse()){
+        fprintf(stderr, "Failed to initialize mouse.\n");
+        return 1;
+    }
+    if (!al_set_system_mouse_cursor(display, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT)){
+        fprintf(stderr, "Failed to attribuite mouse pointer.\n");
+        return 1;
+    }
+
     // Create the event queue
     event_queue = al_create_event_queue();
     if (!event_queue) {
@@ -63,6 +79,8 @@ int initAllegro() {
     // Register event sources
     al_register_event_source(event_queue, al_get_display_event_source(display));
     al_register_event_source(event_queue, al_get_timer_event_source(timer));
+    al_register_event_source(event_queue, al_get_mouse_event_source());
+    al_register_event_source(event_queue, al_get_keyboard_event_source());
 
     return 0;
 }
