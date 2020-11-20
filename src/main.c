@@ -1,12 +1,18 @@
 #include "lib.h"
 #include <stdio.h>
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_native_dialog.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 
 #define FPS 60
+#define WIDTH 640
+#define HEIGHT 480
 
 ALLEGRO_DISPLAY *display = NULL;
 ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 ALLEGRO_TIMER *timer = NULL;
+ALLEGRO_FONT *retroFont = NULL;
 
 int initAllegro() {
     // Initialize allegro
@@ -22,12 +28,30 @@ int initAllegro() {
         return 1;
     }
 
+    // Initialize the font add-on
+    al_init_font_addon();
+
+    // Initialize the tff add-on
+    if (!al_init_ttf_addon()){
+        fprintf(stderr, "Failed to initialize allegro_ttf add-on.\n");
+        return 1;
+    }
+
+    // Initialize the font
+    retroFont = al_load_font("fonts/retroGaming.ttf", 60, 0);
+    if (!retroFont) {
+        fprintf(stderr, "Failed to load font.\n");
+        return 1;
+    }
+
     // Create the display
     display = al_create_display(640, 480);
     if (!display) {
         fprintf(stderr, "Failed to create display.\n");
         return 1;
     }
+
+    al_set_window_title(display, "Jogo sem Título");
 
     // Create the event queue
     event_queue = al_create_event_queue();
@@ -99,6 +123,7 @@ int main(int argc, char *argv[]) {
     // Clean up
     al_destroy_display(display);
     al_destroy_event_queue(event_queue);
+    al_destroy_font(retroFont);
 
     return 0;
 }
