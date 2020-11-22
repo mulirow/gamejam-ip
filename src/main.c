@@ -16,6 +16,8 @@
 #define ESTADO_MENU 1
 #define ESTADO_PRE_JOGO 2
 #define ESTADO_JOGO 3
+#define RETRO_TAMANHO 20
+
 int LARGURA;
 int ALTURA;
 //diz respeito ao fluxo do jogo, com -1 sendo a saída
@@ -26,7 +28,7 @@ int opcao;
 ALLEGRO_DISPLAY *janela; //janela de saida padrao
 ALLEGRO_EVENT_QUEUE *fila_eventos; //fila de eventos padrao
 ALLEGRO_TIMER *timer; //timer padrao
-ALLEGRO_FONT *fonte; //fonte padrao (deve ser amplificado)
+ALLEGRO_FONT *retro_font; //fonte padrao (deve ser amplificado)
 
 //mensagem de erro, deve ser usado na verificação de inicializações
 void msg_erro(char *t){
@@ -95,8 +97,8 @@ int cria(){
         msg_erro("Falha ao criar fila de eventos");
         return 0;
     }
-    fonte = al_load_font("arial.ttf", 20, 0);
-    if(!fonte){
+    retro_font = al_load_font("fonts/retroGaming.ttf", RETRO_TAMANHO, 0);
+    if(!retro_font){
         msg_erro("Falha ao carregar fonte");
         return 0;
     }
@@ -133,7 +135,7 @@ void destroi(){
     al_destroy_timer(timer);
     al_destroy_display(janela);
     al_destroy_event_queue(fila_eventos);
-    
+    al_destroy_font(retro_font);
 }
 
 int main(){
