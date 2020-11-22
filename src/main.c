@@ -10,29 +10,72 @@
 #include <stdlib.h>
 
 #define FPS 60.0
-#define VEL 5
 #define ESTADO_SAIDA -1
 #define ESTADO_PRE_MENU 0
 #define ESTADO_MENU 1
 #define ESTADO_PRE_JOGO 2
 #define ESTADO_JOGO 3
-#define RETRO_TAMANHO 20
 
-int LARGURA;
-int ALTURA;
+//tamanho da fonte retro
+#define RETRO_TAMANHO 20
+//velocidade das entidades no geral
+#define VELOCIDADE 5.0;
+//vida das entidades no geral
+#define HP 100.0;
+//ataque das entidades no geral
+#define ATAQUE 10.0;
+//defesa da entidades no geral
+#define DEFESA 5.0;
+//total de fases no jogo
+#define FASES 3;
+
+int LARGURA; int ALTURA;
+int LARGURA_F; int ALTURA_F;
 //diz respeito ao fluxo do jogo, com -1 sendo a saída
 int estado=0;
 //diz respeito à opção no menu
 int opcao;
+//numero de entidades totais;
+int n_entidades=0;
 
 ALLEGRO_DISPLAY *janela; //janela de saida padrao
 ALLEGRO_EVENT_QUEUE *fila_eventos; //fila de eventos padrao
 ALLEGRO_TIMER *timer; //timer padrao
 ALLEGRO_FONT *retro_font; //fonte padrao (deve ser amplificado)
+ALLEGRO_BITMAP *fundo[3]; //fundo do jogo, coloquei '3' pois o valor deve ser constante
+
+//estrutura geral das entidades do jogo, talvez seja alterado
+typedef struct{
+    float vx; float vy; //velocidades
+    int px; int py; //posiçoes
+    float hp; //HP total
+    float atk; //dano de ataque
+    float def; //defesa
+    ALLEGRO_BITMAP *sprite; //sprite da entidade
+    int alturaSprite; //auto-explicativos
+    int larguraSprite;
+} Entidade;
+
+Entidade player;
+Entidade *entidades=NULL;
+
+//destroi o que der
+void destroi(){
+    al_destroy_timer(timer);
+    al_destroy_display(janela);
+    al_destroy_event_queue(fila_eventos);
+    al_destroy_font(retro_font);
+    for (int i = 0; i < n_entidades; i++){
+        al_destroy_bitmap(entidades[i].sprite);
+    }
+    al_destroy_bitmap(player.sprite);
+    
+}
 
 //mensagem de erro, deve ser usado na verificação de inicializações
 void msg_erro(char *t){
     al_show_native_message_box(NULL,"ERRO","Ocorreu o seguinte erro:",t,NULL,ALLEGRO_MESSAGEBOX_ERROR);
+    estado=-1;
 }
 
 //inicializa os addons
@@ -120,25 +163,86 @@ void pre_menu(){
 
 //fluxo do menu
 void menu(){
-
+    estado++;
 }
 
 //seta tudo antes do fluxo do jogo
 void pre_jogo(){
-
+    player.hp=HP;
+    player.atk=ATAQUE;
+    player.def=DEFESA;
+    player.sprite=al_load_bitmap("bin/entities/player.bmp");
+    //player.larguraSprite = ...
+    //player.alturaSprite = ... ambos so podem ser definidos quando eu arranjar os sprites
+    if(!player.sprite) msg_erro("Erro no sprite do player");
+    aumenta_entidades();
+    fundo[0]=al_load_bitmap("bin/background/fase0.bmp");
+    fundo[1]=al_load_bitmap("bin/background/fase1.bmp");
+    fundo[2]=al_load_bitmap("bin/background/fase2.bmp");
+    fundo[3]=al_load_bitmap("bin/background/fase3.bmp");
+    //LARGURA_F=... 
+    //ALTURA_F=... altura e largura do fundo
+    estado++;
 }
 
 //fluxo do jogo
 void jogo(){
+    //sai do loop do while
+    bool sair=false;
+    //desenha a proxima tela
+    bool desenhe=false;
+    while (!sair){
+        ALLEGRO_EVENT evento;
+        al_wait_for_event(fila_eventos,&evento);
+        switch (evento.type){
+            case ALLEGRO_EVENT_KEY_DOWN:
+                switch(evento.keyboard.keycode){
+                    case ALLEGRO_KEY_UP:
+                        player.vx-=VELOCIDADE;
+                        break;
+                    case ALLEGRO_KEY_DOWN:
+                        player.vx+=VELOCIDADE;
+                        break;
+                    case ALLEGRO_KEY_RIGHT:
+                        player.vy+=VELOCIDADE;
+                        break;
+                    case ALLEGRO_KEY_LEFT:
+                        player.vy-=VELOCIDADE;
+                        break;
+                    case ALLEGRO_KEY_ESCAPE:
+                        //a função retorna 0, 1 ou 2. 0 se a janela for fechada, 1 se for OK e 2 se for cancelar
+                        if(al_show_native_message_box(janela,"Saída","Deseja sair do jogo?","Aperte OK para sair ou Cancelar para retornar ao estado do jogo",NULL,ALLEGRO_MESSAGEBOX_OK_CANCEL)%2!=0){
+                            sair=true;
+                            estado=-1;
+                        }
+                        break;
+                    case ALLEGRO_KEY_ENTER:
+                        pause_jogo();
+                        break;
+                    case ALLEGRO_KEY_SPACE:
+                        jogador_ataque();
+                        break;
+                }
+    
+                break;
+            case ALLEGRO_EVENT_KEY_UP:
+
+
+                break;
+            case ALLEGRO_EVENT_TIMER:
+                desenhe=true;
+                break;
+
+        }
+
+    }
+    
 
 }
 
-//destroi tudo que foi criado
-void destroi(){
-    al_destroy_timer(timer);
-    al_destroy_display(janela);
-    al_destroy_event_queue(fila_eventos);
-    al_destroy_font(retro_font);
+void aumenta_entidades(){
+    n_entidades++;
+    entidades = (Entidade*)realloc(entidades,n_entidades*sizeof(Entidade));
 }
 
 int main(){
