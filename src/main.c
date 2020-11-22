@@ -83,15 +83,18 @@ int cria(){
         msg_erro("Falha ao criar temporizador");
         return 0;
     }
-    al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
+    al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW); //flag do fullscreen
     janela = al_create_display(1280,720);
     if(!janela) {
         msg_erro("Falha ao criar janela");
         return 0;
     }
+
     ALTURA = al_get_display_height(janela);
     LARGURA = al_get_display_width(janela);
+
     al_set_window_title(janela, "Prototipo");
+
     fila_eventos = al_create_event_queue();
     if(!fila_eventos) {
         msg_erro("Falha ao criar fila de eventos");
