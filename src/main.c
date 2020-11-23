@@ -286,7 +286,6 @@ void atualizaJogador(bool anda){ //desenha e anima o jogador
     if(anda){ //anima o sprite usando vx, vy, e a estrutura do player (dps eu implemento)
 
     }
-    colisaoJogador(); //aqui eu atualizo px e py 
     al_draw_bitmap_region(player.sprite, //muito feio filho
                           player.pDesenhox,player.pDesenhoy,
                           player.larguraSprite,player.alturaSprite,
@@ -376,6 +375,7 @@ void jogo(){
                 escala+=escalaVelocidade; //soma a velocidade da escala à escala, analogo ao movimento normal
                 if(escala<1.0f) escala=1.0f; //limita o zoom pra n bugar 
                 if(escala>5.0f) escala=5.0f; //zoom maximo
+                colisaoJogador(); //botei a colisão aqui pra ficar mais bonitinho, atualizo o px e py
                 atualizaCamera(); //aqui começa a magia negra
                 al_identity_transform(&camera);
                 al_translate_transform(&camera,-(player.px+player.larguraSprite/2),-(player.py+player.larguraSprite/2)); //basicamente transforma tudo que ta na tela de acordo com esses parametros, eu vou mandar os videos que eu vi ensinando isso pq admito que nem eu entendi direito kkkkkk
