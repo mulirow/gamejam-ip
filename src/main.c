@@ -12,7 +12,7 @@
 
 #define FPS 60.0
 
-enum ESTADO{estSaida, estPreMenu, estMenu, estPreJogo, estJogo};
+enum ESTADO{estSaida, estPreMenu, estMenu, estPreJogo, estJogo}; //Organizar num enum porque esse monte de define ficaria feio
 enum DIRECOES{dBaixo,dCima,dDireita,dEsquerda}; //esse enum é pra nao ter que ficar lembrando que numero é cada posição no vetor do struct de entidades
 
 //velocidade das entidades no geral
