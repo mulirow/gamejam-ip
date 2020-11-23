@@ -138,19 +138,19 @@ void geraMundo(int i){
     //aqui simplesmente carrega os fundos como cada tile, fiz um switch case com i e tudo mais so pra caso precise botar mais fases e etc, mas qualquer coisa a gente bota um load direto msm
     switch (i){
         case 0:
-            fundo[i]=al_load_bitmap("bin/backgrounds/tile1.bmp");
+            fundo[i]=al_load_bitmap("./bin/backgrounds/tile1.bmp");
             if(!fundo[i]){
                 msgErro("Deu ruim no fundo 0!");
             }
             break;
         case 1:
-            fundo[i]=al_load_bitmap("bin/backgrounds/tile2.bmp");
+            fundo[i]=al_load_bitmap("./bin/backgrounds/tile2.bmp");
             if(!fundo[i]){
                 msgErro("Deu ruim no fundo 1!");
             }
             break;
         default: //so pra n dar merda
-            fundo[i]=al_load_bitmap("bin/backgrounds/tile1.bmp");
+            fundo[i]=al_load_bitmap("./bin/backgrounds/tile1.bmp");
             if(!fundo[i]){
                 msgErro("Deu ruim no fundo 2!");
             }
@@ -190,7 +190,7 @@ int cria(){
         msgErro("Falha ao criar fila de eventos");
         return 0;
     }
-    retroFont = al_load_font("fonts/retroGaming.ttf", 20, 0);
+    retroFont = al_load_font("./fonts/retroGaming.ttf", 20, 0);
     if(!retroFont){
         msgErro("Falha ao carregar fonte");
         return 0;
@@ -225,8 +225,8 @@ void preJogo(){
     player.hp=HP;
     player.atk=ATAQUE;
     player.def=DEFESA;
-    if(sexo) player.sprite=al_load_bitmap("bin/entities/Char/Mchar.bmp");
-    else player.sprite=al_load_bitmap("bin/entities/Char/Fchar.bmp");
+    if(sexo) player.sprite=al_load_bitmap("./bin/entities/Char/Mchar.bmp");
+    else player.sprite=al_load_bitmap("./bin/entities/Char/Fchar.bmp");
     //tudo isso aqui debaixo é bem hardcoded, depende do sprite msm infelizmente (na vdd eu tenho preguiça de fazer usando matematica entao eh isso)
     player.larguraSprite = 25; player.alturaSprite =  31;
     player.puloColuna=32; player.puloLinha=32;
@@ -250,7 +250,7 @@ void jogadorAtaque(){
 }
 void pauseJogo(){
     ALLEGRO_BITMAP *janelaPause;
-    janelaPause=al_load_bitmap("bin/misc/UI/TextBox.bmp"); //carrega um bitmap de uma caixa de texto
+    janelaPause=al_load_bitmap("./bin/misc/UI/TextBox.bmp"); //carrega um bitmap de uma caixa de texto
     if(!janelaPause){
         msgErro("Deu ruim no pause!");
     }
