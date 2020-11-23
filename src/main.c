@@ -375,7 +375,7 @@ void jogo(){
                 desenhe=true;
                 escala+=escalaVelocidade; //soma a velocidade da escala à escala, analogo ao movimento normal
                 if(escala<1.0f) escala=1.0f; //limita o zoom pra n bugar 
-                if(escala>5.0f) escala=5.0f;
+                if(escala>5.0f) escala=5.0f; //zoom maximo
                 atualizaCamera(); //aqui começa a magia negra
                 al_identity_transform(&camera);
                 al_translate_transform(&camera,-(player.px+player.larguraSprite/2),-(player.py+player.larguraSprite/2)); //basicamente transforma tudo que ta na tela de acordo com esses parametros, eu vou mandar os videos que eu vi ensinando isso pq admito que nem eu entendi direito kkkkkk
