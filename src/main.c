@@ -32,12 +32,12 @@ int estado = 1;
 //diz respeito à opção no menu
 int opcao;
 //numero de entidades totais;
-int n_entidades=0;
+int nEntidades=0;
 
 ALLEGRO_DISPLAY *janela; //janela de saida padrao
-ALLEGRO_EVENT_QUEUE *fila_eventos; //fila de eventos padrao
+ALLEGRO_EVENT_QUEUE *filaEventos; //fila de eventos padrao
 ALLEGRO_TIMER *timer; //timer padrao
-ALLEGRO_FONT *retro_font; //fonte padrao (deve ser amplificado)
+ALLEGRO_FONT *retroFont; //fonte padrao (deve ser amplificado)
 ALLEGRO_BITMAP *fundo[3]; //fundo do jogo, coloquei '3' pois o valor deve ser constante
 
 //estrutura geral das entidades do jogo, talvez seja alterado
@@ -59,9 +59,9 @@ Entidade *entidades=NULL;
 void destroi(){
     al_destroy_timer(timer);
     al_destroy_display(janela);
-    al_destroy_event_queue(fila_eventos);
-    al_destroy_font(retro_font);
-    for (int i = 0; i < n_entidades; i++){
+    al_destroy_event_queue(filaEventos);
+    al_destroy_font(retroFont);
+    for (int i = 0; i < nEntidades; i++){
         al_destroy_bitmap(entidades[i].sprite);
     }
     al_destroy_bitmap(player.sprite);
@@ -69,7 +69,7 @@ void destroi(){
 }
 
 //mensagem de erro, deve ser usado na verificação de inicializações
-void msg_erro(char *t){
+void msgErro(char *t){
     al_show_native_message_box(NULL,"ERRO","Ocorreu o seguinte erro:",t,NULL,ALLEGRO_MESSAGEBOX_ERROR);
     estado = 0;
 }
@@ -77,39 +77,39 @@ void msg_erro(char *t){
 //inicializa os addons
 int inic(){
     if(!al_init()){
-        msg_erro("Falha ao inicializar a Allegro");
+        msgErro("Falha ao inicializar a Allegro");
         return 0;
     }
     if(!al_init_font_addon()){
-        msg_erro("Falha ao inicializar o addon de fontes");
+        msgErro("Falha ao inicializar o addon de fontes");
         return 0;
     }
     if(!al_init_ttf_addon()){
-        msg_erro("Falha ao inicializar o addon ttf");
+        msgErro("Falha ao inicializar o addon ttf");
         return 0;
     }
     if (!al_init_image_addon()){
-        msg_erro("Falha ao inicializar o addon de imagens");
+        msgErro("Falha ao inicializar o addon de imagens");
         return 0;
     }
     if (!al_install_keyboard()){
-        msg_erro("Falha ao inicializar o teclado");
+        msgErro("Falha ao inicializar o teclado");
         return 0;
     }
     if(!al_install_audio()){
-        msg_erro("Falha ao inicializar o audio");
+        msgErro("Falha ao inicializar o audio");
         return 0;
     }
     if(!al_init_acodec_addon()){
-        msg_erro("Falha ao inicializar o codec de audio");
+        msgErro("Falha ao inicializar o codec de audio");
         return 0;
     }
      if(!al_install_mouse()){
-        msg_erro("Falha ao iniciar o mouse");
+        msgErro("Falha ao iniciar o mouse");
         return 0;
     }
     if (!al_init_primitives_addon()){
-        msg_erro("Falha ao inicializar as primitivas");
+        msgErro("Falha ao inicializar as primitivas");
         return 0;
     }
     return 1;
@@ -119,13 +119,13 @@ int inic(){
 int cria(){
     timer = al_create_timer(1.0 / FPS);
     if(!timer) {
-        msg_erro("Falha ao criar temporizador");
+        msgErro("Falha ao criar temporizador");
         return 0;
     }
     al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW); //flag do fullscreen
     janela = al_create_display(1280,720);
     if(!janela) {
-        msg_erro("Falha ao criar janela");
+        msgErro("Falha ao criar janela");
         return 0;
     }
 
@@ -134,25 +134,25 @@ int cria(){
 
     al_set_window_title(janela, "Prototipo");
 
-    fila_eventos = al_create_event_queue();
-    if(!fila_eventos) {
-        msg_erro("Falha ao criar fila de eventos");
+    filaEventos = al_create_event_queue();
+    if(!filaEventos) {
+        msgErro("Falha ao criar fila de eventos");
         return 0;
     }
-    retro_font = al_load_font("fonts/retroGaming.ttf", 20, 0);
-    if(!retro_font){
-        msg_erro("Falha ao carregar fonte");
+    retroFont = al_load_font("fonts/retroGaming.ttf", 20, 0);
+    if(!retroFont){
+        msgErro("Falha ao carregar fonte");
         return 0;
     }
-    al_register_event_source(fila_eventos, al_get_display_event_source(janela));
-    al_register_event_source(fila_eventos, al_get_timer_event_source(timer));
-    al_register_event_source(fila_eventos, al_get_keyboard_event_source());
+    al_register_event_source(filaEventos, al_get_display_event_source(janela));
+    al_register_event_source(filaEventos, al_get_timer_event_source(timer));
+    al_register_event_source(filaEventos, al_get_keyboard_event_source());
     al_start_timer(timer);
     return 1;
 }
 
 //seta tudo antes do fluxo do menu
-void pre_menu(){
+void preMenu(){
     opcao = 0;
     estado++;
 }
@@ -162,21 +162,21 @@ void menu(){
     estado++;
 }
 
-void aumenta_entidades(){
-    n_entidades++;
-    entidades = (Entidade*)realloc(entidades,n_entidades*sizeof(Entidade));
+void aumentaEntidades(){
+    nEntidades++;
+    entidades = (Entidade*)realloc(entidades,nEntidades*sizeof(Entidade));
 }
 
 //seta tudo antes do fluxo do jogo
-void pre_jogo(){
+void preJogo(){
     player.hp=HP;
     player.atk=ATAQUE;
     player.def=DEFESA;
     player.sprite=al_load_bitmap("bin/entities/player.bmp");
     //player.larguraSprite = ...
     //player.alturaSprite = ... ambos so podem ser definidos quando eu arranjar os sprites
-    if(!player.sprite) msg_erro("Erro no sprite do player");
-    aumenta_entidades();
+    if(!player.sprite) msgErro("Erro no sprite do player");
+    aumentaEntidades();
     fundo[0]=al_load_bitmap("bin/background/fase0.bmp");
     fundo[1]=al_load_bitmap("bin/background/fase1.bmp");
     fundo[2]=al_load_bitmap("bin/background/fase2.bmp");
@@ -194,7 +194,7 @@ void jogo(){
     bool desenhe=false;
     while (!sair){
         ALLEGRO_EVENT evento;
-        al_wait_for_event(fila_eventos,&evento);
+        al_wait_for_event(filaEventos,&evento);
         switch (evento.type){
             case ALLEGRO_EVENT_KEY_DOWN:
                 switch(evento.keyboard.keycode){
@@ -237,22 +237,22 @@ void jogo(){
 
 int main(){
     if(!inic()){
-        msg_erro("Deu ruim 1!");
+        msgErro("Deu ruim 1!");
         destroi();
         return 0;
     }
     if(!cria()){
-        msg_erro("Deu ruim 2!");
+        msgErro("Deu ruim 2!");
         destroi();
         return 0;
     }
     while (estado!=estSaida){
         if (estado == estPreMenu)
-            pre_menu();
+            preMenu();
         else if (estado == estMenu)
             menu();
         else if (estado == estPreJogo)
-            pre_jogo();
+            preJogo();
         else if (estado == estJogo)
             jogo();
     }
