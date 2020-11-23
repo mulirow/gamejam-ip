@@ -152,7 +152,7 @@ int cria(){
 }
 
 //seta tudo antes do fluxo do menu
-void pre_menu(){
+void preMenu(){
     opcao = 0;
     estado++;
 }
@@ -168,7 +168,7 @@ void aumentaEntidades(){
 }
 
 //seta tudo antes do fluxo do jogo
-void pre_jogo(){
+void preJogo(){
     player.hp=HP;
     player.atk=ATAQUE;
     player.def=DEFESA;
@@ -248,11 +248,11 @@ int main(){
     }
     while (estado!=estSaida){
         if (estado == estPreMenu)
-            pre_menu();
+            preMenu();
         else if (estado == estMenu)
             menu();
         else if (estado == estPreJogo)
-            pre_jogo();
+            preJogo();
         else if (estado == estJogo)
             jogo();
     }
