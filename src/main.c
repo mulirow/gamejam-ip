@@ -41,6 +41,10 @@ bool sexo;
 int faseAtual=0;
 //altura e largura de cada tile, pode ser redundante
 int largTile[3]; int altTile[3];
+//usado no desenho do bitmap do fundo e na camera
+float pxFundo=0; float pyFundo=0;
+//escala da camera e velocidade com que ela escala
+float escala=1.0f; float escalaVelocidade=0.0f;
 
 
 ALLEGRO_DISPLAY *janela=NULL; //janela de saida padrao
@@ -48,6 +52,7 @@ ALLEGRO_EVENT_QUEUE *filaEventos=NULL; //fila de eventos padrao
 ALLEGRO_TIMER *timer=NULL; //timer padrao
 ALLEGRO_FONT *retroFont=NULL; //fonte padrao (deve ser amplificado)
 ALLEGRO_BITMAP *fundo[3]; //fundo do jogo
+ALLEGRO_TRANSFORM camera; //usado pra movimentar a camera
 
 //estrutura geral das entidades do jogo, talvez seja alterado
 typedef struct{
@@ -193,7 +198,7 @@ int cria(){
     al_register_event_source(filaEventos, al_get_display_event_source(janela));
     al_register_event_source(filaEventos, al_get_timer_event_source(timer));
     al_register_event_source(filaEventos, al_get_keyboard_event_source());
-    al_start_timer(timer);
+    
     return 1;
 }
 
@@ -261,12 +266,16 @@ void pauseJogo(){
     al_destroy_bitmap(janelaPause);
     al_flip_display();
 }
+void atualizaCamera(){ //atualiza as posiçoes das coisas
+    pxFundo=-(LARGURA/2)+(player.px+player.larguraSprite/2); //magia negra (geometria)
+    pyFundo=-(ALTURA/2)+(player.py+player.alturaSprite/2);
+    if(pxFundo<0) pxFundo=0; //n deixa passar do 0
+    if(pyFundo<0) pyFundo=0;
+}
+
 void desenhaMundo(){
-    for (int i = 0; i < RAZAO_X+1; i++){
-        for (int j = 0; j < RAZAO_Y+1; j++){
-            al_draw_bitmap(fundo[faseAtual],i*largTile[faseAtual],j*altTile[faseAtual],0);
-        }
-    }
+    al_draw_scaled_bitmap(fundo[faseAtual],0,0,largTile[faseAtual],altTile[faseAtual],
+                           pxFundo,pyFundo,LARGURA,ALTURA,0);
 }
 void colisaoJogador(){
     //algoritmo de colisao medindo em um raio do player se tem alguma entidade, vasculhando as posiçoes das entidades (pensei num jeito melhor de fazer isso mas por enquanto nao)
@@ -293,6 +302,7 @@ void atualizaEntidades(){ //desenha e anima as entidades, pode ser preciso usar 
 
 //fluxo do jogo
 void jogo(){
+    al_start_timer(timer);
     //sai do loop do while
     bool sair=false;
     bool anda=false; //unica serventia desse bool é pra animação de movimento do personagem
@@ -326,6 +336,12 @@ void jogo(){
                             estado = 0;
                         }
                         break;
+                    case ALLEGRO_KEY_Q:
+                        escalaVelocidade+= 0.1f;
+                        break;
+                    case ALLEGRO_KEY_E:
+                        escalaVelocidade-=0.1f;
+                        break;
                     case ALLEGRO_KEY_ENTER:
                         pauseJogo();
                         break;
@@ -348,17 +364,31 @@ void jogo(){
                     case ALLEGRO_KEY_LEFT:
                         player.vx+=VELOCIDADE;
                         break;
+                    case ALLEGRO_KEY_Q:
+                        escalaVelocidade-= 0.1f;
+                        break;
+                    case ALLEGRO_KEY_E:
+                        escalaVelocidade+= 0.1f;
                 }
                 break;
             case ALLEGRO_EVENT_TIMER:
                 desenhe=true;
+                escala+=escalaVelocidade; //soma a velocidade da escala à escala, analogo ao movimento normal
+                if(escala<1.0f) escala=1.0f; //limita o zoom pra n bugar 
+                if(escala>5.0f) escala=5.0f;
+                atualizaCamera(); //aqui começa a magia negra
+                al_identity_transform(&camera);
+                al_translate_transform(&camera,-(player.px+player.larguraSprite/2),-(player.py+player.larguraSprite/2)); //basicamente transforma tudo que ta na tela de acordo com esses parametros, eu vou mandar os videos que eu vi ensinando isso pq admito que nem eu entendi direito kkkkkk
+                al_scale_transform(&camera,escala,escala); //esse é o mais simples
+                al_translate_transform(&camera,-pxFundo+(player.px+player.larguraSprite/2),-pyFundo+(player.py+player.larguraSprite/2)); 
+                al_use_transform(&camera); //simplesmente torna a transformação "canonica"
                 break;
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
                 sair = true;
                 desenhe = false;
                 break;
         }
-        if(desenhe && !al_is_event_queue_empty(filaEventos)){
+        if(desenhe){
             desenhaMundo(); //desenha o fundo da fase atual
             if(player.vx==0 || player.vy==0) anda=false;
             atualizaJogador(anda);
