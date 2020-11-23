@@ -1,7 +1,6 @@
 #include "lib.h"
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_native_dialog.h>
-
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_acodec.h>
@@ -11,15 +10,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define FPS 60.0
-#define ESTADO_SAIDA -1
-#define ESTADO_PRE_MENU 0
-#define ESTADO_MENU 1
-#define ESTADO_PRE_JOGO 2
-#define ESTADO_JOGO 3
+#define FPS 60.0 
 
-//tamanho da fonte retro
-#define RETRO_TAMANHO 20
+enum ESTADO{estSaida, estPreMenu, estMenu, estPreJogo, estJogo};
+
 //velocidade das entidades no geral
 #define VELOCIDADE 5.0;
 //vida das entidades no geral
@@ -34,7 +28,7 @@
 int LARGURA; int ALTURA;
 int LARGURA_F; int ALTURA_F;
 //diz respeito ao fluxo do jogo, com -1 sendo a saída
-int estado=0;
+int estado = 1;
 //diz respeito à opção no menu
 int opcao;
 //numero de entidades totais;
@@ -77,7 +71,7 @@ void destroi(){
 //mensagem de erro, deve ser usado na verificação de inicializações
 void msg_erro(char *t){
     al_show_native_message_box(NULL,"ERRO","Ocorreu o seguinte erro:",t,NULL,ALLEGRO_MESSAGEBOX_ERROR);
-    estado=-1;
+    estado = 0;
 }
 
 //inicializa os addons
@@ -145,7 +139,7 @@ int cria(){
         msg_erro("Falha ao criar fila de eventos");
         return 0;
     }
-    retro_font = al_load_font("fonts/retroGaming.ttf", RETRO_TAMANHO, 0);
+    retro_font = al_load_font("fonts/retroGaming.ttf", 20, 0);
     if(!retro_font){
         msg_erro("Falha ao carregar fonte");
         return 0;
@@ -159,13 +153,18 @@ int cria(){
 
 //seta tudo antes do fluxo do menu
 void pre_menu(){
-    opcao=0;
+    opcao = 0;
     estado++;
 }
 
 //fluxo do menu
 void menu(){
     estado++;
+}
+
+void aumenta_entidades(){
+    n_entidades++;
+    entidades = (Entidade*)realloc(entidades,n_entidades*sizeof(Entidade));
 }
 
 //seta tudo antes do fluxo do jogo
@@ -215,7 +214,7 @@ void jogo(){
                         //a função retorna 0, 1 ou 2. 0 se a janela for fechada, 1 se for OK e 2 se for cancelar
                         if(al_show_native_message_box(janela,"Saída","Deseja sair do jogo?","Aperte OK para sair ou Cancelar para retornar ao estado do jogo",NULL,ALLEGRO_MESSAGEBOX_OK_CANCEL)%2!=0){
                             sair=true;
-                            estado=-1;
+                            estado = 0;
                         }
                         break;
                     case ALLEGRO_KEY_ENTER:
@@ -225,27 +224,16 @@ void jogo(){
                         jogador_ataque();
                         break;
                 }
-    
                 break;
             case ALLEGRO_EVENT_KEY_UP:
-
-
                 break;
             case ALLEGRO_EVENT_TIMER:
                 desenhe=true;
                 break;
-
         }
-
     }
-    
-
 }
 
-void aumenta_entidades(){
-    n_entidades++;
-    entidades = (Entidade*)realloc(entidades,n_entidades*sizeof(Entidade));
-}
 
 int main(){
     if(!inic()){
@@ -258,14 +246,14 @@ int main(){
         destroi();
         return 0;
     }
-    while (estado!=ESTADO_SAIDA){
-        if (estado == ESTADO_PRE_MENU)
+    while (estado!=estSaida){
+        if (estado == estPreMenu)
             pre_menu();
-        else if (estado == ESTADO_MENU)
+        else if (estado == estMenu)
             menu();
-        else if (estado == ESTADO_PRE_JOGO)
+        else if (estado == estPreJogo)
             pre_jogo();
-        else if (estado == ESTADO_JOGO)
+        else if (estado == estJogo)
             jogo();
     }
     destroi();
