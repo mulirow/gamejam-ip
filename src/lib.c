@@ -9,6 +9,7 @@
 #include <allegro5/allegro_ttf.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 const float VELOCIDADE = 5.0;
 const float HP=100.0;
@@ -84,8 +85,8 @@ int inic(){
         msgErro("Falha ao inicializar o teclado");
         return 0;
     }
-    //if(!al_install_audio()){ msgErro("Falha ao inicializar o audio"); return 0;}
-    //if(!al_init_acodec_addon()){msgErro("Falha ao inicializar o codec de audio");return 0;}
+    if(!al_install_audio()){ msgErro("Falha ao inicializar o audio"); return 0;}
+    if(!al_init_acodec_addon()){msgErro("Falha ao inicializar o codec de audio");return 0;}
      if(!al_install_mouse()){
         msgErro("Falha ao iniciar o mouse");
         return 0;
@@ -233,28 +234,37 @@ void preJogo(){
 
 
     if(!player.sprite) msgErro("Erro no sprite do player");
-    al_convert_mask_to_alpha(player.sprite,al_map_rgb(0,0,0));
+    al_convert_mask_to_alpha(player.sprite,al_map_rgb(0,0,0)); //isso aqui define a transparencia do sprite
     aumentaEntidades();
-
+    al_flush_event_queue(filaEventos); //da um wipe na fila inteira
     estado++;
 }
 
 void pauseJogo(){
+    al_flush_event_queue(filaEventos);
     ALLEGRO_BITMAP *janelaPause;
+    retroFont = al_load_font("./fonts/retroGaming.ttf", 50/escala, 0);
     janelaPause=al_load_bitmap("./bin/misc/UI/TextBox.bmp"); //carrega um bitmap de uma caixa de texto
-    if(!janelaPause){
+    if(!janelaPause || !retroFont){
         msgErro("Deu ruim no pause!");
     }
-    al_draw_bitmap(janelaPause,LARGURA/2,ALTURA/2,0); //desenha ela sobre a tela
-    al_draw_text(retroFont,al_map_rgb(0,0,0),LARGURA/2,ALTURA/2,ALLEGRO_ALIGN_CENTER,"PAUSADO");
+    int alturaPause=al_get_bitmap_height(janelaPause);
+    int larguraPause=al_get_bitmap_width(janelaPause);
+    al_draw_scaled_bitmap(janelaPause,0,0,
+                        larguraPause,alturaPause,(player.px-5*larguraPause/(2*escala)),(player.py-5*alturaPause/(2*escala)), //largura do bitmap, altura do bitmap,posicao x na tela, posicao y na tela
+                        5*larguraPause/escala,5*alturaPause/escala,0); //tamanho desejado, altura desejada, flag
+    al_draw_text(retroFont,al_map_rgb(0,0,0),player.px,player.py,ALLEGRO_ALIGN_CENTRE,"PAUSADO");
     al_flip_display(); //atualiza a tela
-    ALLEGRO_EVENT pausa;
-    al_wait_for_event(filaEventos,&pausa);
-    bool despausa=0;
+    bool despausa=false;
     while(!despausa){
-        if(pausa.keyboard.keycode==ALLEGRO_KEY_ENTER) despausa=1; //se apertar enter sai do loop
+        ALLEGRO_EVENT pausa;
+        al_wait_for_event(filaEventos,&pausa);
+        if(pausa.type==ALLEGRO_EVENT_KEY_DOWN) despausa=true; //se apertar enter sai do loop
     }
+    al_flush_event_queue(filaEventos);
+    retroFont = al_load_font("./fonts/retroGaming.ttf", 20, 0);
     al_destroy_bitmap(janelaPause);
+    player.vx=0;player.vy=0;escalaVelocidade=0;
     al_flip_display();
 }
 
@@ -324,6 +334,8 @@ void jogo(){
                             sair=true;
                             estado = 0;
                         }
+                        player.vx=0;player.vy=0;escalaVelocidade=0;
+                        al_flush_event_queue(filaEventos);
                         break;
                     case ALLEGRO_KEY_Q:
                         escalaVelocidade+= 0.1f;
@@ -332,7 +344,9 @@ void jogo(){
                         escalaVelocidade-=0.1f;
                         break;
                     case ALLEGRO_KEY_ENTER:
+                        al_stop_timer(timer);
                         pauseJogo();
+                        al_start_timer(timer);
                         break;
                     case ALLEGRO_KEY_SPACE:
                         //jogadorAtaque();
@@ -342,36 +356,41 @@ void jogo(){
             case ALLEGRO_EVENT_KEY_UP: //solta a tecla
                 switch(evento.keyboard.keycode){
                     case ALLEGRO_KEY_UP:
-                        player.vy+=VELOCIDADE;
+                        player.vy=0;
                         break;
                     case ALLEGRO_KEY_DOWN:
-                        player.vy-=VELOCIDADE;
+                        player.vy=0;
                         break;
                     case ALLEGRO_KEY_RIGHT:
-                        player.vx-=VELOCIDADE;
+                        player.vx=0;
                         break;
                     case ALLEGRO_KEY_LEFT:
-                        player.vx+=VELOCIDADE;
+                        player.vx=0;
                         break;
                     case ALLEGRO_KEY_Q:
-                        escalaVelocidade-= 0.1f;
+                        escalaVelocidade=0;
                         break;
                     case ALLEGRO_KEY_E:
-                        escalaVelocidade+= 0.1f;
+                        escalaVelocidade=0;
+                        break;
                 }
                 break;
             case ALLEGRO_EVENT_TIMER:
                 desenhe=true;
+                
                 escala+=escalaVelocidade; //soma a velocidade da escala à escala, analogo ao movimento normal
                 if(escala<1.0f) escala=1.0f; //limita o zoom pra n bugar 
                 if(escala>5.0f) escala=5.0f; //zoom maximo
+                
                 colisaoJogador(); //botei a colisão aqui pra ficar mais bonitinho, atualizo o px e py
                 atualizaCamera(); //aqui começa a magia negra
+                
                 al_identity_transform(&camera);
                 al_translate_transform(&camera,-(player.px+player.larguraSprite/2),-(player.py+player.larguraSprite/2)); //basicamente transforma tudo que ta na tela de acordo com esses parametros, eu vou mandar os videos que eu vi ensinando isso pq admito que nem eu entendi direito kkkkkk
                 al_scale_transform(&camera,escala,escala); //esse é o mais simples
                 al_translate_transform(&camera,-pxFundo+(player.px+player.larguraSprite/2),-pyFundo+(player.py+player.larguraSprite/2)); 
                 al_use_transform(&camera); //simplesmente torna a transformação "canonica"
+                
                 break;
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
                 sair = true;
