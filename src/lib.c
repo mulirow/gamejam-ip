@@ -31,7 +31,7 @@ float escala = 1.0f; float escalaVelocidade = 0.0f;
 ALLEGRO_DISPLAY *janela = NULL;
 ALLEGRO_EVENT_QUEUE *filaEventos = NULL;
 ALLEGRO_TIMER *timer = NULL;
-ALLEGRO_TIMER *timer15 = NULL;
+ALLEGRO_TIMER *timerAlt = NULL;
 ALLEGRO_FONT *retroFont = NULL;
 ALLEGRO_FONT *retroFont32 = NULL;
 ALLEGRO_BITMAP *fundo[3];
@@ -46,7 +46,7 @@ bool criaEnt; bool criaEntParada;
 //destroi o que der
 void destroi(){
     al_destroy_timer(timer);
-    al_destroy_timer(timer15);
+    al_destroy_timer(timerAlt);
     al_destroy_display(janela);
     al_destroy_event_queue(filaEventos);
     al_destroy_font(retroFont);
@@ -132,8 +132,8 @@ void geraMundo(int i){
 //cria tudo que será necessário no jogo
 int cria(){
     timer = al_create_timer(1.0 / FPS);
-    timer15 = al_create_timer(4.0 / FPS);
-    if((!timer) || (!timer15)){
+    timerAlt = al_create_timer(8.0 / FPS);
+    if((!timer) || (!timerAlt)){
         msgErro("Falha ao criar temporizador");
         return 0;
     }
@@ -166,7 +166,7 @@ int cria(){
     }
     al_register_event_source(filaEventos, al_get_display_event_source(janela));
     al_register_event_source(filaEventos, al_get_timer_event_source(timer));
-    al_register_event_source(filaEventos, al_get_timer_event_source(timer15));
+    al_register_event_source(filaEventos, al_get_timer_event_source(timerAlt));
     al_register_event_source(filaEventos, al_get_keyboard_event_source());
     
     return 1;
@@ -193,35 +193,84 @@ void aumentaEntidadesParadas(){
 void preMenu(){
     int i = 0;
     bool sair = false;
-    al_start_timer(timer15);
+    al_start_timer(timerAlt);
     while(!sair){
         ALLEGRO_EVENT evento;
         al_wait_for_event(filaEventos,&evento);
         switch (evento.type){
             case ALLEGRO_EVENT_TIMER:
-                al_clear_to_color(al_map_rgb(0, 0, 0));
                 al_draw_multiline_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA / 2, ALTURA - i, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.1, ALLEGRO_ALIGN_CENTER, "O ano é 20XX, e o mundo está no mais completo caos. Há meses, surgiram boatos de que a infame [...]--uma organização criminosa vinda do outro lado do mundo--havia liberado a Ameaça Vermelha, um vírus altamente contagioso que causava fome e frio em tamanha magnitude que chegava a ser letal. Entretanto, como ela havia sido extinta há quase 30 anos, a população desconsiderou o risco, pensando que aquela era apenas mais uma fake news.\n\nA solução para tal crise se encontra em Brasilia, onde o primeiro-ministro Adolf Solnorabo Mussolini é secretamente recrutado para proteger seus queridos cidadãos da terrível Ameaça. Ao questionar sobre o motivo de ser escolhido para realizar árdua tarefa, nosso bravo herói descobre que seu histórico de atleta o imunizou contra a nefária doença, tornando-o a pessoa mais qualificada para combatê-la.\n\n\n\nCabe a você salvar o mundo dessa terrível ameaça.");
                 al_flip_display();
-                i += 2;
+                al_clear_to_color(al_map_rgb(0, 0, 0));
+                i += 3;
                 if(i >= 1.5 * ALTURA) sair = true;
                 break;
             case ALLEGRO_EVENT_KEY_DOWN: //aperta uma tecla
                 switch(evento.keyboard.keycode){
-                    case ALLEGRO_KEY_ENTER:
+                    case ALLEGRO_KEY_ENTER: 
                         sair = true;
                         break;
                 }
                 break;
         }
     }
-    al_stop_timer(timer15);
-    opcao = 0;
+    al_stop_timer(timerAlt);
+    al_flush_event_queue(filaEventos);
     estado++;
 }
 
 //fluxo do menu
 void menu(){
-    estado++;
+    ALLEGRO_MOUSE_STATE estadoMouse;
+    opcao = 0; //indica qual botão que tá com highlight
+    int i = 255, j = 120, temp;
+    bool sair = false;
+    al_start_timer(timer);
+    while(!sair){
+        ALLEGRO_EVENT evento;
+        al_wait_for_event(filaEventos,&evento);
+        switch (evento.type){
+            case ALLEGRO_EVENT_TIMER:
+                al_draw_text(retroFont32, al_map_rgb(i, i, i), LARGURA / 2, ALTURA / 2, ALLEGRO_ALIGN_CENTER, "Jogar");
+                al_draw_text(retroFont32, al_map_rgb(j, j, j), LARGURA / 2, ALTURA / 2 + al_get_font_line_height(retroFont32), ALLEGRO_ALIGN_CENTER, "Sair");
+                al_flip_display();
+                al_clear_to_color(al_map_rgb(0, 0, 0));
+                break;
+            case ALLEGRO_EVENT_MOUSE_AXES:
+                al_get_mouse_state(&estadoMouse);
+                if((estadoMouse.x > 0) && (estadoMouse.x < 100)){
+                    printf("Ae\n");
+                }
+                al_flip_display();
+                break;
+            case ALLEGRO_EVENT_KEY_DOWN: //aperta uma tecla
+                switch(evento.keyboard.keycode){
+                    case ALLEGRO_KEY_DOWN: 
+                        opcao++;
+                        temp = i;
+                        i = j;
+                        j = temp;
+                        break;
+                    case ALLEGRO_KEY_UP: 
+                        opcao++;
+                        temp = i;
+                        i = j;
+                        j = temp;
+                        break;
+                    case ALLEGRO_KEY_ENTER:
+                        sair = true;
+                }
+                break;
+        }
+    }
+    al_stop_timer(timer);
+    al_flush_event_queue(filaEventos);
+    if(opcao % 2 == 0){
+        estado++;
+    }
+    else{
+        estado = 0;
+    }
 }
 
 //seta tudo antes do fluxo do jogo, talvez possa ser repetido a cada mudança de fase(?)
