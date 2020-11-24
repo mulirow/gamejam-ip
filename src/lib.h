@@ -44,7 +44,7 @@ extern float escala; extern float escalaVelocidade;
 extern ALLEGRO_DISPLAY *janela; //janela de saida padrao
 extern ALLEGRO_EVENT_QUEUE *filaEventos; //fila de eventos padrao
 extern ALLEGRO_TIMER *timer; //timer padrao
-extern ALLEGRO_TIMER *timer15; //timer que roda a 15 fps
+extern ALLEGRO_TIMER *timerAlt; //timer que roda a 7.5 fps
 extern ALLEGRO_FONT *retroFont; //fonte padrao (tamanho 20)
 extern ALLEGRO_FONT *retroFont32; //fonte tamanho 32
 extern ALLEGRO_BITMAP *fundo[3]; //fundo do jogo
