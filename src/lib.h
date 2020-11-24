@@ -4,6 +4,7 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
+
 #define FPS 60.0
 
 enum ESTADO{estSaida, estPreMenu, estMenu, estPreJogo, estJogo}; //Organizar num enum porque esse monte de define ficaria feio
@@ -43,7 +44,9 @@ extern float escala; extern float escalaVelocidade;
 extern ALLEGRO_DISPLAY *janela; //janela de saida padrao
 extern ALLEGRO_EVENT_QUEUE *filaEventos; //fila de eventos padrao
 extern ALLEGRO_TIMER *timer; //timer padrao
-extern ALLEGRO_FONT *retroFont; //fonte padrao (deve ser amplificado)
+extern ALLEGRO_TIMER *timer15; //timer que roda a 15 fps
+extern ALLEGRO_FONT *retroFont; //fonte padrao (tamanho 20)
+extern ALLEGRO_FONT *retroFont32; //fonte tamanho 32
 extern ALLEGRO_BITMAP *fundo[3]; //fundo do jogo
 extern ALLEGRO_TRANSFORM camera; //usado pra movimentar a camera
 
