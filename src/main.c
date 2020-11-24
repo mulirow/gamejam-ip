@@ -15,9 +15,9 @@ void jogadorAtaque(){
 
 }
 
-void atualizaEntidades(){ //desenha e anima as entidades, pode ser preciso usar varios casos
+ //removida a funçao de entidades
 
-}
+ //so pra evitar conflitos
 
 int main(){
     if(!inic()){

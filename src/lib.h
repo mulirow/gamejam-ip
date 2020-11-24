@@ -29,7 +29,7 @@ extern int opcao;
 //numero de entidades totais;
 //diz respeito ao fluxo do jogo, com -1 sendo a saída
 extern int estado;
-extern int nEntidades;
+extern int nEntidades; extern int nEntiParadas;
 //( ͡° ͜ʖ ͡°)
 extern bool sexo;
 //fase atual
@@ -68,10 +68,24 @@ typedef struct{
     int nDirecao[4];
     //posiçao x e y do desenho do sprime no bitmap(bmp) original
     int pDesenhox; int pDesenhoy;
+    //aqui sabemos se a entidade está ou não na tela
+    bool naTela;
 } Entidade;
+
+typedef struct{
+    //analogos à estrutura acima
+    int px; int py;
+    ALLEGRO_BITMAP *sprite;
+    int alturaSprite;
+    int larguraSprite;
+    bool naTela;
+
+} EntidadeParada;
 
 extern Entidade player;
 extern Entidade *entidades;
+extern EntidadeParada *entParadas;
+bool criaEnt; bool criaEntParada;
 
 void destroi();
 
@@ -84,7 +98,11 @@ void geraMundo(int i);
 int cria();
 
 //Funções de atualização
+int initEntidade();
+int initEntidadeParada();
+void geraEntidades();
 void aumentaEntidades();
+void aumentaEntidadesParadas();
 void atualizaCamera();
 void desenhaMundo();
 void colisaoJogador();
