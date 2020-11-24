@@ -21,7 +21,7 @@ int LARGURA, ALTURA;
 int RAZAO_X, RAZAO_Y;
 int opcao;
 int estado = 1;
-int nEntidades = 0;
+int nEntidades = 0; int nEntiParadas = 0;
 bool sexo;
 int faseAtual = 0;
 int largTile[3]; int altTile[3];
@@ -39,6 +39,9 @@ ALLEGRO_TRANSFORM camera;
 
 Entidade player;
 Entidade *entidades = NULL;
+EntidadeParada *entParadas = NULL;
+//variaveis pra saber se deve ou não ser criado entidades na tela
+bool criaEnt; bool criaEntParada;
 
 //destroi o que der
 void destroi(){
@@ -85,8 +88,8 @@ int inic(){
         msgErro("Falha ao inicializar o teclado");
         return 0;
     }
-    if(!al_install_audio()){ msgErro("Falha ao inicializar o audio"); return 0;}
-    if(!al_init_acodec_addon()){msgErro("Falha ao inicializar o codec de audio");return 0;}
+    //if(!al_install_audio()){ msgErro("Falha ao inicializar o audio"); return 0;}
+    //if(!al_init_acodec_addon()){msgErro("Falha ao inicializar o codec de audio");return 0;}
      if(!al_install_mouse()){
         msgErro("Falha ao iniciar o mouse");
         return 0;
@@ -172,6 +175,18 @@ int cria(){
 void aumentaEntidades(){
     nEntidades++;
     entidades = (Entidade*)realloc(entidades,nEntidades*sizeof(Entidade));
+    if(entidades==NULL){
+        msgErro("Deu ruim na alocação!");
+        estado=0;
+    }
+}
+void aumentaEntidadesParadas(){
+    nEntiParadas++;
+    entParadas = (EntidadeParada*)realloc(entParadas,nEntiParadas*sizeof(EntidadeParada));
+    if(entidades==NULL){
+        msgErro("Deu ruim na alocação!");
+        estado=0;
+    }
 }
 
 //seta tudo antes do fluxo do menu
@@ -231,11 +246,13 @@ void preJogo(){
     //zera as posiçoes e velocidades
     player.px=0; player.py=0;
     player.vx=0; player.vy=0;
+    //o player sempre esta na tela
+    player.naTela=true;
 
 
     if(!player.sprite) msgErro("Erro no sprite do player");
     al_convert_mask_to_alpha(player.sprite,al_map_rgb(0,0,0)); //isso aqui define a transparencia do sprite
-    aumentaEntidades();
+
     al_flush_event_queue(filaEventos); //da um wipe na fila inteira
     estado++;
 }
@@ -281,9 +298,103 @@ void desenhaMundo(){
 }
 
 void colisaoJogador(){
+    bool colisaox=false; bool colisaoy=false;
+    for (int i = 0; i < nEntidades; i++){
+        if(entidades[i].px >= pxFundo && entidades[i].py >= pyFundo && entidades[i].px<=LARGURA+pxFundo && entidades[i].py<=ALTURA+pyFundo){
+            entidades[i].naTela=true;
+        }
+        else entidades[i].naTela=false;
+        
+    }
+    for (int i = 0; i < nEntiParadas; i++){
+        if(entParadas[i].px >= pxFundo && entParadas[i].py >= pyFundo && entParadas[i].px<=LARGURA+pxFundo && entParadas[i].py<=ALTURA+pyFundo){
+            entParadas[i].naTela=true;
+        }
+        else entParadas[i].naTela=false;
+    }
     //algoritmo de colisao medindo em um raio do player se tem alguma entidade, vasculhando as posiçoes das entidades (pensei num jeito melhor de fazer isso mas por enquanto nao)
+    if(colisaox) player.vx=0;
+    if(colisaoy) player.vy=0;
     player.px+=player.vx;
     player.py+=player.vy;
+}
+int initEntidade(){
+    if(rand()%2==0){
+        entidades[nEntidades-1].sprite=al_load_bitmap("./bin/entities/Char/NPC.png");
+        if(!entidades[nEntidades-1].sprite){
+            msgErro("Deu ruim na entidade parada!");
+            return 0;
+        } //inicializando tudo (obs, nada definitivo)
+        entidades[nEntidades-1].larguraSprite = al_get_bitmap_width(entidades[nEntidades-1].sprite); 
+        entidades[nEntidades-1].alturaSprite =  al_get_bitmap_height(entidades[nEntidades-1].sprite);
+        entidades[nEntidades-1].px=LARGURA/6+rand()%LARGURA; entidades[nEntidades-1].py=ALTURA/7+rand()%ALTURA;
+        entidades[nEntidades-1].vx=0; entidades[nEntidades-1].vy=0;
+    }
+    else{
+        entidades[nEntidades-1].sprite=al_load_bitmap("./bin/entities/Char/NPC1.png");
+        if(!entidades[nEntidades-1].sprite){
+            msgErro("Deu ruim na entidade parada!");
+            return 0;
+        } //inicializando tudo (obs, nada definitivo)
+        entidades[nEntidades-1].larguraSprite = al_get_bitmap_width(entidades[nEntidades-1].sprite); 
+        entidades[nEntidades-1].alturaSprite =  al_get_bitmap_height(entidades[nEntidades-1].sprite);
+        entidades[nEntidades-1].px=LARGURA/3+rand()%LARGURA; entidades[nEntidades-1].py=ALTURA/4+rand()%ALTURA;
+        entidades[nEntidades-1].vx=0; entidades[nEntidades-1].vy=0;
+    }
+    return 1;
+    //aqui teoricamente deveriam ficar todas as possibilidades e tal
+}
+
+int initEntidadeParada(){
+    if(rand()%2==0){
+        entParadas[nEntiParadas-1].sprite=al_load_bitmap("./bin/entities/Clutter/lake.png");
+        if(!entParadas[nEntiParadas-1].sprite){
+            msgErro("Deu ruim na entidade parada!");
+            return 0;
+        }
+        entParadas[nEntiParadas-1].larguraSprite = al_get_bitmap_width(entParadas[nEntiParadas-1].sprite);
+        entParadas[nEntiParadas-1].alturaSprite = al_get_bitmap_height(entParadas[nEntiParadas-1].sprite);
+        entParadas[nEntiParadas-1].px=LARGURA/9+rand()%LARGURA; entParadas[nEntiParadas-1].py=ALTURA/2+rand()%ALTURA;
+
+    }
+    else{
+        entParadas[nEntiParadas-1].sprite=al_load_bitmap("./bin/entities/Clutter/Barrel.png");
+        if(!entParadas[nEntiParadas-1].sprite){
+            msgErro("Deu ruim na entidade parada!");
+            return 0;
+        }
+        entParadas[nEntiParadas-1].larguraSprite = al_get_bitmap_width(entParadas[nEntiParadas-1].sprite);
+        entParadas[nEntiParadas-1].alturaSprite = al_get_bitmap_height(entParadas[nEntiParadas-1].sprite);
+        entParadas[nEntiParadas-1].px=LARGURA/8+rand()%LARGURA; entParadas[nEntiParadas-1].py=ALTURA/9+rand()%ALTURA;
+    }
+    return 1;
+}
+
+void geraEntidades(){ //gera as entidades, pode ser preciso usar varios casos
+    if(rand()%178==0){ 
+        aumentaEntidades();
+        if(!initEntidade()) estado=0;
+
+    }
+    if(rand()%154==0){
+        aumentaEntidadesParadas();
+        if(!initEntidadeParada()) estado=0;
+
+    }
+}
+
+void atualizaEntidades(){
+    for (int i = 0; i < nEntidades; i++){
+        if(entidades[i].naTela){
+            al_draw_bitmap(entidades[i].sprite,entidades[i].px,entidades[i].py,0);
+        }
+        
+    }
+    for (int i = 0; i < nEntiParadas; i++){
+        if(entParadas[i].naTela){
+            al_draw_bitmap(entParadas[i].sprite,entParadas[i].px,entParadas[i].py,0);
+        }
+    }
 }
 
 void atualizaJogador(bool anda){ //desenha e anima o jogador
@@ -356,22 +467,22 @@ void jogo(){
             case ALLEGRO_EVENT_KEY_UP: //solta a tecla
                 switch(evento.keyboard.keycode){
                     case ALLEGRO_KEY_UP:
-                        player.vy=0;
+                        if(player.vy!=0) player.vy=0;
                         break;
                     case ALLEGRO_KEY_DOWN:
-                        player.vy=0;
+                        if(player.vy!=0) player.vy=0;
                         break;
                     case ALLEGRO_KEY_RIGHT:
-                        player.vx=0;
+                        if(player.vx!=0) player.vx=0;
                         break;
                     case ALLEGRO_KEY_LEFT:
-                        player.vx=0;
+                        if(player.vx!=0) player.vx=0;
                         break;
                     case ALLEGRO_KEY_Q:
-                        escalaVelocidade=0;
+                        if(escalaVelocidade!=0) escalaVelocidade=0;
                         break;
                     case ALLEGRO_KEY_E:
-                        escalaVelocidade=0;
+                        if(escalaVelocidade!=0) escalaVelocidade=0;
                         break;
                 }
                 break;
@@ -381,10 +492,10 @@ void jogo(){
                 escala+=escalaVelocidade; //soma a velocidade da escala à escala, analogo ao movimento normal
                 if(escala<1.0f) escala=1.0f; //limita o zoom pra n bugar 
                 if(escala>5.0f) escala=5.0f; //zoom maximo
-                
+                geraEntidades();
                 colisaoJogador(); //botei a colisão aqui pra ficar mais bonitinho, atualizo o px e py
                 atualizaCamera(); //aqui começa a magia negra
-                
+
                 al_identity_transform(&camera);
                 al_translate_transform(&camera,-(player.px+player.larguraSprite/2),-(player.py+player.larguraSprite/2)); //basicamente transforma tudo que ta na tela de acordo com esses parametros, eu vou mandar os videos que eu vi ensinando isso pq admito que nem eu entendi direito kkkkkk
                 al_scale_transform(&camera,escala,escala); //esse é o mais simples
