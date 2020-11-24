@@ -9,6 +9,7 @@
 #include <allegro5/allegro_ttf.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 void jogadorAtaque(){
 
