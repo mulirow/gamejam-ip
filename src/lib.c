@@ -198,7 +198,7 @@ void aumentaEntidades(){
 void aumentaBlocos(){
     nBlocos++;
     blocos = (Bloco*)realloc(blocos,nBlocos*sizeof(Bloco));
-    if(entidades==NULL){
+    if(blocos==NULL){
         msgErro("Deu ruim na alocação!");
         estado=0;
     }
@@ -388,14 +388,14 @@ void desenhaMundo(){
 void colisaoJogador(){
 
     for (int i = 0; i < nEntidades; i++){
-        if(entidades[i].px >= pxFundo && entidades[i].py >= pyFundo && entidades[i].px<=LARGURA+pxFundo && entidades[i].py<=ALTURA+pyFundo){
+        if(entidades[i].px+entidades[i].larguraSprite >= pxFundo && entidades[i].py+entidades[i].alturaSprite >= pyFundo && entidades[i].px<=LARGURA+pxFundo && entidades[i].py<=ALTURA+pyFundo){
             entidades[i].naTela=true;
         }
         else entidades[i].naTela=false;
         
     }
     for (int i = 0; i < nBlocos; i++){
-        if(blocos[i].px >= pxFundo && blocos[i].py >= pyFundo && blocos[i].px<=LARGURA+pxFundo && blocos[i].py<=ALTURA+pyFundo){
+        if(blocos[i].px+blocos[i].larguraSprite >= pxFundo && blocos[i].py+blocos[i].alturaSprite >= pyFundo && blocos[i].px<=LARGURA+pxFundo && blocos[i].py<=ALTURA+pyFundo){
             blocos[i].naTela=true;
         }
         else blocos[i].naTela=false;
@@ -429,18 +429,22 @@ void colisaoJogador(){
         }
     }
     //colisao do jogador com os blocos
-    bool colisao=false;
+    
     for(int j=0; j<nBlocos;j++){
+        bool colisao=false;
+        if(j<0) j = 0; //evitar bugs no j--
         if(blocos[j].naTela){  //n tem mt o que explicar aqui, so desenhando msm (serio)
-            if(player.px+player.larguraSprite < blocos[j].px || player.px > blocos[j].px+blocos[j].larguraSprite ||
-                player.py+player.alturaSprite<blocos[j].py || player.py>blocos[j].py+blocos[j].alturaSprite) colisao=false;
-                else{
-                    //preciso implementar um sistema de alteração de velocidade pra corrigir o bug das colisões
-                    colisao=true;
-                }
-            }
-        if((player.direcao[dCima] || player.direcao[dBaixo]) && colisao) player.py-=player.vy; //se colide numa dessas direçoes, zeramos a velocidade nela
-        if((player.direcao[dDireita] || player.direcao[dEsquerda]) && colisao) player.px-=player.vx;
+            if (player.px+player.larguraSprite > blocos[j].px && player.px < blocos[j].px+blocos[j].larguraSprite && player.py+player.alturaSprite > blocos[j].py && player.py < blocos[j].py+blocos[j].alturaSprite) colisao=true;
+            else colisao=false;
+        }
+        if((player.direcao[dCima] || player.direcao[dBaixo]) && colisao){
+                player.py-=player.vy/5; //uma lenta porem eficiente solução ao problema das colisões
+                j--;
+        } 
+        if((player.direcao[dDireita] || player.direcao[dEsquerda]) && colisao){
+                player.px-=player.vx/5;
+                j--;
+        }
     }
 
 }
@@ -709,7 +713,7 @@ void jogo(){
             if(player.vx==0 || player.vy==0) anda=false;
             atualizaJogador(anda);
             atualizaEntidades();
-            al_draw_textf(retroFont,al_map_rgb(0,0,0),player.px,player.py,ALLEGRO_ALIGN_CENTER,"px=%f py=%f vx=%f vy=%f",player.px,player.py,player.vx,player.vy);
+            al_draw_textf(retroFont,al_map_rgb(0,0,0),player.px+player.larguraSprite/2,player.py+player.alturaSprite,ALLEGRO_ALIGN_CENTER,"PROTÓTIPO");
             al_flip_display();
             desenhe=0;
         }
