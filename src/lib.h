@@ -10,6 +10,7 @@
 enum ESTADO{estSaida, estPreMenu, estMenu, estPreJogo, estJogo}; //Organizar num enum porque esse monte de define ficaria feio
 enum DIRECOES{dBaixo,dCima,dDireita,dEsquerda}; //esse enum é pra nao ter que ficar lembrando que numero é cada posição no vetor do struct de entidades
 
+
 //velocidade das entidades no geral
 extern const float VELOCIDADE;
 //vida das entidades no geral
@@ -20,16 +21,19 @@ extern const float ATAQUE;
 extern const float DEFESA;
 //total de fases no jogo
 extern const int FASES;
+//raio de procura do player
+extern const float RAIO_P;
 
 extern int LARGURA; extern int ALTURA;
 //as razões entre o tamanho dos tiles e a altura da tela, essencial pra desenhar na tela
 extern int RAZAO_X; extern int RAZAO_Y;
 //diz respeito à opção no menu
 extern int opcao;
-//numero de entidades totais;
+
 //diz respeito ao fluxo do jogo, com -1 sendo a saída
 extern int estado;
-extern int nEntidades; extern int nEntiParadas;
+//o numero de entidades e o numero de blocos
+extern int nEntidades; extern int nBlocos; 
 //( ͡° ͜ʖ ͡°)
 extern bool sexo;
 //fase atual
@@ -53,13 +57,15 @@ extern ALLEGRO_TRANSFORM camera; //usado pra movimentar a camera
 //estrutura geral das entidades do jogo, talvez seja alterado
 typedef struct{
     float vx; float vy; //velocidades
-    int px; int py; //posiçoes
+    float px; float py; //posiçoes
     float hp; //HP total
     float atk; //dano de ataque
     float def; //defesa
     ALLEGRO_BITMAP *sprite; //sprite da entidade
     //auto-explicativos
-    int alturaSprite; int larguraSprite;
+    float alturaSprite; float larguraSprite;
+    //raio de contato
+    float raio;
     //pulo de linha pra uma direcao pra outra e pulo de coluna de um sprite pro outro
     int puloLinha; int puloColuna;
     //quantos frames tem a animação do sprite
@@ -70,22 +76,32 @@ typedef struct{
     int pDesenhox; int pDesenhoy;
     //aqui sabemos se a entidade está ou não na tela
     bool naTela;
+    //se for inimigo = true
+    bool inimigo; bool hostil;
+    // escala do bitmap
+    float escalaEntidade;
+    //bool que diz em qual (ou quais) direções o player se move
+    bool direcao[4];
 } Entidade;
 
 typedef struct{
     //analogos à estrutura acima
-    int px; int py;
+    float px; float py;
     ALLEGRO_BITMAP *sprite;
     int alturaSprite;
     int larguraSprite;
     bool naTela;
+    // escala do bitmap
+    float escalaEntidade;
 
-} EntidadeParada;
+} Bloco; //um tipo de entidade que não se move
 
 extern Entidade player;
 extern Entidade *entidades;
-extern EntidadeParada *entParadas;
-bool criaEnt; bool criaEntParada;
+extern Bloco *blocos;
+bool criaEnt; bool criaBloco; // aqui é um boleano que responde se deve ou nao ser criada uma entidade ou um bloco
+bool mostraHitbox; //boleano que diz se deve ou nao demonstrar as hitboxes
+bool reinicio; //boleano que pergunta se o jogo esta reiniciando
 
 void destroi();
 
@@ -99,10 +115,10 @@ int cria();
 
 //Funções de atualização
 int initEntidade();
-int initEntidadeParada();
+int initBloco();
 void geraEntidades();
 void aumentaEntidades();
-void aumentaEntidadesParadas();
+void aumentaBlocos();
 void atualizaCamera();
 void desenhaMundo();
 void colisaoJogador();
@@ -114,6 +130,7 @@ void preMenu();
 void menu();
 void preJogo();
 void pauseJogo();
+void fimDeJogo();
 void jogo();
 
 #endif
