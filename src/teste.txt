@@ -1,0 +1,8 @@
+Fazer um mapa com tiles e blocos pré setados.
+Entidades podem ser random, sem problema.
+Resolver o problema da colisão. CHECK
+Desenhar a partir do canto inferior.
+Definir uma colisão decente das. entidades com os blocos.
+Definir mecânica de ataque. (provavelmente análoga a de dano por contato?). WASD
+Limite de entidades (até por escolha do usuário na difículdade, why not).
+Ja começar a implementar a história.
