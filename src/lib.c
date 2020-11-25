@@ -17,6 +17,7 @@ const float HP=100.0;
 const float ATAQUE=10.0;
 const float DEFESA=5.0;
 const int FASES=3;
+const int NUMERO_TILES=14;
 const float RAIO_P=50;
 
 
@@ -27,7 +28,7 @@ int estado = 1;
 int nEntidades = 0; int nBlocos = 0;
 bool sexo;
 int faseAtual = 0;
-int largTile[3]; int altTile[3];
+int largTile[14]; int altTile[14];
 float pxFundo = 0; float pyFundo = 0;
 float escala = 1.0f; float escalaVelocidade = 0.0f;
 
@@ -38,7 +39,7 @@ ALLEGRO_TIMER *timerAlt = NULL;
 ALLEGRO_TIMER *timerTeste=NULL;
 ALLEGRO_FONT *retroFont = NULL;
 ALLEGRO_FONT *retroFont32 = NULL;
-ALLEGRO_BITMAP *fundo[3];
+ALLEGRO_BITMAP *fundo[14];
 ALLEGRO_TRANSFORM camera;
 
 Entidade player;
@@ -47,6 +48,15 @@ Bloco *blocos = NULL;
 bool criaEnt; bool criaBloco;
 bool mostraHitbox=false;
 bool reinicio=false;
+
+int max(int a,int b){
+    if(a>b) return a;
+    else return b;
+}
+int min(int a,int b){
+    if(a>b) return b;
+    else return a;
+}
 
 //destroi o que der
 void destroi(){
@@ -60,7 +70,7 @@ void destroi(){
     for (int i = 0; i < nEntidades; i++){
         al_destroy_bitmap(entidades[i].sprite);
     }
-    for (int i = 0; i < FASES; i++){
+    for (int i = 0; i < NUMERO_TILES; i++){
         al_destroy_bitmap(fundo[i]);
     }
     for (int i = 0; i < nBlocos; i++){
@@ -115,19 +125,19 @@ void geraMundo(int i){
     //aqui simplesmente carrega os fundos como cada tile, fiz um switch case com i e tudo mais so pra caso precise botar mais fases e etc, mas qualquer coisa a gente bota um load direto msm
     switch (i){
         case 0:
-            fundo[i]=al_load_bitmap("./bin/backgrounds/tile1.bmp");
+            fundo[i]=al_load_bitmap("./bin/backgrounds/Asfalto.png");
             if(!fundo[i]){
                 msgErro("Deu ruim no fundo 0!");
             }
             break;
         case 1:
-            fundo[i]=al_load_bitmap("./bin/backgrounds/tile2.bmp");
+            fundo[i]=al_load_bitmap("./bin/backgrounds/Terra.png");
             if(!fundo[i]){
                 msgErro("Deu ruim no fundo 1!");
             }
             break;
         default: //so pra n dar merda
-            fundo[i]=al_load_bitmap("./bin/backgrounds/tile1.bmp");
+            fundo[i]=al_load_bitmap("./bin/backgrounds/Asfalto.png");
             if(!fundo[i]){
                 msgErro("Deu ruim no fundo 2!");
             }
@@ -405,16 +415,18 @@ void colisaoJogador(){
     for (int i = 0; i < nEntidades; i++){ 
         if(entidades[i].naTela){//se a entidade ta na tela
             //teorema de pitagoras (serio)
+            bool colisaoEntidade=false;
             double distancia=sqrt(pow(player.px+player.larguraSprite/2-entidades[i].px-entidades[i].larguraSprite/2,2)+pow(player.py+player.alturaSprite/2-entidades[i].py-entidades[i].alturaSprite/2,2));
             if(distancia<=player.raio+entidades[i].raio){ //isso significa que as circunferencias são secantes
                 if(entidades[i].inimigo){ //se for inimigo, apanha
                     player.hp-=10;
                     //animação de dano feita nas coxas, simplesmente empurra o player
-                    player.px-=3*player.vx;
-                    player.py-=3*player.vy;
+                
                 }
+               colisaoEntidade=true;
             }
-            if(distancia<=RAIO_P*entidades[i].escalaEntidade){ //se ele tiver dentro do raio de procura
+            else colisaoEntidade=false;
+            if(distancia<=RAIO_P*entidades[i].escalaEntidade && !colisaoEntidade){ //se ele tiver dentro do raio de procura
                 float seno=(player.py-entidades[i].py)/distancia; //olha ele ai
                 float cosseno=(player.px-entidades[i].px)/distancia;
                 entidades[i].vx=+VELOCIDADE*cosseno/1.2; //geometria 
@@ -659,19 +671,19 @@ void jogo(){
             case ALLEGRO_EVENT_KEY_UP: //solta a tecla
                 switch(evento.keyboard.keycode){
                     case ALLEGRO_KEY_UP:
-                        if(player.vy!=0)player.vy+=VELOCIDADE;
+                        if(player.vy!=0 || player.direcao[dCima])player.vy+=VELOCIDADE;
                         player.direcao[dCima]=false;
                         break;
                     case ALLEGRO_KEY_DOWN:
-                        if(player.vy!=0)player.vy-=VELOCIDADE;
+                        if(player.vy!=0 || player.direcao[dBaixo])player.vy-=VELOCIDADE;
                         player.direcao[dBaixo]=false;
                         break;
                     case ALLEGRO_KEY_RIGHT:
-                        if(player.vx!=0)player.vx-=VELOCIDADE;
+                        if(player.vx!=0 || player.direcao[dDireita])player.vx-=VELOCIDADE;
                         player.direcao[dDireita]=false;
                         break;
                     case ALLEGRO_KEY_LEFT:
-                        if(player.vx!=0)player.vx+=VELOCIDADE;
+                        if(player.vx!=0 || player.direcao[dEsquerda])player.vx+=VELOCIDADE;
                         player.direcao[dEsquerda]=false;
                         break;
                     case ALLEGRO_KEY_Q:

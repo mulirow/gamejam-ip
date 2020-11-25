@@ -21,6 +21,8 @@ extern const float ATAQUE;
 extern const float DEFESA;
 //total de fases no jogo
 extern const int FASES;
+//numero de tiles usado pra gerar o mundo
+extern const int NUMERO_TILES;
 //raio de procura do player
 extern const float RAIO_P;
 
@@ -39,7 +41,7 @@ extern bool sexo;
 //fase atual
 extern int faseAtual;
 //altura e largura de cada tile, pode ser redundante
-extern int largTile[3]; extern int altTile[3];
+extern int largTile[14]; extern int altTile[14];
 //usado no desenho do bitmap do fundo e na camera
 extern float pxFundo; extern float pyFundo;
 //escala da camera e velocidade com que ela escala
@@ -51,7 +53,7 @@ extern ALLEGRO_TIMER *timer; //timer padrao
 extern ALLEGRO_TIMER *timerAlt; //timer que roda a 7.5 fps
 extern ALLEGRO_FONT *retroFont; //fonte padrao (tamanho 20)
 extern ALLEGRO_FONT *retroFont32; //fonte tamanho 32
-extern ALLEGRO_BITMAP *fundo[3]; //fundo do jogo
+extern ALLEGRO_BITMAP *fundo[14]; //fundo do jogo
 extern ALLEGRO_TRANSFORM camera; //usado pra movimentar a camera
 
 //estrutura geral das entidades do jogo, talvez seja alterado
@@ -104,6 +106,8 @@ bool mostraHitbox; //boleano que diz se deve ou nao demonstrar as hitboxes
 bool reinicio; //boleano que pergunta se o jogo esta reiniciando
 
 void destroi();
+int min();
+int max();
 
 //Auxiliar para erros
 void msgErro(char *t);
