@@ -5,6 +5,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
+#include <allegro5/color.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 #include <stdio.h>
@@ -22,10 +23,11 @@ const float RAIO_P=50;
 
 
 int LARGURA, ALTURA;
-int RAZAO_X, RAZAO_Y;
+int RAZAO_X[14], RAZAO_Y[14];
 int opcao;
 int estado = 1;
 int nEntidades = 0; int nBlocos = 0;
+int limEntidades =100;
 bool sexo;
 int faseAtual = 0;
 int largTile[14]; int altTile[14];
@@ -123,33 +125,14 @@ int inic(){
 
 void geraMundo(int i){ 
     //aqui simplesmente carrega os fundos como cada tile, fiz um switch case com i e tudo mais so pra caso precise botar mais fases e etc, mas qualquer coisa a gente bota um load direto msm
-    switch (i){
-        case 0:
-            fundo[i]=al_load_bitmap("./bin/backgrounds/Asfalto.png");
-            if(!fundo[i]){
-                msgErro("Deu ruim no fundo 0!");
-            }
-            break;
-        case 1:
-            fundo[i]=al_load_bitmap("./bin/backgrounds/Terra.png");
-            if(!fundo[i]){
-                msgErro("Deu ruim no fundo 1!");
-            }
-            break;
-        default: //so pra n dar merda
-            fundo[i]=al_load_bitmap("./bin/backgrounds/Asfalto.png");
-            if(!fundo[i]){
-                msgErro("Deu ruim no fundo 2!");
-            }
-            break;
-    }
+    
     //pega a largura de cada tile, pra função de desenho
     largTile[i]=al_get_bitmap_width(fundo[i]);
     //pega a altura de cada tile , pra função de desenho
     altTile[i]=al_get_bitmap_height(fundo[i]);
     //defino as razoes, utilidade explicada na declaração
-    RAZAO_X=LARGURA/largTile[i]; 
-    RAZAO_Y=ALTURA/altTile[i];
+    RAZAO_X[i]=LARGURA/largTile[i]; 
+    RAZAO_Y[i]=ALTURA/altTile[i];
 }
 
 //cria tudo que será necessário no jogo
@@ -174,8 +157,26 @@ int cria(){
     al_set_window_title(janela, "Jogo");
 
     //bem redundante, mas so mesmo por enquanto
-    for (int i = 0; i < FASES; i++){
+       
+    fundo[asfalto]=al_load_bitmap("./bin/backgrounds/asfalto.png");
+    fundo[tijoloBaixo]=al_load_bitmap("./bin/backgrounds/tijoloBaixo.png");
+    fundo[tijoloCima]=al_load_bitmap("./bin/backgrounds/tijoloCima.png");
+    fundo[tijoloDireita]=al_load_bitmap("./bin/backgrounds/tijoloDireita.png");
+    fundo[tijoloEsquerda]=al_load_bitmap("./bin/backgrounds/tijoloEsquerda.png");
+    fundo[tijoloQBaixo]=al_load_bitmap("./bin/backgrounds/tijoloQBaixo.png");
+    fundo[tijoloQCima]=al_load_bitmap("./bin/backgrounds/tijoloQCima.png");
+    fundo[tijoloQDireita]=al_load_bitmap("./bin/backgrounds/tijoloQDireita.png");
+    fundo[tijoloQEsquerda]=al_load_bitmap("./bin/backgrounds/tijoloQEsquerda.png");
+    fundo[terra]=al_load_bitmap("./bin/backgrounds/terra.png");
+    fundo[tijoloH]=al_load_bitmap("./bin/backgrounds/tijoloH.png");
+    fundo[tijoloQH]=al_load_bitmap("./bin/backgrounds/tijoloQH.png");
+    fundo[tijoloV]=al_load_bitmap("./bin/backgrounds/tijoloV.png");
+    fundo[tijoloQV]=al_load_bitmap("./bin/backgrounds/tijoloQV.png");
+    
+    for (int i = 1; i < NUMERO_TILES; i++){
+        if(!fundo[i]) msgErro("Deu ruim nos fundos!");
         geraMundo(i);
+        
     }
     filaEventos = al_create_event_queue();
     if(!filaEventos) {
@@ -390,9 +391,8 @@ void atualizaCamera(){ //atualiza as posiçoes das coisas
     if(pyFundo<0) pyFundo=0;
 }
 
-void desenhaMundo(){
-    al_draw_scaled_bitmap(fundo[faseAtual],0,0,largTile[faseAtual],altTile[faseAtual],
-                           pxFundo,pyFundo,LARGURA,ALTURA,0);
+void desenhaMundo(){ //essa função tem que desenhar o mapa inteiro usando os tiles ja carregados
+    al_draw_scaled_bitmap(fundo[1],0,0,largTile[1],altTile[1],pxFundo,pyFundo,LARGURA,ALTURA,0);
 }
 
 void colisaoJogador(){
@@ -419,9 +419,9 @@ void colisaoJogador(){
             double distancia=sqrt(pow(player.px+player.larguraSprite/2-entidades[i].px-entidades[i].larguraSprite/2,2)+pow(player.py+player.alturaSprite/2-entidades[i].py-entidades[i].alturaSprite/2,2));
             if(distancia<=player.raio+entidades[i].raio){ //isso significa que as circunferencias são secantes
                 if(entidades[i].inimigo){ //se for inimigo, apanha
-                    player.hp-=10;
-                    //animação de dano feita nas coxas, simplesmente empurra o player
-                
+                    player.hp-=1;
+                    //animacao de dano/ataque aqui, por enquanto nao rola nd
+
                 }
                colisaoEntidade=true;
             }
