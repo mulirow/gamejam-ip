@@ -9,6 +9,8 @@
 
 enum ESTADO{estSaida, estPreMenu, estMenu, estPreJogo, estJogo}; //Organizar num enum porque esse monte de define ficaria feio
 enum DIRECOES{dBaixo,dCima,dDireita,dEsquerda}; //esse enum é pra nao ter que ficar lembrando que numero é cada posição no vetor do struct de entidades
+//enum pra cada tile, pra ficar alto nivel
+enum TILES{asfalto,tijoloBaixo,tijoloCima,tijoloDireita,tijoloEsquerda,tijoloQBaixo,tijoloQCima,tijoloQDireita,tijoloQEsquerda,terra,tijoloH,tijoloQH,tijoloV,tijoloQV};
 
 
 //velocidade das entidades no geral
@@ -27,8 +29,8 @@ extern const int NUMERO_TILES;
 extern const float RAIO_P;
 
 extern int LARGURA; extern int ALTURA;
-//as razões entre o tamanho dos tiles e a altura da tela, essencial pra desenhar na tela
-extern int RAZAO_X; extern int RAZAO_Y;
+//as razões entre o tamanho dos tiles e a altura da tela, essencial pra desenhar na tela (lembrar de atulizar se tiverem mais tiles)
+extern int RAZAO_X[14]; extern int RAZAO_Y[14];
 //diz respeito à opção no menu
 extern int opcao;
 
@@ -36,6 +38,7 @@ extern int opcao;
 extern int estado;
 //o numero de entidades e o numero de blocos
 extern int nEntidades; extern int nBlocos; 
+extern int limiteEntidades;
 //( ͡° ͜ʖ ͡°)
 extern bool sexo;
 //fase atual

@@ -4,6 +4,7 @@ Ja definir os tipos de entidades por fase.
 Ja definir os tipos de blocos por fase.
 Fazer uma UI básica.
 Animar o sprite do player (talvez apenas o player seja animado?).
+Animação de dano ao contato?
 Resolver o problema da colisão. ::CHECK
 Desenhar a partir do canto inferior.
 Definir uma colisão decente das entidades com os blocos.
