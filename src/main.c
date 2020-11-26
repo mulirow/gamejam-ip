@@ -37,6 +37,8 @@ int main(){
             menu();
         else if (estado == estPreJogo)
             preJogo();
+        else if (estado == estCutscene)
+            cutscene();
         else if (estado == estJogo)
             jogo();
     }

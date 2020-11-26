@@ -7,7 +7,7 @@
 
 #define FPS 60.0
 
-enum ESTADO{estSaida, estPreMenu, estMenu, estPreJogo, estJogo}; //Organizar num enum porque esse monte de define ficaria feio
+enum ESTADO{estSaida, estPreMenu, estMenu, estPreJogo, estCutscene, estJogo}; //Organizar num enum porque esse monte de define ficaria feio
 enum DIRECOES{dBaixo,dCima,dDireita,dEsquerda}; //esse enum é pra nao ter que ficar lembrando que numero é cada posição no vetor do struct de entidades
 //enum removido
 
@@ -55,6 +55,7 @@ extern ALLEGRO_TIMER *timerAlt; //timer que roda a 7.5 fps
 extern ALLEGRO_FONT *retroFont; //fonte padrao (tamanho 20)
 extern ALLEGRO_FONT *retroFont32; //fonte tamanho 32
 extern ALLEGRO_BITMAP *fundo; //fundo do jogo
+extern ALLEGRO_BITMAP *caixaDialogo;
 extern ALLEGRO_TRANSFORM camera; //usado pra movimentar a camera
 
 //estrutura geral das entidades do jogo, talvez seja alterado
@@ -139,6 +140,7 @@ void atualizaEntidades();
 void preMenu();
 void menu();
 void preJogo();
+void cutscene();
 void pauseJogo();
 void fimDeJogo();
 void jogo();

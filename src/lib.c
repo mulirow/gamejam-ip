@@ -25,7 +25,7 @@ const float RAIO_P=200;
 int LARGURA, ALTURA;
 
 int opcao;
-int estado = 1;
+int estado = estPreMenu;
 int nEntidades = 0; int nBlocos = 0;
 int limEntidades[3];
 int limBlocos[3];
@@ -43,6 +43,7 @@ ALLEGRO_TIMER *timerTeste=NULL;
 ALLEGRO_FONT *retroFont = NULL;
 ALLEGRO_FONT *retroFont32 = NULL;
 ALLEGRO_BITMAP *fundo;
+ALLEGRO_BITMAP *caixaDialogo;
 ALLEGRO_TRANSFORM camera;
 
 Entidade player;
@@ -78,12 +79,13 @@ void destroi(){
         al_destroy_bitmap(blocos[i].sprite);
     }
     al_destroy_bitmap(player.sprite);
+    al_destroy_bitmap(caixaDialogo);
 }
 
 //mensagem de erro, deve ser usado na verificação de inicializações
 void msgErro(char *t){
     al_show_native_message_box(NULL,"ERRO","Ocorreu o seguinte erro:",t,NULL,ALLEGRO_MESSAGEBOX_ERROR);
-    estado = 0;
+    estado = estSaida;
 }
 
 //inicializa os addons
@@ -125,9 +127,9 @@ int inic(){
 void geraMundo(int i){ 
     if(i==0){
         fundo=al_load_bitmap("./bin/backgrounds/mapa0.png");
-        nBlocos=limBlocos[i];
-        aumentaBlocos(); //apenas um teste
-        if(!initBloco()) msgErro("Erro ao gerar os blocos!");
+        //nBlocos=limBlocos[i];
+        //aumentaBlocos(); //apenas um teste
+        //if(!initBloco()) msgErro("Erro ao gerar os blocos!");
     }
     if(!fundo) msgErro("Deu ruim nos fundos!");
     //pega a largura de cada tile, pra função de desenho
@@ -185,7 +187,7 @@ void aumentaEntidades(){
     entidades = (Entidade*)realloc(entidades,nEntidades*sizeof(Entidade));
     if(entidades==NULL){
         msgErro("Deu ruim na alocação!");
-        estado=0;
+        estado=estSaida;
     }
 }
 void aumentaBlocos(){
@@ -193,7 +195,7 @@ void aumentaBlocos(){
     blocos = (Bloco*)realloc(blocos,nBlocos*sizeof(Bloco));
     if(blocos==NULL){
         msgErro("Deu ruim na alocação!");
-        estado=0;
+        estado=estSaida;
     }
 }
 
@@ -224,7 +226,7 @@ void preMenu(){
     }
     al_stop_timer(timerAlt);
     al_flush_event_queue(filaEventos);
-    estado++;
+    estado = estMenu;
 }
 
 //fluxo do menu
@@ -274,11 +276,37 @@ void menu(){
     al_stop_timer(timer);
     al_flush_event_queue(filaEventos);
     if(opcao % 2 == 0){
-        estado++;
+        estado = estCutscene;
     }
     else{
-        estado = 0;
+        estado = estSaida;
     }
+}
+
+void cutscene(){
+    caixaDialogo = al_load_bitmap("./bin/misc/UI/caixaDialogo.png");
+    bool sair = false;
+    al_start_timer(timer);
+    while(!sair){
+        ALLEGRO_EVENT evento;
+        al_wait_for_event(filaEventos,&evento);
+        switch (evento.type){
+            case ALLEGRO_EVENT_TIMER:
+                al_draw_bitmap(caixaDialogo, 0, 0, ALLEGRO_ALIGN_LEFT);
+                al_flip_display();
+                al_clear_to_color(al_map_rgb(0, 0, 0));
+                break;
+            case ALLEGRO_EVENT_KEY_DOWN: //aperta uma tecla
+                switch(evento.keyboard.keycode){
+                    case ALLEGRO_KEY_ENTER:
+                        sair = true;
+                }
+                break;
+        }
+    }
+    al_stop_timer(timer);
+    al_flush_event_queue(filaEventos);
+    estado = estPreJogo;
 }
 
 //seta tudo antes do fluxo do jogo, talvez possa ser repetido a cada mudança de fase(?)
@@ -327,18 +355,18 @@ void preJogo(){
     al_convert_mask_to_alpha(player.sprite,al_map_rgb(0,0,0)); //isso aqui define a transparencia do sprite
 
     al_flush_event_queue(filaEventos); //da um wipe na fila inteira
-    estado++;
+    estado = estJogo;
 }
 void fimDeJogo(){
     //bem besta
     if(al_show_native_message_box(janela,"Você morreu!","Que pena", "Os inimigos venceram, tentar novamente?","Claro!|Tô Fora",ALLEGRO_MESSAGEBOX_YES_NO)%2==0){
-        estado=0;
+        estado = estSaida;
     }
     //caso ele reinicie
     else{
         al_flush_event_queue(filaEventos);
         reinicio=1;
-        estado=3;
+        estado= estPreJogo;
     }
 }
 
@@ -531,7 +559,7 @@ int initEntidade(){ //aqui é tudo hardcoded msm, n tem jeito
     //aqui teoricamente deveriam ficar todas as possibilidades e tal
 }
 
-int initBloco(){ //template pra qualquer geração de blocos, bem hardcoded mas pelo menos ta organizado
+/*int initBloco(){ //template pra qualquer geração de blocos, bem hardcoded mas pelo menos ta organizado
     if(faseAtual==0){
         int i=nBlocos;
         int j=i;
@@ -713,12 +741,12 @@ int initBloco(){ //template pra qualquer geração de blocos, bem hardcoded mas 
         if(i==nBlocos) return 0;
     }
     return 1;
-}
+}*/
 
 void geraEntidades(){ //gera as entidades, pode ser preciso usar varios casos
     if(rand()%200==0 && nEntidades<limEntidades[faseAtual]){ //gera entidades aleatoriamente
         aumentaEntidades();
-        if(!initEntidade()) estado=0;
+        if(!initEntidade()) estado=estSaida;
 
     }
     //tirei daqui o gera blocos, eles vao ser desenhados automaticamente
@@ -792,7 +820,7 @@ void jogo(){
     bool teste=false; //modo de teste, frame unico
     bool anda=false; //unica serventia desse bool é pra animação de movimento do personagem
     bool desenhe=false; //desenha o proximo frame
-    while (!sair && estado==4){
+    while (!sair && estado==estJogo){
         ALLEGRO_EVENT evento;
         al_wait_for_event(filaEventos,&evento);
         switch (evento.type){
@@ -822,7 +850,7 @@ void jogo(){
                         //a função retorna 0, 1 ou 2. 0 se a janela for fechada, 1 se for OK e 2 se for cancelar
                         if(al_show_native_message_box(janela,"Saída","Deseja sair do jogo?","Aperte OK para sair ou Cancelar para retornar ao estado do jogo",NULL,ALLEGRO_MESSAGEBOX_OK_CANCEL)%2!=0){
                             sair=true;
-                            estado = 0;
+                            estado = estSaida;
                         }
                         player.vx=0;player.vy=0;escalaVelocidade=0;
                         al_flush_event_queue(filaEventos);
