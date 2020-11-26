@@ -4,7 +4,7 @@ Ja definir os tipos de entidades por fase.
 Ja definir os tipos de blocos por fase.
 Fazer uma UI básica.
 Animar o sprite do player (talvez apenas o player seja animado?).
-Animação de dano ao contato?
+Animação de dano ao contato? ::CHECK
 Resolver o problema da colisão. ::CHECK
 Desenhar a partir do canto inferior.
 Definir uma colisão decente das entidades com os blocos.
@@ -12,17 +12,3 @@ Definir mecânica de ataque. (provavelmente análoga a de dano por contato?). WA
 Limite de entidades (até por escolha do usuário na difículdade, why not).
 Ja começar a implementar a história.
 
-bool colisao=false;
-        if(j<0) j = 0; //evitar bugs no j--
-        if(blocos[j].naTela){  //n tem mt o que explicar aqui, so desenhando msm (serio)
-            if (player.px+player.larguraSprite > blocos[j].px && player.px < blocos[j].px+blocos[j].larguraSprite && player.py+player.alturaSprite > blocos[j].py && player.py < blocos[j].py+blocos[j].alturaSprite) colisao=true;
-            else colisao=false;
-        }
-        if((player.direcao[dCima] || player.direcao[dBaixo]) && colisao){
-                player.py-=player.vy/5; //uma lenta porem eficiente solução ao problema das colisões
-                j--;
-        } 
-        if((player.direcao[dDireita] || player.direcao[dEsquerda]) && colisao){
-                player.px-=player.vx/5;
-                j--;
-        }
