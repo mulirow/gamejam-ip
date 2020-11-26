@@ -18,19 +18,19 @@ const float HP=100.0;
 const float ATAQUE=10.0;
 const float DEFESA=5.0;
 const int FASES=3;
-const int NUMERO_TILES=14;
+
 const float RAIO_P=50;
 
 
 int LARGURA, ALTURA;
-int RAZAO_X[14], RAZAO_Y[14];
+
 int opcao;
 int estado = 1;
 int nEntidades = 0; int nBlocos = 0;
 int limEntidades =100;
 bool sexo;
 int faseAtual = 0;
-int largTile[14]; int altTile[14];
+int largFase; int altFase;
 float pxFundo = 0; float pyFundo = 0;
 float escala = 1.0f; float escalaVelocidade = 0.0f;
 
@@ -41,7 +41,7 @@ ALLEGRO_TIMER *timerAlt = NULL;
 ALLEGRO_TIMER *timerTeste=NULL;
 ALLEGRO_FONT *retroFont = NULL;
 ALLEGRO_FONT *retroFont32 = NULL;
-ALLEGRO_BITMAP *fundo[14];
+ALLEGRO_BITMAP *fundo;
 ALLEGRO_TRANSFORM camera;
 
 Entidade player;
@@ -72,9 +72,7 @@ void destroi(){
     for (int i = 0; i < nEntidades; i++){
         al_destroy_bitmap(entidades[i].sprite);
     }
-    for (int i = 0; i < NUMERO_TILES; i++){
-        al_destroy_bitmap(fundo[i]);
-    }
+    al_destroy_bitmap(fundo);
     for (int i = 0; i < nBlocos; i++){
         al_destroy_bitmap(blocos[i].sprite);
     }
@@ -124,15 +122,14 @@ int inic(){
 }
 
 void geraMundo(int i){ 
-    //aqui simplesmente carrega os fundos como cada tile, fiz um switch case com i e tudo mais so pra caso precise botar mais fases e etc, mas qualquer coisa a gente bota um load direto msm
-    
+    if(i==0) fundo=al_load_bitmap("./bin/backgrounds/mapa0.png");
+    if(!fundo) msgErro("Deu ruim nos fundos!");
     //pega a largura de cada tile, pra função de desenho
-    largTile[i]=al_get_bitmap_width(fundo[i]);
+    largFase=al_get_bitmap_width(fundo);
     //pega a altura de cada tile , pra função de desenho
-    altTile[i]=al_get_bitmap_height(fundo[i]);
+    altFase=al_get_bitmap_height(fundo);
     //defino as razoes, utilidade explicada na declaração
-    RAZAO_X[i]=LARGURA/largTile[i]; 
-    RAZAO_Y[i]=ALTURA/altTile[i];
+
 }
 
 //cria tudo que será necessário no jogo
@@ -157,27 +154,14 @@ int cria(){
     al_set_window_title(janela, "Jogo");
 
     //bem redundante, mas so mesmo por enquanto
-       
-    fundo[asfalto]=al_load_bitmap("./bin/backgrounds/asfalto.png");
-    fundo[tijoloBaixo]=al_load_bitmap("./bin/backgrounds/tijoloBaixo.png");
-    fundo[tijoloCima]=al_load_bitmap("./bin/backgrounds/tijoloCima.png");
-    fundo[tijoloDireita]=al_load_bitmap("./bin/backgrounds/tijoloDireita.png");
-    fundo[tijoloEsquerda]=al_load_bitmap("./bin/backgrounds/tijoloEsquerda.png");
-    fundo[tijoloQBaixo]=al_load_bitmap("./bin/backgrounds/tijoloQBaixo.png");
-    fundo[tijoloQCima]=al_load_bitmap("./bin/backgrounds/tijoloQCima.png");
-    fundo[tijoloQDireita]=al_load_bitmap("./bin/backgrounds/tijoloQDireita.png");
-    fundo[tijoloQEsquerda]=al_load_bitmap("./bin/backgrounds/tijoloQEsquerda.png");
-    fundo[terra]=al_load_bitmap("./bin/backgrounds/terra.png");
-    fundo[tijoloH]=al_load_bitmap("./bin/backgrounds/tijoloH.png");
-    fundo[tijoloQH]=al_load_bitmap("./bin/backgrounds/tijoloQH.png");
-    fundo[tijoloV]=al_load_bitmap("./bin/backgrounds/tijoloV.png");
-    fundo[tijoloQV]=al_load_bitmap("./bin/backgrounds/tijoloQV.png");
     
-    for (int i = 1; i < NUMERO_TILES; i++){
-        if(!fundo[i]) msgErro("Deu ruim nos fundos!");
-        geraMundo(i);
-        
-    }
+
+    
+    
+    
+
+
+    //removido
     filaEventos = al_create_event_queue();
     if(!filaEventos) {
         msgErro("Falha ao criar fila de eventos");
@@ -301,6 +285,7 @@ void menu(){
 
 //seta tudo antes do fluxo do jogo, talvez possa ser repetido a cada mudança de fase(?)
 void preJogo(){
+    geraMundo(faseAtual);
     //pergunta como a pessoa quer jogar
     if(al_show_native_message_box(janela,"Escolha do Sexo","Escolha com cautela:","Você prefere jogar com macho ou fêmea?","M|F",ALLEGRO_MESSAGEBOX_OK_CANCEL)%2!=0){
         sexo=1;
@@ -329,6 +314,7 @@ void preJogo(){
     player.escalaEntidade=1;
     //raio da hitbox de contato/hitbox de dano (com entidades)
     player.raio=player.alturaSprite/4+player.larguraSprite/4;
+    player.dano=false;
     if(reinicio){ //se reinicio for true, reseta as entidades e blocos
         nEntidades=0;
         nBlocos=0;
@@ -392,7 +378,7 @@ void atualizaCamera(){ //atualiza as posiçoes das coisas
 }
 
 void desenhaMundo(){ //essa função tem que desenhar o mapa inteiro usando os tiles ja carregados
-    al_draw_scaled_bitmap(fundo[1],0,0,largTile[1],altTile[1],pxFundo,pyFundo,LARGURA,ALTURA,0);
+    al_draw_bitmap_region(fundo,pxFundo,pyFundo,altFase,largFase,pxFundo,pyFundo,0);
 }
 
 void colisaoJogador(){
@@ -421,11 +407,17 @@ void colisaoJogador(){
                 if(entidades[i].inimigo){ //se for inimigo, apanha
                     player.hp-=1;
                     //animacao de dano/ataque aqui, por enquanto nao rola nd
-
+                    if(player.px>entidades[i].px) player.px+=VELOCIDADE/3;
+                    if(player.px<entidades[i].px) player.px-=VELOCIDADE/3;
+                    if(player.py>entidades[i].py) player.py+=VELOCIDADE/3;
+                    if(player.py<entidades[i].py) player.py-=VELOCIDADE/3;
+                    player.dano=true;
                 }
                colisaoEntidade=true;
             }
-            else colisaoEntidade=false;
+            else{
+                colisaoEntidade=false;
+            }
             if(distancia<=RAIO_P*entidades[i].escalaEntidade && !colisaoEntidade){ //se ele tiver dentro do raio de procura
                 float seno=(player.py-entidades[i].py)/distancia; //olha ele ai
                 float cosseno=(player.px-entidades[i].px)/distancia;
@@ -569,20 +561,25 @@ void atualizaEntidades(){
         }
     }
     for (int i = 0; i < nBlocos; i++){
-        al_draw_scaled_bitmap(blocos[i].sprite,0,0,
-                                blocos[i].larguraSprite/blocos[i].escalaEntidade,blocos[i].alturaSprite/blocos[i].escalaEntidade,
-                                blocos[i].px,blocos[i].py,
-                                blocos[i].larguraSprite,
-                                blocos[i].alturaSprite,0);
-            if(mostraHitbox) al_draw_rectangle(blocos[i].px,blocos[i].py,blocos[i].px+blocos[i].larguraSprite,blocos[i].py+blocos[i].alturaSprite,al_map_rgb(0,0,i),1);
+        if(blocos[i].naTela){
+            al_draw_scaled_bitmap(blocos[i].sprite,0,0,
+                                    blocos[i].larguraSprite/blocos[i].escalaEntidade,blocos[i].alturaSprite/blocos[i].escalaEntidade,
+                                    blocos[i].px,blocos[i].py,
+                                    blocos[i].larguraSprite,
+                                    blocos[i].alturaSprite,0);
+                if(mostraHitbox) al_draw_rectangle(blocos[i].px,blocos[i].py,blocos[i].px+blocos[i].larguraSprite,blocos[i].py+blocos[i].alturaSprite,al_map_rgb(0,0,i),1);
+        }
     }
 }
 
 void atualizaJogador(bool anda){ //desenha e anima o jogador
     if(anda){ //anima o sprite usando vx, vy, e a estrutura do player (dps eu implemento)
-
+        
     }
-    al_draw_bitmap_region(player.sprite, //muito feio filho
+    if(player.dano) al_draw_tinted_bitmap_region(player.sprite,al_map_rgba(255,0,0,0.5),player.pDesenhox,player.pDesenhoy,
+                          player.larguraSprite,player.alturaSprite,
+                          player.px,player.py,0);
+    else al_draw_bitmap_region(player.sprite, //muito feio filho
                           player.pDesenhox,player.pDesenhoy,
                           player.larguraSprite,player.alturaSprite,
                           player.px,player.py,0);
@@ -702,6 +699,7 @@ void jogo(){
                 if(escala>5.0f) escala=5.0f; //zoom maximo
         
                 geraEntidades();
+                player.dano=false;
                 player.px+=player.vx;
                 player.py+=player.vy;
                 if(player.py<0)player.py=0;

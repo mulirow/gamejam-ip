@@ -9,8 +9,7 @@
 
 enum ESTADO{estSaida, estPreMenu, estMenu, estPreJogo, estJogo}; //Organizar num enum porque esse monte de define ficaria feio
 enum DIRECOES{dBaixo,dCima,dDireita,dEsquerda}; //esse enum é pra nao ter que ficar lembrando que numero é cada posição no vetor do struct de entidades
-//enum pra cada tile, pra ficar alto nivel
-enum TILES{asfalto,tijoloBaixo,tijoloCima,tijoloDireita,tijoloEsquerda,tijoloQBaixo,tijoloQCima,tijoloQDireita,tijoloQEsquerda,terra,tijoloH,tijoloQH,tijoloV,tijoloQV};
+//enum removido
 
 
 //velocidade das entidades no geral
@@ -23,14 +22,12 @@ extern const float ATAQUE;
 extern const float DEFESA;
 //total de fases no jogo
 extern const int FASES;
-//numero de tiles usado pra gerar o mundo
-extern const int NUMERO_TILES;
+
 //raio de procura do player
 extern const float RAIO_P;
 
 extern int LARGURA; extern int ALTURA;
-//as razões entre o tamanho dos tiles e a altura da tela, essencial pra desenhar na tela (lembrar de atulizar se tiverem mais tiles)
-extern int RAZAO_X[14]; extern int RAZAO_Y[14];
+
 //diz respeito à opção no menu
 extern int opcao;
 
@@ -44,7 +41,7 @@ extern bool sexo;
 //fase atual
 extern int faseAtual;
 //altura e largura de cada tile, pode ser redundante
-extern int largTile[14]; extern int altTile[14];
+extern int largFase; extern int altFase;
 //usado no desenho do bitmap do fundo e na camera
 extern float pxFundo; extern float pyFundo;
 //escala da camera e velocidade com que ela escala
@@ -56,7 +53,7 @@ extern ALLEGRO_TIMER *timer; //timer padrao
 extern ALLEGRO_TIMER *timerAlt; //timer que roda a 7.5 fps
 extern ALLEGRO_FONT *retroFont; //fonte padrao (tamanho 20)
 extern ALLEGRO_FONT *retroFont32; //fonte tamanho 32
-extern ALLEGRO_BITMAP *fundo[14]; //fundo do jogo
+extern ALLEGRO_BITMAP *fundo; //fundo do jogo
 extern ALLEGRO_TRANSFORM camera; //usado pra movimentar a camera
 
 //estrutura geral das entidades do jogo, talvez seja alterado
@@ -87,6 +84,8 @@ typedef struct{
     float escalaEntidade;
     //bool que diz em qual (ou quais) direções o player se move
     bool direcao[4];
+    //se esta tomando dano ou não
+    bool dano;
 } Entidade;
 
 typedef struct{
