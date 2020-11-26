@@ -1,0 +1,16 @@
+Fazer um mapa com tiles e blocos pré setados. :: ALMOST CHECK
+Entidades podem ser random, sem problema. ::CHECK
+Ja definir os tipos de entidades por fase. :: ALMOST CHECK
+Ja definir os tipos de blocos por fase. ::CHECK ?
+Fazer uma UI básica.
+Animar o sprite do player (talvez apenas o player seja animado?).
+Animação de dano ao contato? ::CHECK
+Resolver o problema da colisão. ::CHECK
+Desenhar a partir do canto inferior.
+Definir uma colisão decente das entidades com os blocos. ::CHECK
+Definir mecânica de ataque. (provavelmente análoga a de dano por contato?). WASD
+Limite de entidades (até por escolha do usuário na difículdade, why not). ::ALMOST CHECK
+Ja começar a implementar a história.
+
+
+
