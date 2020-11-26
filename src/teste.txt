@@ -12,3 +12,13 @@ Definir mecânica de ataque. (provavelmente análoga a de dano por contato?). WA
 Limite de entidades (até por escolha do usuário na difículdade, why not).
 Ja começar a implementar a história.
 
+for (int i = 0; i < nBlocos-1; i++){
+            if(blocos[nBlocos-1].px+blocos[nBlocos-1].larguraSprite < blocos[i].px || blocos[nBlocos-1].px > blocos[i].px+blocos[i].larguraSprite || blocos[nBlocos-1].py+blocos[nBlocos-1].alturaSprite<blocos[i].py || blocos[nBlocos-1].py> blocos[i].py+blocos[i].alturaSprite) colisao=false;
+            else colisao=true;
+            if (colisao){
+                blocos[nBlocos-1].px+=3*blocos[i].larguraSprite;
+                blocos[nBlocos-1].py+=3*blocos[i].alturaSprite;
+                i--;
+            }
+        }
+

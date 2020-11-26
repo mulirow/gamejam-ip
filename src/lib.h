@@ -35,7 +35,8 @@ extern int opcao;
 extern int estado;
 //o numero de entidades e o numero de blocos
 extern int nEntidades; extern int nBlocos; 
-extern int limiteEntidades;
+extern int limiteEntidades[3]; //total de fases
+extern int limBlocos[3]; //total de fases
 //( ͡° ͜ʖ ͡°)
 extern bool sexo;
 //fase atual
@@ -92,8 +93,9 @@ typedef struct{
     //analogos à estrutura acima
     float px; float py;
     ALLEGRO_BITMAP *sprite;
-    int alturaSprite;
-    int larguraSprite;
+    int alturaSprite; int larguraSprite;
+    //altura e largura de onde acontece a colisão
+    int alturaHitbox; int larguraHitbox;
     bool naTela;
     // escala do bitmap
     float escalaEntidade;
@@ -115,18 +117,20 @@ int max();
 void msgErro(char *t);
 
 //Funções de inicialização
+int initEntidade();
+int initBloco();
 int inic();
 void geraMundo(int i);
 int cria();
 
 //Funções de atualização
-int initEntidade();
-int initBloco();
+
 void geraEntidades();
 void aumentaEntidades();
 void aumentaBlocos();
 void atualizaCamera();
 void desenhaMundo();
+void colisaoEntidades(int i);
 void colisaoJogador();
 void atualizaJogador(bool anda);
 void atualizaEntidades();
