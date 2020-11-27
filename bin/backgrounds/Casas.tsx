@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.4" tiledversion="1.4.3" name="Casas" tilewidth="536" tileheight="356" tilecount="14" columns="0">
+<tileset version="1.4" tiledversion="1.4.3" name="Casas" tilewidth="576" tileheight="576" tilecount="17" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image width="88" height="102" source="../entities/Buildings/casaB.png"/>
@@ -42,5 +42,14 @@
  </tile>
  <tile id="19">
   <image width="32" height="32" source="../entities/Buildings/cercaMUnica.png"/>
+ </tile>
+ <tile id="21">
+  <image width="32" height="32" source="grama.png"/>
+ </tile>
+ <tile id="27">
+  <image width="576" height="576" source="fabricaAlt3M.png"/>
+ </tile>
+ <tile id="29">
+  <image width="498" height="289" source="../entities/Buildings/escola.png"/>
  </tile>
 </tileset>
