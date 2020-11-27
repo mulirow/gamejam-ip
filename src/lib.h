@@ -20,8 +20,7 @@ extern const float HP;
 extern const float ATAQUE;
 //defesa da entidades no geral
 extern const float DEFESA;
-//total de fases no jogo
-extern const int FASES;
+//
 
 //raio de procura do player
 extern const float RAIO_P;
@@ -35,12 +34,12 @@ extern int opcao;
 extern int estado;
 //o numero de entidades e o numero de blocos
 extern int nEntidades; extern int nBlocos; 
-extern int limiteEntidades[3]; //total de fases
-extern int limBlocos[3]; //total de fases
+extern int nBalas;
+extern int limEntidades; //total de fases
 //( ͡° ͜ʖ ͡°)
 extern bool sexo;
-//fase atual
-extern int faseAtual;
+extern bool atirando;
+
 //altura e largura de cada tile, pode ser redundante
 extern int largFase; extern int altFase;
 //usado no desenho do bitmap do fundo e na camera
@@ -81,7 +80,7 @@ typedef struct{
     //aqui sabemos se a entidade está ou não na tela
     bool naTela;
     //se for inimigo = true
-    bool inimigo; bool hostil;
+    bool inimigo;
     // escala do bitmap
     float escalaEntidade;
     //bool que diz em qual (ou quais) direções o player se move
@@ -89,6 +88,25 @@ typedef struct{
     //se esta tomando dano ou não
     bool dano;
 } Entidade;
+
+typedef struct{
+    float vx; float vy; //velocidades
+    float px; float py; //posiçoes
+    float dano;
+    ALLEGRO_BITMAP *sprite; //sprite da entidade
+    //auto-explicativos
+    float alturaSprite; float larguraSprite;
+    //raio de contato
+    float raio;
+    //aqui sabemos se a entidade está ou não na tela
+    bool atingiu;
+    //se for inimigo = true
+    bool inimigo;
+    // escala do bitmap
+    float escalaEntidade;
+    //bool que diz em qual (ou quais) direções o player se move
+    bool direcao[4];
+} Balas;
 
 typedef struct{
     //analogos à estrutura acima
@@ -104,9 +122,11 @@ typedef struct{
 } Bloco; //um tipo de entidade que não se move
 
 extern Entidade player;
+extern Balas balasPlayer;
 extern Entidade *entidades;
+extern Balas *balasEntidades;
 extern Bloco *blocos;
-bool criaEnt; bool criaBloco; // aqui é um boleano que responde se deve ou nao ser criada uma entidade ou um bloco
+bool criaEnt; // aqui é um boleano que responde se deve ou nao ser criada uma entidade ou um bloco
 bool mostraHitbox; //boleano que diz se deve ou nao demonstrar as hitboxes
 bool reinicio; //boleano que pergunta se o jogo esta reiniciando
 
@@ -120,8 +140,9 @@ void msgErro(char *t);
 //Funções de inicialização
 int initEntidade();
 int initBloco();
+int initBalas();
 int inic();
-void geraMundo(int i);
+void geraMundo();
 int cria();
 
 //Funções de atualização
@@ -131,8 +152,12 @@ void aumentaEntidades();
 void aumentaBlocos();
 void atualizaCamera();
 void desenhaMundo();
+void jogadorAtaque();
+void colisaoBalasP();
+void colisaoBalasE();
 void colisaoEntidades(int i);
 void colisaoJogador();
+void atualizaBalas();
 void atualizaJogador(bool anda);
 void atualizaEntidades();
 

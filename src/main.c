@@ -11,10 +11,9 @@
 #include <stdlib.h>
 #include <math.h>
 
-void jogadorAtaque(){
+ //rmovida a função de ataque
 
-}
-
+//
  //removida a funçao de entidades
 
  //so pra evitar conflitos
@@ -35,12 +34,14 @@ int main(){
             preMenu();
         else if (estado == estMenu)
             menu();
-        else if (estado == estPreJogo)
-            preJogo();
         else if (estado == estCutscene)
             cutscene();
-        else if (estado == estJogo)
+        else if (estado == estPreJogo)
+            preJogo();
+        else if (estado == estJogo){
             jogo();
+        
+        }
     }
     destroi();
     return 0;

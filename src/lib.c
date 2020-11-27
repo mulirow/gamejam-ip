@@ -17,8 +17,7 @@ const float VELOCIDADE = 5.0;
 const float HP=100.0;
 const float ATAQUE=10.0;
 const float DEFESA=5.0;
-const int FASES=3;
-
+//removido
 const float RAIO_P=200;
 
 
@@ -27,10 +26,12 @@ int LARGURA, ALTURA;
 int opcao;
 int estado = estPreMenu;
 int nEntidades = 0; int nBlocos = 0;
-int limEntidades[3];
-int limBlocos[3];
+int nBalas = 0;
+int limEntidades;
+
 bool sexo;
-int faseAtual = 0;
+bool atirando=false;
+
 int largFase; int altFase;
 float pxFundo = 0; float pyFundo = 0;
 float escala = 2.5f; float escalaVelocidade = 0.0f;
@@ -47,9 +48,11 @@ ALLEGRO_BITMAP *caixaDialogo;
 ALLEGRO_TRANSFORM camera;
 
 Entidade player;
+Balas balasPlayer;
 Entidade *entidades = NULL;
+Balas *balasEntidades;
 Bloco *blocos = NULL;
-bool criaEnt; bool criaBloco;
+bool criaEnt;
 bool mostraHitbox=false;
 bool reinicio=false;
 
@@ -76,7 +79,8 @@ void destroi(){
     }
     al_destroy_bitmap(fundo);
     for (int i = 0; i < nBlocos; i++){
-        al_destroy_bitmap(blocos[i].sprite);
+        if(blocos[i].sprite) al_destroy_bitmap(blocos[i].sprite);
+        else continue;
     }
     al_destroy_bitmap(player.sprite);
     al_destroy_bitmap(caixaDialogo);
@@ -124,13 +128,11 @@ int inic(){
     return 1;
 }
 
-void geraMundo(int i){ 
-    if(i==0){
-        fundo=al_load_bitmap("./bin/backgrounds/mapa0.png");
-        //nBlocos=limBlocos[i];
-        //aumentaBlocos(); //apenas um teste
-        //if(!initBloco()) msgErro("Erro ao gerar os blocos!");
-    }
+void geraMundo(){ 
+    
+    fundo=al_load_bitmap("./bin/backgrounds/mapa0.png");
+     //apenas um teste
+    if(!initBloco()) msgErro("Erro ao gerar os blocos!");
     if(!fundo) msgErro("Deu ruim nos fundos!");
     //pega a largura de cada tile, pra função de desenho
     largFase=al_get_bitmap_width(fundo);
@@ -184,16 +186,19 @@ int cria(){
 
 void aumentaEntidades(){
     nEntidades++;
+    nBalas++;
     entidades = (Entidade*)realloc(entidades,nEntidades*sizeof(Entidade));
-    if(entidades==NULL){
+    balasEntidades = (Balas*)realloc(balasEntidades,nBalas*sizeof(Balas));
+    if(entidades==NULL || balasEntidades==NULL){
         msgErro("Deu ruim na alocação!");
         estado=estSaida;
     }
 }
 void aumentaBlocos(){
-
+    //aloca o espaço
+    nBlocos=0;
     blocos = (Bloco*)realloc(blocos,nBlocos*sizeof(Bloco));
-    if(blocos==NULL){
+    if(blocos==NULL && nBlocos!=0){
         msgErro("Deu ruim na alocação!");
         estado=estSaida;
     }
@@ -311,9 +316,9 @@ void cutscene(){
 
 //seta tudo antes do fluxo do jogo, talvez possa ser repetido a cada mudança de fase(?)
 void preJogo(){
-    limEntidades[faseAtual]=100;
-    limBlocos[faseAtual]=100;
-    geraMundo(faseAtual);
+    limEntidades=100;
+    
+    geraMundo();
     //pergunta como a pessoa quer jogar
     if(al_show_native_message_box(janela,"Escolha do Sexo","Escolha com cautela:","Você prefere jogar com macho ou fêmea?","M|F",ALLEGRO_MESSAGEBOX_OK_CANCEL)%2!=0){
         sexo=1;
@@ -331,7 +336,9 @@ void preJogo(){
     player.totalFrames=3;
     player.nDirecao[dBaixo]=0; player.nDirecao[dCima]=4;
     player.nDirecao[dEsquerda]=1; player.nDirecao[dDireita]=2;
-
+    for (int i = 0; i < 4; i++){
+        player.direcao[i]=false;
+    }
     //zera as posiçoes e velocidades
     player.px=0; player.py=0;
     player.vx=0; player.vy=0;
@@ -345,15 +352,32 @@ void preJogo(){
     player.dano=false;
     if(reinicio){ //se reinicio for true, reseta as entidades e blocos
         nEntidades=0;
-
-        blocos=NULL;
+        nBalas=0;
+        //zera as entidades pro proximo jogo
         entidades=NULL;
+        balasEntidades=NULL;
     }
     
 
     if(!player.sprite) msgErro("Erro no sprite do player");
     al_convert_mask_to_alpha(player.sprite,al_map_rgb(0,0,0)); //isso aqui define a transparencia do sprite
-
+    balasPlayer.px=0; balasPlayer.py=0;
+    balasPlayer.vx=0; balasPlayer.vy=0;
+    balasPlayer.sprite=al_load_bitmap("./bin/entities/Bullets/balaPlayer.png");
+    if(!balasPlayer.sprite){
+        msgErro("Erro ao carregar balas!");
+    }
+    balasPlayer.escalaEntidade=1;
+    balasPlayer.alturaSprite=al_get_bitmap_height(balasPlayer.sprite)*balasPlayer.escalaEntidade;
+    balasPlayer.larguraSprite=al_get_bitmap_width(balasPlayer.sprite)*balasPlayer.escalaEntidade;
+    balasPlayer.raio=balasPlayer.alturaSprite;
+    balasPlayer.atingiu=true;
+    balasPlayer.inimigo=false;
+    balasPlayer.dano=5;
+    for (int i = 0; i < 4; i++){
+        balasPlayer.direcao[i]=false;
+    }
+    
     al_flush_event_queue(filaEventos); //da um wipe na fila inteira
     estado = estJogo;
 }
@@ -449,7 +473,7 @@ void colisaoJogador(){
     }
     //algoritmo de colisao medindo em um raio do player se tem alguma entidade, vasculhando as posiçoes das entidades
     for (int i = 0; i < nEntidades; i++){ 
-        if(entidades[i].naTela){//se a entidade ta na tela
+        if(entidades[i].naTela && entidades[i].hp>0){//se a entidade ta na tela
             //teorema de pitagoras (serio)
             bool colisaoEntidade=false;
             double distancia=sqrt(pow(player.px+player.larguraSprite/2-entidades[i].px-entidades[i].larguraSprite/2,2)+pow(player.py+player.alturaSprite/2-entidades[i].py-entidades[i].alturaSprite/2,2));
@@ -473,6 +497,13 @@ void colisaoJogador(){
                 float cosseno=(player.px-entidades[i].px)/distancia;
                 entidades[i].vx=+VELOCIDADE*cosseno/1.2; //geometria 
                 entidades[i].vy=+VELOCIDADE*seno/1.2;
+                if(balasEntidades[i].atingiu==true && entidades[i].inimigo == true){
+                    balasEntidades[i].px=entidades[i].px;
+                    balasEntidades[i].py=entidades[i].py;
+                    balasEntidades[i].vx=3*entidades[i].vx;
+                    balasEntidades[i].vy=3*entidades[i].vy;
+                    balasEntidades[i].atingiu=false;
+                }
             }
             else{
                 entidades[i].vx=0; //se n tiver no raio, fica quietinho
@@ -492,6 +523,8 @@ void colisaoJogador(){
             }
             entidades[i].px+=entidades[i].vx; //atualiza a posição
             entidades[i].py+=entidades[i].vy;
+            balasEntidades[i].px+=balasEntidades[i].vx;
+            balasEntidades[i].py+=balasEntidades[i].vy;
             colisaoEntidades(i);
         }
     }
@@ -518,6 +551,27 @@ void colisaoJogador(){
     }
 
 }
+int initBalas(){
+    balasEntidades[nBalas-1].px=0; balasEntidades[nBalas-1].py=0;
+    balasEntidades[nBalas-1].vx=0; balasEntidades[nBalas-1].vy=0;
+    balasEntidades[nBalas-1].sprite=al_load_bitmap("./bin/entities/Bullets/balaInimigo.png");
+    if(!balasEntidades[nBalas-1].sprite){
+            msgErro("Erro ao carregar balas!");
+            return 0;
+    }   
+    balasEntidades[nBalas-1].escalaEntidade=1;
+    balasEntidades[nBalas-1].alturaSprite=al_get_bitmap_height(balasEntidades[nBalas-1].sprite)*balasEntidades[nBalas-1].escalaEntidade;
+    balasEntidades[nBalas-1].larguraSprite=al_get_bitmap_width(balasEntidades[nBalas-1].sprite)*balasEntidades[nBalas-1].escalaEntidade;
+    balasEntidades[nBalas-1].raio=balasEntidades[nBalas-1].larguraSprite;
+    balasEntidades[nBalas-1].atingiu=true;
+    balasEntidades[nBalas-1].inimigo=false;
+    balasEntidades[nBalas-1].dano=10;
+    for (int i = 0; i < 4; i++){
+        balasEntidades[nBalas-1].direcao[i]=false;
+    }
+    return 1;
+}
+
 int initEntidade(){ //aqui é tudo hardcoded msm, n tem jeito
     if(rand()%2==0){
         entidades[nEntidades-1].sprite=al_load_bitmap("./bin/entities/Char/NPC.png");
@@ -527,15 +581,19 @@ int initEntidade(){ //aqui é tudo hardcoded msm, n tem jeito
         } //inicializando tudo (obs, nada definitivo)
         entidades[nEntidades-1].larguraSprite = 1.7*al_get_bitmap_width(entidades[nEntidades-1].sprite); 
         entidades[nEntidades-1].alturaSprite =  1.7*al_get_bitmap_height(entidades[nEntidades-1].sprite);
-        entidades[nEntidades-1].px=LARGURA/6+rand()%LARGURA; entidades[nEntidades-1].py=ALTURA/7+rand()%ALTURA;
+        entidades[nEntidades-1].px=player.px+300; entidades[nEntidades-1].py=player.py+300;
+        entidades[nEntidades-1].pDesenhox=0; entidades[nEntidades-1].pDesenhoy=0;
         entidades[nEntidades-1].vx=0; entidades[nEntidades-1].vy=0;
         entidades[nEntidades-1].inimigo=false;
+        entidades[nEntidades-1].dano=false;
         entidades[nEntidades-1].escalaEntidade=1.7;
         entidades[nEntidades-1].raio=entidades[nEntidades-1].larguraSprite/4+entidades[nEntidades-1].alturaSprite/4;
+        entidades[nEntidades-1].hp = 10;
         for (int j = 0; j < 4; j++){
             entidades[nEntidades-1].direcao[j]=false;
         }
-
+        //inicializa balas
+        if(!initBalas()) msgErro("Erro ao iniciar balas!");
     }
     else{
         entidades[nEntidades-1].sprite=al_load_bitmap("./bin/entities/Char/NPC1.png");
@@ -545,212 +603,133 @@ int initEntidade(){ //aqui é tudo hardcoded msm, n tem jeito
         } //inicializando tudo (obs, nada definitivo)
         entidades[nEntidades-1].larguraSprite = 1.7*al_get_bitmap_width(entidades[nEntidades-1].sprite); 
         entidades[nEntidades-1].alturaSprite =  1.7*al_get_bitmap_height(entidades[nEntidades-1].sprite);
-        entidades[nEntidades-1].px=LARGURA/3+rand()%LARGURA; entidades[nEntidades-1].py=ALTURA/4+rand()%ALTURA;
-        entidades[nEntidades-1].vx=VELOCIDADE/5; entidades[nEntidades-1].vy=VELOCIDADE/20;
+        entidades[nEntidades-1].px=player.px+300; entidades[nEntidades-1].py=player.py+300;
+        entidades[nEntidades-1].pDesenhox=0; entidades[nEntidades-1].pDesenhoy=0;
+        entidades[nEntidades-1].vx=0; entidades[nEntidades-1].vy=0;
         entidades[nEntidades-1].inimigo=true;
+        entidades[nEntidades-1].dano=false;
         entidades[nEntidades-1].escalaEntidade=1.7;
         entidades[nEntidades-1].raio=entidades[nEntidades-1].larguraSprite/4+entidades[nEntidades-1].alturaSprite/4;
+        entidades[nEntidades-1].hp = 10;
         for (int j = 0; j < 4; j++){
             entidades[nEntidades-1].direcao[j]=false;
         }
-        
+        //inicializa balas
+        if(!initBalas()) msgErro("Erro ao iniciar balas!");
     }
     return 1;
     //aqui teoricamente deveriam ficar todas as possibilidades e tal
 }
 
-/*int initBloco(){ //template pra qualquer geração de blocos, bem hardcoded mas pelo menos ta organizado
-    if(faseAtual==0){
-        int i=nBlocos;
-        int j=i;
-        for (i; i > j-5 && i>=0; i--){
-            blocos[nBlocos-i].sprite=al_load_bitmap("./bin/entities/Buildings/House.png");
-            if(!blocos[nBlocos-i].sprite){
-                msgErro("Deu ruim nos blocos!");
-                i=nBlocos;
-            }
-            blocos[nBlocos-i].px = 200+10*i; blocos[nBlocos-i].py = 30+10*i;
-            blocos[nBlocos-i].escalaEntidade=1;
-            blocos[nBlocos-i].alturaHitbox=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade/1.2; 
-            blocos[nBlocos-i].larguraHitbox=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade/1.2;
-            blocos[nBlocos-i].larguraSprite=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].alturaSprite=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].py+=blocos[nBlocos-i].alturaSprite-blocos[nBlocos-i].alturaHitbox;
-            blocos[nBlocos-i].px+=(blocos[nBlocos-i].larguraSprite-blocos[nBlocos-i].larguraHitbox)/2;
+int initBloco(){ //template pra qualquer geração de blocos, bem hardcoded mas pelo menos ta organizado
+    aumentaBlocos();
+    int i=nBlocos;
+    int j=i;
+    for (i; i > 0; i--){ //template da geração de blocos, depois eu explico por que fiz assim
+        blocos[nBlocos-i].sprite=al_load_bitmap("./bin/entities/Buildings/House.png");
+        if(!blocos[nBlocos-i].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
         }
-        j=i;
-        for (i; i > j -10 && i>=0; i--){
-            blocos[nBlocos-i].sprite=al_load_bitmap("./bin/entities/Buildings/Storage.png");
-            if(!blocos[nBlocos-i].sprite){
-                msgErro("Deu ruim nos blocos!");
-                i=nBlocos;
-            }
-            blocos[nBlocos-i].px = 505+100*i ; blocos[nBlocos-i].py = 206+20*i;
-            blocos[nBlocos-i].escalaEntidade=1;
-            blocos[nBlocos-i].alturaHitbox=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade/1.2; 
-            blocos[nBlocos-i].larguraHitbox=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade/1.2;
-            blocos[nBlocos-i].larguraSprite=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].alturaSprite=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].py+=blocos[nBlocos-i].alturaSprite-blocos[nBlocos-i].alturaHitbox;
-            blocos[nBlocos-i].px+=(blocos[nBlocos-i].larguraSprite-blocos[nBlocos-i].larguraHitbox)/2;
-        }
-        j=i;
-        for (i; i > j-15 && i>=0; i--){
-            blocos[nBlocos-i].sprite=al_load_bitmap("./bin/entities/Buildings/Tower.png");
-            if(!blocos[nBlocos-i].sprite){
-                msgErro("Deu ruim nos blocos!");
-                i=nBlocos;
-            }
-            blocos[nBlocos-i].px = 30+400*i; blocos[nBlocos-i].py = 30+10*i;
-            blocos[nBlocos-i].escalaEntidade=1;
-            blocos[nBlocos-i].alturaHitbox=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade/5; 
-            blocos[nBlocos-i].larguraHitbox=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade/1.1;
-            blocos[nBlocos-i].larguraSprite=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].alturaSprite=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].py+=blocos[nBlocos-i].alturaSprite-blocos[nBlocos-i].alturaHitbox;
-            blocos[nBlocos-i].px+=(blocos[nBlocos-i].larguraSprite-blocos[nBlocos-i].larguraHitbox)/2;
-        }
-        j=i;
-        for (i; i > j-5 && i>=0; i--){
-            blocos[nBlocos-i].sprite=al_load_bitmap("./bin/entities/Buildings/Wall.png");
-            if(!blocos[nBlocos-i].sprite){
-                msgErro("Deu ruim nos blocos!");
-                i=nBlocos;
-            }
-            blocos[nBlocos-i].px = 584+i; blocos[nBlocos-i].py = 651+102*i;
-            blocos[nBlocos-i].escalaEntidade=1;
-            blocos[nBlocos-i].alturaHitbox=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade/5; 
-            blocos[nBlocos-i].larguraHitbox=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].larguraSprite=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].alturaSprite=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].py+=blocos[nBlocos-i].alturaSprite-blocos[nBlocos-i].alturaHitbox;
-            blocos[nBlocos-i].px+=(blocos[nBlocos-i].larguraSprite-blocos[nBlocos-i].larguraHitbox)/2;
-        }
-        j=i;
-        for (i; i > j-15 && i>=0; i--){
-            blocos[nBlocos-i].sprite=al_load_bitmap("./bin/entities/Rocks/rock1.png");
-            if(!blocos[nBlocos-i].sprite){
-                msgErro("Deu ruim nos blocos!");
-                i=nBlocos;
-            }
-            blocos[nBlocos-i].px = 432+10*i; blocos[nBlocos-i].py = 76+120*i;
-            blocos[nBlocos-i].escalaEntidade=1;
-            blocos[nBlocos-i].alturaHitbox=0; 
-            blocos[nBlocos-i].larguraHitbox=0;
-            blocos[nBlocos-i].larguraSprite=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].alturaSprite=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].py+=blocos[nBlocos-i].alturaSprite-blocos[nBlocos-i].alturaHitbox;
-            blocos[nBlocos-i].px+=(blocos[nBlocos-i].larguraSprite-blocos[nBlocos-i].larguraHitbox)/2;
-        }
-        j=i;
-        for (i; i > j-25 && i>=0; i--){
-            blocos[nBlocos-i].sprite=al_load_bitmap("./bin/entities/Rocks/rock2.png");
-            if(!blocos[nBlocos-i].sprite){
-                msgErro("Deu ruim nos blocos!");
-                i=nBlocos;
-            }
-            blocos[nBlocos-i].px = 654+10*i; blocos[nBlocos-i].py = 1245+10*i;
-            blocos[nBlocos-i].escalaEntidade=1;
-            blocos[nBlocos-i].alturaHitbox=0; 
-            blocos[nBlocos-i].larguraHitbox=0;
-            blocos[nBlocos-i].larguraSprite=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].alturaSprite=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].py+=blocos[nBlocos-i].alturaSprite-blocos[nBlocos-i].alturaHitbox;
-            blocos[nBlocos-i].px+=(blocos[nBlocos-i].larguraSprite-blocos[nBlocos-i].larguraHitbox)/2;
-        }
-        j=i;
-        for (i; i > j-5 && i>=0; i--){
-            blocos[nBlocos-i].sprite=al_load_bitmap("./bin/entities/Rocks/rock4.png");
-            if(!blocos[nBlocos-i].sprite){
-                msgErro("Deu ruim nos blocos!");
-                i=nBlocos;
-            }
-            blocos[nBlocos-i].escalaEntidade=1;
-            blocos[nBlocos-i].alturaHitbox=0; 
-            blocos[nBlocos-i].larguraHitbox=0;
-            blocos[nBlocos-i].larguraSprite=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].alturaSprite=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].py+=blocos[nBlocos-i].alturaSprite-blocos[nBlocos-i].alturaHitbox;
-            blocos[nBlocos-i].px+=(blocos[nBlocos-i].larguraSprite-blocos[nBlocos-i].larguraHitbox)/2;
-        }
-        j=i;
-        for (i; i > j-5 && i>=0; i--){
-            blocos[nBlocos-i].sprite=al_load_bitmap("./bin/entities/Trees/stump.png");
-            if(!blocos[nBlocos-i].sprite){
-                msgErro("Deu ruim nos blocos!");
-                i=nBlocos;
-            }
-            blocos[nBlocos-i].px = 453+10*i; blocos[nBlocos-i].py = 654+100*i;
-            blocos[nBlocos-i].escalaEntidade=1;
-            blocos[nBlocos-i].alturaHitbox=0; 
-            blocos[nBlocos-i].larguraHitbox=0;
-            blocos[nBlocos-i].larguraSprite=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].alturaSprite=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].py+=blocos[nBlocos-i].alturaSprite-blocos[nBlocos-i].alturaHitbox;
-            blocos[nBlocos-i].px+=(blocos[nBlocos-i].larguraSprite-blocos[nBlocos-i].larguraHitbox)/2;
-        }
-        j=i;
-        for (i; i > j-5 && i>=0; i--){
-            blocos[nBlocos-i].sprite=al_load_bitmap("./bin/entities/Trees/tree1.png");
-            if(!blocos[nBlocos-i].sprite){
-                msgErro("Deu ruim nos blocos!");
-                i=nBlocos;
-            }
-            blocos[nBlocos-i].px = 23+100*i; blocos[nBlocos-i].py = 543+100*i;
-            blocos[nBlocos-i].escalaEntidade=1;
-            blocos[nBlocos-i].alturaHitbox=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade/5; 
-            blocos[nBlocos-i].larguraHitbox=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade/5;
-            blocos[nBlocos-i].larguraSprite=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].alturaSprite=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].py+=blocos[nBlocos-i].alturaSprite-blocos[nBlocos-i].alturaHitbox;
-            blocos[nBlocos-i].px+=(blocos[nBlocos-i].larguraSprite-blocos[nBlocos-i].larguraHitbox)/2;
-        }
-        j=i;
-        for (i; i > j-5 && i>=0; i--){
-            blocos[nBlocos-i].sprite=al_load_bitmap("./bin/entities/Trees/wheat1.png");
-            if(!blocos[nBlocos-i].sprite){
-                msgErro("Deu ruim nos blocos!");
-                i=nBlocos;
-            }
-            blocos[nBlocos-i].px = 423+10*i; blocos[nBlocos-i].py = 54+100*i;
-            blocos[nBlocos-i].escalaEntidade=1;
-            blocos[nBlocos-i].alturaHitbox=0; 
-            blocos[nBlocos-i].larguraHitbox=0;
-            blocos[nBlocos-i].larguraSprite=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].alturaSprite=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].py+=blocos[nBlocos-i].alturaSprite-blocos[nBlocos-i].alturaHitbox;
-            blocos[nBlocos-i].px+=(blocos[nBlocos-i].larguraSprite-blocos[nBlocos-i].larguraHitbox)/2;
-        }
-        j=i;
-        for (i; i > j-5 && i>=0; i--){
-            blocos[nBlocos-i].sprite=al_load_bitmap("./bin/entities/Trees/wheat2.png");
-            if(!blocos[nBlocos-i].sprite){
-                msgErro("Deu ruim nos blocos!");
-                i=nBlocos;
-            }
-            blocos[nBlocos-i].px = 765+100*i; blocos[nBlocos-i].py = 123+100*i;
-            blocos[nBlocos-i].escalaEntidade=1;
-            blocos[nBlocos-i].alturaHitbox=0; 
-            blocos[nBlocos-i].larguraHitbox=0;
-            blocos[nBlocos-i].larguraSprite=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].alturaSprite=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-            blocos[nBlocos-i].py+=blocos[nBlocos-i].alturaSprite-blocos[nBlocos-i].alturaHitbox;
-            blocos[nBlocos-i].px+=(blocos[nBlocos-i].larguraSprite-blocos[nBlocos-i].larguraHitbox)/2;
-        }
-        j=i;
-        if(i==nBlocos) return 0;
+        blocos[nBlocos-i].px = 100; blocos[nBlocos-i].py = 100;
+        blocos[nBlocos-i].escalaEntidade=1;
+        blocos[nBlocos-i].alturaHitbox=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade/1.2; 
+        blocos[nBlocos-i].larguraHitbox=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade/1.2;
+        blocos[nBlocos-i].larguraSprite=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
+        blocos[nBlocos-i].alturaSprite=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
+        blocos[nBlocos-i].py+=blocos[nBlocos-i].alturaSprite-blocos[nBlocos-i].alturaHitbox;
+        blocos[nBlocos-i].px+=(blocos[nBlocos-i].larguraSprite-blocos[nBlocos-i].larguraHitbox)/2;
     }
     return 1;
-}*/
+}
+
 
 void geraEntidades(){ //gera as entidades, pode ser preciso usar varios casos
-    if(rand()%200==0 && nEntidades<limEntidades[faseAtual]){ //gera entidades aleatoriamente
+    if(rand()%limEntidades==0 && nEntidades<=limEntidades){ //gera entidades aleatoriamente
         aumentaEntidades();
         if(!initEntidade()) estado=estSaida;
 
     }
     //tirei daqui o gera blocos, eles vao ser desenhados automaticamente
 }
+void jogadorAtaque(){
+    if(balasPlayer.atingiu==true){
+        balasPlayer.px = player.px; balasPlayer.py = player.py;
+        if(balasPlayer.direcao[dCima]) balasPlayer.vy=-VELOCIDADE*10;
+        if(balasPlayer.direcao[dBaixo]) balasPlayer.vy=VELOCIDADE*10;
+        if(balasPlayer.direcao[dDireita]) balasPlayer.vx=VELOCIDADE*10;
+        if(balasPlayer.direcao[dEsquerda]) balasPlayer.vx=-VELOCIDADE*10;
+        balasPlayer.atingiu=false;
+    }
+}
+
+void colisaoBalasP(){
+    for (int i = 0; i < nBalas; i++){
+        if(balasEntidades[i].atingiu==false){
+            float distancia = sqrt(pow(player.px+player.larguraSprite/2-balasEntidades[i].px-balasEntidades[i].larguraSprite/2,2)+pow(player.py+player.alturaSprite/2-balasEntidades[i].py-balasEntidades[i].alturaSprite/2,2));
+            if(distancia<=player.raio+balasEntidades[i].raio){
+                player.hp-=balasEntidades[i].dano;
+                balasEntidades[i].atingiu=true;
+                player.dano=true;
+            }
+        }
+
+    }
+}
+
+void colisaoBalasE(){
+    for (int i = 0; i < nEntidades && !balasPlayer.atingiu; i++){
+        if(entidades[i].naTela && entidades[i].inimigo && entidades[i].hp>0){
+            float distancia = sqrt(pow(entidades[i].px+entidades[i].larguraSprite/2-balasPlayer.px-balasPlayer.larguraSprite/2,2)+pow(entidades[i].py+entidades[i].alturaSprite/2-balasPlayer.py-balasPlayer.alturaSprite/2,2));
+            if(distancia<=entidades[i].raio+balasPlayer.raio){
+                entidades[i].hp-=balasPlayer.dano;
+                balasPlayer.atingiu=true;
+                entidades[i].dano=true;
+            }
+
+        }
+
+    }
+
+}
+
+//atualiza a posição das balas
+void atualizaBalas(){
+    if(balasPlayer.atingiu==false){
+        if(balasPlayer.px<0 || balasPlayer.px>largFase || balasPlayer.py<0 || balasPlayer.py>altFase) balasPlayer.atingiu=true;
+            else al_draw_scaled_bitmap(balasPlayer.sprite,0,0,
+                                   balasPlayer.larguraSprite/balasPlayer.escalaEntidade,balasPlayer.alturaSprite/balasPlayer.escalaEntidade,
+                                   balasPlayer.px,balasPlayer.py,
+                                   balasPlayer.larguraSprite,
+                                   balasPlayer.alturaSprite,0);
+
+    }
+    else{
+        balasPlayer.vx=0;
+        balasPlayer.vy=0;
+    }
+    al_hold_bitmap_drawing(true);
+    for (int i = 0; i < nBalas; i++){
+        if(balasEntidades[i].atingiu==false && entidades[i].hp>0){
+            if(balasEntidades[i].px<0 || balasEntidades[i].px>largFase || balasEntidades[i].py<0 || balasEntidades[i].py>altFase) balasEntidades[i].atingiu=true;
+            else al_draw_scaled_bitmap( balasEntidades[i].sprite,0,0,
+                                   balasEntidades[i].larguraSprite/balasEntidades[i].escalaEntidade,balasEntidades[i].alturaSprite/balasEntidades[i].escalaEntidade,
+                                   balasEntidades[i].px,balasEntidades[i].py,
+                                   balasEntidades[i].larguraSprite,
+                                   balasEntidades[i].alturaSprite,0);
+        }
+        else{
+            balasEntidades[i].vx=0;
+            balasEntidades[i].vy=0;
+        }
+
+    }
+
+    
+    al_hold_bitmap_drawing(false);
+    
+}
+
 
 void atualizaEntidades(){
     int naTela=0; 
@@ -758,12 +737,18 @@ void atualizaEntidades(){
     iNaTela = (int*)realloc(iNaTela,nEntidades*sizeof(int));
     al_hold_bitmap_drawing(true);
     for (int i = 0; i < nEntidades; i++){
-        if(entidades[i].naTela){ //desenha entidades escaladas e seus hitboxes
-            al_draw_scaled_bitmap(entidades[i].sprite,0,0,
-                                entidades[i].larguraSprite/entidades[i].escalaEntidade,entidades[i].alturaSprite/entidades[i].escalaEntidade,
-                                entidades[i].px,entidades[i].py,
-                                entidades[i].larguraSprite,
-                                entidades[i].alturaSprite,0);
+        if(entidades[i].naTela && entidades[i].hp>0){ //desenha entidades escaladas e seus hitboxes
+            if(entidades[i].dano){
+                        al_draw_tinted_bitmap_region(entidades[i].sprite,al_map_rgba(255,0,0,0.5),entidades[i].pDesenhox,entidades[i].pDesenhoy,
+                        entidades[i].larguraSprite,entidades[i].alturaSprite,
+                        entidades[i].px,entidades[i].py,0);
+                        entidades[i].dano=false;
+            }
+            else al_draw_scaled_bitmap(entidades[i].sprite,0,0,
+                                 entidades[i].larguraSprite/entidades[i].escalaEntidade,entidades[i].alturaSprite/entidades[i].escalaEntidade,
+                                 entidades[i].px,entidades[i].py,
+                                 entidades[i].larguraSprite,
+                                 entidades[i].alturaSprite,0);
             iNaTela[naTela]=i;
             naTela++;
 
@@ -814,6 +799,7 @@ void atualizaJogador(bool anda){ //desenha e anima o jogador
 
 //fluxo do jogo
 void jogo(){
+    al_flush_event_queue(filaEventos);
     al_start_timer(timer);
     //sai do loop do while
     bool sair=false;
@@ -852,7 +838,7 @@ void jogo(){
                             sair=true;
                             estado = estSaida;
                         }
-                        player.vx=0;player.vy=0;escalaVelocidade=0;
+                        else player.vx=0;player.vy=0;escalaVelocidade=0;
                         al_flush_event_queue(filaEventos);
                         break;
                     case ALLEGRO_KEY_Q:
@@ -866,9 +852,7 @@ void jogo(){
                         pauseJogo();
                         al_start_timer(timer);
                         break;
-                    case ALLEGRO_KEY_SPACE:
-                        //jogadorAtaque();
-                        break;
+
                     case ALLEGRO_KEY_C:
                         if(!mostraHitbox) mostraHitbox=true;
                         else mostraHitbox=false;
@@ -886,7 +870,23 @@ void jogo(){
                             al_start_timer(timer);
                             teste=false;
                         }
-                    }
+                    case ALLEGRO_KEY_W:
+                        balasPlayer.direcao[dCima]=true;
+                        jogadorAtaque();
+                        break;
+                    case ALLEGRO_KEY_A:
+                        balasPlayer.direcao[dEsquerda]=true;
+                        jogadorAtaque();
+                        break;
+                    case ALLEGRO_KEY_S:
+                        balasPlayer.direcao[dBaixo]=true;
+                        jogadorAtaque();
+                        break;
+                    case ALLEGRO_KEY_D:
+                        balasPlayer.direcao[dDireita]=true;
+                        jogadorAtaque();
+                        break;
+                }
                 break;
             case ALLEGRO_EVENT_KEY_UP: //solta a tecla
                 switch(evento.keyboard.keycode){
@@ -912,6 +912,22 @@ void jogo(){
                     case ALLEGRO_KEY_E:
                         escalaVelocidade+= 0.1f;
                         break;
+                    case ALLEGRO_KEY_W:
+                        balasPlayer.direcao[dCima]=false;
+                        
+                        break;
+                    case ALLEGRO_KEY_A:
+                        balasPlayer.direcao[dEsquerda]=false;
+                        
+                        break;
+                    case ALLEGRO_KEY_S:
+                        balasPlayer.direcao[dBaixo]=false;
+                        
+                        break;
+                    case ALLEGRO_KEY_D:
+                        balasPlayer.direcao[dDireita]=false;
+                        
+                        break;
                 }
                 break;
             case ALLEGRO_EVENT_TIMER:
@@ -925,10 +941,18 @@ void jogo(){
                 player.dano=false;
                 player.px+=player.vx;
                 player.py+=player.vy;
-                if(player.py<0)player.py=0;
-                if(player.px<0)player.px=0;
+                if(balasPlayer.atingiu==false){
+                    balasPlayer.py+=balasPlayer.vy;
+                    balasPlayer.px+=balasPlayer.vx;
+                }
                 atualizaCamera(); //aqui começa a magia negra
+                colisaoBalasE();
+                colisaoBalasP();
                 colisaoJogador();
+                if(player.px<0) player.px=0;
+                else if(player.px> largFase)player.px=largFase;
+                if(player.py<0) player.py=0;
+                else if(player.py>altFase) player.py=altFase;
                 al_identity_transform(&camera);
                 al_translate_transform(&camera,-(player.px+player.larguraSprite/2),-(player.py+player.larguraSprite/2)); //basicamente transforma tudo que ta na tela de acordo com esses parametros, eu vou mandar os videos que eu vi ensinando isso pq admito que nem eu entendi direito kkkkkk 
                 al_scale_transform(&camera,escala,escala); //esse é o mais simples
@@ -936,6 +960,7 @@ void jogo(){
                 al_use_transform(&camera); //simplesmente torna a transformação "canonica"
                 if(player.hp<=0) fimDeJogo();
                 break;
+            
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
                 sair = true;
                 desenhe = false;
@@ -945,8 +970,9 @@ void jogo(){
             desenhaMundo(); //desenha o fundo da fase atual
             if(player.vx==0 || player.vy==0) anda=false;
             atualizaJogador(anda);
+            atualizaBalas();
             atualizaEntidades();
-            al_draw_textf(retroFont,al_map_rgb(0,0,0),player.px+player.larguraSprite/2,player.py+player.alturaSprite,ALLEGRO_ALIGN_CENTER,"PROTÓTIPO");
+            al_draw_textf(retroFont,al_map_rgb(0,0,0),player.px+player.larguraSprite/2,player.py+player.alturaSprite,ALLEGRO_ALIGN_CENTER,"Zoom =%f",escala);
             al_flip_display();
             desenhe=0;
         }
