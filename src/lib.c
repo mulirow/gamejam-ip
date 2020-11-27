@@ -856,7 +856,7 @@ int initBloco(){ //template pra qualquer geração de blocos, bem hardcoded mas 
         blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
     }
     i=0;
-    //mansao, caso especial
+    //mansao, caso especial .
     for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
         int psx[1]={836};
         int psy[1]={0};
