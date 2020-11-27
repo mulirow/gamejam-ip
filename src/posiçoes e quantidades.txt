@@ -49,22 +49,7 @@ px24 =  py24 =
 px25 =  py25 =  
  
 
-porco = 3 alt
-porco1 -
-px1 =  py1 =  alturaSrite = larguraSprite =
-porco2 -
-px1 =  py1 =  alturaSrite = larguraSprite =
-porco3 -
-px1 =  py1 =  alturaSrite = larguraSprite =
-
-
-cercas - 4 alt
-cerca1
-px1 =810  py1 =0  alturaSrite = 415 larguraSprite = 11
-px2 =1387  py2 = 0  alturaSrite = 415 larguraSprite = 11
-cerca2
-px1 =811  py2 =416  alturaSrite =32 larguraSprite =235
-px2 =1162  py2 =416  alturaSrite =32 larguraSprite =235
+//
 
 placas - 9 (interação)
 px1 =  py1 =  
