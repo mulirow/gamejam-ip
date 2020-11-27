@@ -320,7 +320,7 @@ void preJogo(){
     
     geraMundo();
     //pergunta como a pessoa quer jogar
-    if(al_show_native_message_box(janela,"Escolha do Sexo","Escolha com cautela:","Você prefere jogar com macho ou fêmea?","M|F",ALLEGRO_MESSAGEBOX_OK_CANCEL)%2!=0){
+    if(al_show_native_message_box(janela,"É azul ou rosa?","Escolha seu covideiro","Um ou outro, ta ok?","Salnorabo|Salnaraba",ALLEGRO_MESSAGEBOX_OK_CANCEL)%2!=0){
         sexo=1;
     }
     else sexo=0;
