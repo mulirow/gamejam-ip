@@ -252,7 +252,6 @@ void preMenu(){
 
 //fluxo do menu
 void menu(){
-    ALLEGRO_MOUSE_STATE estadoMouse; //Mouse ainda não foi implementado, é capaz disso sair
     opcao = 0; //indica qual botão que tá com highlight
     int i = 255, j = 120, temp;
     bool sair = false;
@@ -266,13 +265,6 @@ void menu(){
                 al_draw_text(retroFont32, al_map_rgb(j, j, j), LARGURA / 2, ALTURA / 2 + al_get_font_line_height(retroFont32), ALLEGRO_ALIGN_CENTER, "Sair");
                 al_flip_display();
                 al_clear_to_color(al_map_rgb(0, 0, 0));
-                break;
-            case ALLEGRO_EVENT_MOUSE_AXES:
-                al_get_mouse_state(&estadoMouse);
-                if((estadoMouse.x > 0) && (estadoMouse.x < 100)){
-                    printf("Ae\n");
-                }
-                al_flip_display();
                 break;
             case ALLEGRO_EVENT_KEY_DOWN: //aperta uma tecla
                 switch(evento.keyboard.keycode){
@@ -304,8 +296,19 @@ void menu(){
     }
 }
 
+char dialogo1A[150] = "Vejo que você tem um espírito nobre, eu escolhi você para salvar a humanidade. Se escolher aceitar a missão, compareça a [LUGAR] em [HORÁRIO].";
+char dialogo1B[37] = "E então, o que você tem para mim?";
+char dialogo1C[203] = "Eu investiguei toda sua vida, sei das suas convicções e do seu histórico de atleta, e é por isso que eu sei, que você é o único adequado para essa missão. Solnorabo, você é imune ao vírus...";
+char dialogo1D[9] = "Vírus?";
+char dialogo1E[172] = "Ao vírus da... Ameaça Comunista. Esse vírus está se espalhando silenciosamente pela sociedade, e em poucos anos, toda a humanidade como conhecemos estará destruída.";
+char dialogo1F[118] = "Malditos comunistas, sempre soube que algo assim aconteceria, TÁ OK, eu aceito a missão, o que eu tenho que fazer?";
+char dialogo1G[88] = "Vá e leve esse comunicador, eu manterei contato e avisarei sobre os próximos passos.";
+
 void cutscene(){
     caixaDialogo = al_load_bitmap("./bin/misc/UI/caixaDialogo.png");
+    int i = 0;
+    int xCaixaSup = LARGURA / 15, yCaixaSup = ALTURA / 15;
+    int xCaixaInf = LARGURA - (al_get_bitmap_width(caixaDialogo) + LARGURA / 15), yCaixaInf = ALTURA * 14/15 - al_get_bitmap_height(caixaDialogo);
     int dialogo = 0;
     bool sair = false;
     al_start_timer(timer);
@@ -314,18 +317,40 @@ void cutscene(){
         al_wait_for_event(filaEventos,&evento);
         switch (evento.type){
             case ALLEGRO_EVENT_TIMER:
-                al_draw_bitmap(caixaDialogo, LARGURA / 15, ALTURA / 15, 0);
-                al_draw_bitmap(caixaDialogo, LARGURA - (al_get_bitmap_width(caixaDialogo) + LARGURA / 15), ALTURA * 14/15 - al_get_bitmap_height(caixaDialogo), 0);
-                al_flip_display();
-                al_clear_to_color(al_map_rgb(0, 0, 0));
+                al_draw_bitmap(caixaDialogo, xCaixaSup, yCaixaSup, 0);
+                al_draw_bitmap(caixaDialogo, xCaixaInf, yCaixaInf, 0);
+
+                if(dialogo == 0){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1A);
+                }
+                else if(dialogo == 1){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1B);
+                }
+                else if(dialogo == 2){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1C);
+                }
+                else if(dialogo == 3){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1D);
+                }
+                else if(dialogo == 4){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1E);
+                }
+                else if(dialogo == 5){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1F);
+                }
+                else if(dialogo == 6){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1G);
+                }
                 break;
             case ALLEGRO_EVENT_KEY_DOWN: //aperta uma tecla
                 switch(evento.keyboard.keycode){
                     case ALLEGRO_KEY_ENTER:
-                        sair = true;
+                        dialogo++;
+                        if(dialogo >= 7) sair = true;
                 }
                 break;
         }
+        al_flip_display();
     }
     al_stop_timer(timer);
     al_flush_event_queue(filaEventos);
@@ -338,7 +363,7 @@ void preJogo(){
     
     geraMundo();
     //pergunta como a pessoa quer jogar
-    if(al_show_native_message_box(janela,"É azul ou rosa?","Escolha seu covideiro","Um ou outro, ta ok?","Salnorabo|Salnaraba",ALLEGRO_MESSAGEBOX_OK_CANCEL)%2!=0){
+    if(al_show_native_message_box(janela,"É azul ou rosa?","Escolha seu covideiro","Um ou outro, ta ok?","Solnorabo|Salnaraba",ALLEGRO_MESSAGEBOX_OK_CANCEL)%2!=0){
         sexo=1;
     }
     else sexo=0;
