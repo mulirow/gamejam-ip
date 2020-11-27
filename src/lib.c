@@ -18,7 +18,7 @@ const float HP=100.0;
 const float ATAQUE=10.0;
 const float DEFESA=5.0;
 //removido
-const float RAIO_P=200;
+const float RAIO_P=100;
 
 
 int LARGURA, ALTURA;
@@ -34,7 +34,7 @@ bool atirando=false;
 
 int largFase; int altFase;
 float pxFundo = 0; float pyFundo = 0;
-float escala = 2.5f; float escalaVelocidade = 0.0f;
+float escala = 1.6f; float escalaVelocidade = 0.0f;
 
 ALLEGRO_DISPLAY *janela = NULL;
 ALLEGRO_EVENT_QUEUE *filaEventos = NULL;
@@ -135,9 +135,9 @@ void geraMundo(){
     if(!initBloco()) msgErro("Erro ao gerar os blocos!");
     if(!fundo) msgErro("Deu ruim nos fundos!");
     //pega a largura de cada tile, pra função de desenho
-    largFase=al_get_bitmap_width(fundo);
+    largFase=2*al_get_bitmap_width(fundo);
     //pega a altura de cada tile , pra função de desenho
-    altFase=al_get_bitmap_height(fundo);
+    altFase=2*al_get_bitmap_height(fundo);
     //defino as razoes, utilidade explicada na declaração
 
 }
@@ -340,7 +340,7 @@ void preJogo(){
         player.direcao[i]=false;
     }
     //zera as posiçoes e velocidades
-    player.px=0; player.py=0;
+    player.px=LARGURA/4; player.py=ALTURA/2;
     player.vx=0; player.vy=0;
     //o player sempre esta na tela
     player.naTela=true;
@@ -430,7 +430,7 @@ void atualizaCamera(){ //atualiza as posiçoes das coisas
 }
 
 void desenhaMundo(){ //essa função tem que desenhar o mapa inteiro usando os tiles ja carregados
-    al_draw_bitmap(fundo,0,0,0);
+    al_draw_scaled_bitmap(fundo,0,0,largFase/2,altFase/2,0,0,largFase,altFase,0);
 }
 void colisaoEntidades(int i){
     for(int j=0; j<nBlocos;j++){
