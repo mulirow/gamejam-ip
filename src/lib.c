@@ -1032,7 +1032,7 @@ void colisaoBalasE(){
                 balasPlayer.atingiu=true;
                 entidades[i].dano=true;
             }
-
+            
         }
 
     }
