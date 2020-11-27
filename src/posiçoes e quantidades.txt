@@ -1,0 +1,85 @@
+total = 69
+totalD = 18
+
+
+tree3 - 13
+px1 =  py1 =  
+px2 =  py2 =  
+px3 =  py3 =  
+px4 =  py4 = 
+px5 =  py5 =  
+px6 =  py6 =  
+px7 =  py7 =  
+px8 =  py8 =  
+px9 =  py9 =
+px10 =  py10 =  
+px11 =  py11 =  
+px12 =  py12 =  
+px13 =  py13 = 
+
+tree2 - 2
+px1 =  py1 =  
+px2 =  py2 =
+
+tree1 - 25
+px1 =  py1 =  
+px2 =  py2 =  
+px3 =  py3 =  
+px4 =  py4 = 
+px5 =  py5 =  
+px6 =  py6 =  
+px7 =  py7 =  
+px8 =  py8 =  
+px9 =  py9 =
+px10 =  py10 =  
+px11 =  py11 =  
+px12 =  py12 =  
+px13 =  py13 =
+px14 =  py14 =  
+px15 =  py15 =  
+px16 =  py16 =  
+px17 =  py17 = 
+px18 =  py18 =  
+px19 =  py19 =  
+px20 =  py20 =  
+px21 =  py21 =  
+px22 =  py22 =
+px23 =  py23 =  
+px24 =  py24 =  
+px25 =  py25 =  
+ 
+
+porco = 3 alt
+porco1 -
+px1 =  py1 =  alturaSrite = larguraSprite =
+porco2 -
+px1 =  py1 =  alturaSrite = larguraSprite =
+porco3 -
+px1 =  py1 =  alturaSrite = larguraSprite =
+
+
+cercas - 4 alt
+cerca1
+px1 =810  py1 =0  alturaSrite = 415 larguraSprite = 11
+px2 =1387  py2 = 0  alturaSrite = 415 larguraSprite = 11
+cerca2
+px1 =811  py2 =416  alturaSrite =32 larguraSprite =235
+px2 =1162  py2 =416  alturaSrite =32 larguraSprite =235
+
+placas - 9 (interação)
+px1 =  py1 =  
+px2 =  py2 =  
+px3 =  py3 =  
+px4 =  py4 = 
+px5 =  py5 =  
+px6 =  py6 =  
+px7 =  py7 =  
+px8 =  py8 =  
+px9 =  py9 =  
+
+barril - 1 (interação)
+px1 =  py1 =  
+
+
+
+

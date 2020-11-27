@@ -196,7 +196,7 @@ void aumentaEntidades(){
 }
 void aumentaBlocos(){
     //aloca o espaço
-    nBlocos=0;
+    nBlocos=69;
     blocos = (Bloco*)realloc(blocos,nBlocos*sizeof(Bloco));
     if(blocos==NULL && nBlocos!=0){
         msgErro("Deu ruim na alocação!");
@@ -666,23 +666,369 @@ int initEntidade(){ //aqui é tudo hardcoded msm, n tem jeito
 
 int initBloco(){ //template pra qualquer geração de blocos, bem hardcoded mas pelo menos ta organizado
     aumentaBlocos();
-    int i=nBlocos;
-    int j=i;
-    for (i; i > 0; i--){ //template da geração de blocos, depois eu explico por que fiz assim
-        blocos[nBlocos-i].sprite=al_load_bitmap("./bin/entities/Buildings/House.png");
-        if(!blocos[nBlocos-i].sprite){
+    int i=0;
+    int j=0;
+    //casaB
+    for (i; i < 2 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[2]={4,452};
+        int psy[2]={26,26};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/casaB.png");
+        if(!blocos[j].sprite){
             msgErro("Deu ruim nos blocos!");
             return 0;
         }
-        blocos[nBlocos-i].px = 100; blocos[nBlocos-i].py = 100;
-        blocos[nBlocos-i].escalaEntidade=1;
-        blocos[nBlocos-i].alturaHitbox=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade/1.2; 
-        blocos[nBlocos-i].larguraHitbox=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade/1.2;
-        blocos[nBlocos-i].larguraSprite=al_get_bitmap_width(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-        blocos[nBlocos-i].alturaSprite=al_get_bitmap_height(blocos[nBlocos-i].sprite)*blocos[nBlocos-i].escalaEntidade;
-        blocos[nBlocos-i].py+=blocos[nBlocos-i].alturaSprite-blocos[nBlocos-i].alturaHitbox;
-        blocos[nBlocos-i].px+=(blocos[nBlocos-i].larguraSprite-blocos[nBlocos-i].larguraHitbox)/2;
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/1.2; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/1.2;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
     }
+    i=0;
+    //casaR
+    for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[1]={548};
+        int psy[1]={26};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/casaR.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/1.2; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/1.2;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //casa G
+    for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[1]={228};
+        int psy[1]={26};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/casaG.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/1.2; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/1.2;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //casaGrandeR
+    for (i; i < 3 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[3]={96,0,512};
+        int psy[3]={19,276,276};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/casaGrandeR.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/1.2; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/1.2;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //casaGrandeG
+    for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[1]={256};
+        int psy[1]={276};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/casaGrandeG.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/1.2; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/1.2;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //casaGrandeB
+    for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[1]={320};
+        int psy[1]={20};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/casaGrandeB.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/1.2; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/1.2;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //tree3
+    for (i; i < 13 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[13]={0,0,0,0,0,0,0,0,0,0,0,0,0};
+        int psy[13]={0,0,0,0,0,0,0,0,0,0,0,0,0};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Trees/tree3.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/3; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/3;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //tree2
+    for (i; i < 2 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[2]={0,0};
+        int psy[2]={0,0};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Trees/tree2.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/4; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/4;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //porco1 mudar altura e largura
+    for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[1]={0};
+        int psy[1]={0};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Char/Vendor.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/5; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/5;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //porco2 mudar altura e largura
+    for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[1]={0};
+        int psy[1]={0};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Char/Vendor.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/5; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/5;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //porco3 mudar altura e largura
+    for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[1]={0};
+        int psy[1]={0};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Char/Vendor.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/5; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/5;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //fabrica
+    for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[1]={1760};
+        int psy[1]={220};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/fabricaAlt3M.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/8; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //mansao, caso especial
+    for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[1]={836};
+        int psy[1]={0};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/mansao.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //tree1
+    for (i; i < 25 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[25]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+        int psy[25]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Trees/tree1.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/5; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/5;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //escola
+    for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[1]={1792};
+        int psy[1]={702};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/escola.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/8; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //cerca1
+    for (i; i < 2 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[2]={810,1387};
+        int psy[2]={0,0};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/cercaMV.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //cerca2
+    for (i; i < 2 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[2]={811,1162};
+        int psy[2]={416,416};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/cercaMH.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //placas
+    for (i; i < 9 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[9]={0,0,0,0,0,0,0,0,0};
+        int psy[9]={0,0,0,0,0,0,0,0,0};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Clutter/props_sign.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/5; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/5;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
+    //barril
+    for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
+        int psx[1]={0};
+        int psy[1]={0};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Clutter/Barrel.png");
+        if(!blocos[j].sprite){
+            msgErro("Deu ruim nos blocos!");
+            return 0;
+        }
+        blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
+        blocos[j].escalaEntidade=2;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/5; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/5;
+        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
+        blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
+    }
+    i=0;
     return 1;
 }
 
@@ -729,7 +1075,7 @@ void colisaoBalasE(){
                 balasPlayer.atingiu=true;
                 entidades[i].dano=true;
             }
-
+            
         }
 
     }
@@ -809,7 +1155,7 @@ void atualizaEntidades(){
         if(blocos[i].naTela){
             al_draw_scaled_bitmap(blocos[i].sprite,0,0,
                                     blocos[i].larguraSprite/blocos[i].escalaEntidade,blocos[i].alturaSprite/blocos[i].escalaEntidade,
-                                    blocos[i].px+(-blocos[i].larguraSprite+blocos[i].larguraHitbox)/2,blocos[i].py-blocos[i].alturaSprite+blocos[i].alturaHitbox,
+                                    blocos[i].px+(-blocos[i].larguraSprite+blocos[i].larguraHitbox)/2,blocos[i].py+(-blocos[i].alturaSprite+blocos[i].alturaHitbox),
                                     blocos[i].larguraSprite,
                                     blocos[i].alturaSprite,0);
             iNaTela[naTela]=i;
@@ -1015,7 +1361,7 @@ void jogo(){
             atualizaJogador(anda);
             atualizaBalas();
             atualizaEntidades();
-            al_draw_textf(retroFont,al_map_rgb(0,0,0),player.px+player.larguraSprite/2,player.py+player.alturaSprite,ALLEGRO_ALIGN_CENTER,"Zoom =%f",escala);
+            al_draw_textf(retroFont,al_map_rgb(0,0,0),player.px+player.larguraSprite/2,player.py+player.alturaSprite,ALLEGRO_ALIGN_CENTER,"PX=%f PY=%f",player.px,player.py);
             al_flip_display();
             desenhe=0;
         }
