@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.4" tiledversion="1.4.3" name="Clutter" tilewidth="56" tileheight="39" tilecount="12" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
- <tile id="0">
-  <image width="16" height="19" source="../entities/Clutter/Barrel.png"/>
- </tile>
  <tile id="1">
   <image width="56" height="28" source="../entities/Clutter/flowers.png"/>
  </tile>
@@ -36,5 +33,8 @@
  </tile>
  <tile id="12">
   <image width="11" height="11" source="../entities/Clutter/ui_coin.png"/>
+ </tile>
+ <tile id="14">
+  <image width="32" height="32" source="../entities/Clutter/Barrel.png"/>
  </tile>
 </tileset>
