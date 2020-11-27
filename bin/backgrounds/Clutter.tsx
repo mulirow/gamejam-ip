@@ -25,9 +25,6 @@
  <tile id="8">
   <image width="19" height="18" source="../entities/Clutter/props_grasschest_closed.png"/>
  </tile>
- <tile id="9">
-  <image width="16" height="16" source="../entities/Clutter/props_sign.png"/>
- </tile>
  <tile id="10">
   <image width="17" height="13" source="../entities/Clutter/props_skull.png"/>
  </tile>
@@ -36,5 +33,8 @@
  </tile>
  <tile id="14">
   <image width="32" height="32" source="../entities/Clutter/Barrel.png"/>
+ </tile>
+ <tile id="15">
+  <image width="32" height="32" source="../entities/Clutter/props_sign.png"/>
  </tile>
 </tileset>
