@@ -206,7 +206,7 @@ void aumentaBlocos(){
 
 //seta tudo antes do fluxo do menu
 void preMenu(){
-    int i = 0;
+    int i = 0, j = 252;
     bool sair = false;
     al_start_timer(timerAlt);
     while(!sair){
@@ -214,16 +214,31 @@ void preMenu(){
         al_wait_for_event(filaEventos,&evento);
         switch (evento.type){
             case ALLEGRO_EVENT_TIMER:
-                al_draw_multiline_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA / 2, ALTURA - i, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.1, ALLEGRO_ALIGN_CENTER, "O ano é 20XX, e o mundo está no mais completo caos. Há meses, surgiram boatos de que a infame [...]--uma organização criminosa vinda do outro lado do mundo--havia liberado a Ameaça Vermelha, um vírus altamente contagioso que causava fome e frio em tamanha magnitude que chegava a ser letal. Entretanto, como ela havia sido extinta há quase 30 anos, a população desconsiderou o risco, pensando que aquela era apenas mais uma fake news.\n\nA solução para tal crise se encontra em Brasilia, onde o primeiro-ministro Adolf Solnorabo Mussolini é secretamente recrutado para proteger seus queridos cidadãos da terrível Ameaça. Ao questionar sobre o motivo de ser escolhido para realizar árdua tarefa, nosso bravo herói descobre que seu histórico de atleta o imunizou contra a nefária doença, tornando-o a pessoa mais qualificada para combatê-la.\n\n\n\nCabe a você salvar o mundo dessa terrível ameaça.");
+                al_draw_multiline_text(retroFont32, al_map_rgb(j, j, j), LARGURA / 2, ALTURA - i, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.1, ALLEGRO_ALIGN_CENTER, "O ano é 20XX, e o mundo está no mais completo caos. Há meses, surgiram boatos de que a infame [...]--uma organização criminosa vinda do outro lado do mundo--havia liberado a Ameaça Vermelha, um vírus altamente contagioso que causava fome e frio em tamanha magnitude que chegava a ser letal. Entretanto, como ela havia sido extinta há quase 30 anos, a população desconsiderou o risco, pensando que aquela era apenas mais uma fake news.\n\nA solução para tal crise se encontra em Brasilia, onde o primeiro-ministro Adolf Solnorabo Mussolini é secretamente recrutado para proteger seus queridos cidadãos da terrível Ameaça. Ao questionar sobre o motivo de ser escolhido para realizar árdua tarefa, nosso bravo herói descobre que seu histórico de atleta o imunizou contra a nefária doença, tornando-o a pessoa mais qualificada para combatê-la.\n\n\n\nCabe a você salvar o mundo dessa terrível ameaça.");
                 al_flip_display();
                 al_clear_to_color(al_map_rgb(0, 0, 0));
-                i += 3;
-                if(i >= 1.5 * ALTURA) sair = true;
+                if(i >= 1.5 * ALTURA) {
+                    if(j > 0){
+                        j -= 6;
+                    }
+                }
+                else i += 3;
+                if(j <= 0) {
+                    sair = true;
+                    estado = estMenu;
+                }
                 break;
             case ALLEGRO_EVENT_KEY_DOWN: //aperta uma tecla
                 switch(evento.keyboard.keycode){
                     case ALLEGRO_KEY_ENTER: 
                         sair = true;
+                        estado = estMenu;
+                        break;
+                    case ALLEGRO_KEY_ESCAPE:
+                        if(al_show_native_message_box(janela,"","Tem certeza que quer sair do jogo?", "","Nope :D|Sim T^T",ALLEGRO_MESSAGEBOX_YES_NO)%2==0){
+                            sair = true;
+                            estado = estSaida;
+                        }
                         break;
                 }
                 break;
@@ -231,12 +246,11 @@ void preMenu(){
     }
     al_stop_timer(timerAlt);
     al_flush_event_queue(filaEventos);
-    estado = estMenu;
 }
 
 //fluxo do menu
 void menu(){
-    ALLEGRO_MOUSE_STATE estadoMouse;
+    ALLEGRO_MOUSE_STATE estadoMouse; //Mouse ainda não foi implementado, é capaz disso sair
     opcao = 0; //indica qual botão que tá com highlight
     int i = 255, j = 120, temp;
     bool sair = false;
