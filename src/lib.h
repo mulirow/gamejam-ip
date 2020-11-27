@@ -9,8 +9,6 @@
 
 enum ESTADO{estSaida, estPreMenu, estMenu, estPreJogo, estCutscene, estJogo}; //Organizar num enum porque esse monte de define ficaria feio
 enum DIRECOES{dBaixo,dCima,dDireita,dEsquerda}; //esse enum é pra nao ter que ficar lembrando que numero é cada posição no vetor do struct de entidades
-//enum removido
-
 
 //velocidade das entidades no geral
 extern const float VELOCIDADE;

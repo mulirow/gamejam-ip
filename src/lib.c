@@ -235,10 +235,12 @@ void preMenu(){
                         estado = estMenu;
                         break;
                     case ALLEGRO_KEY_ESCAPE:
+                        al_stop_timer(timerAlt);
                         if(al_show_native_message_box(janela,"","Tem certeza que quer sair do jogo?", "","Nope :D|Sim T^T",ALLEGRO_MESSAGEBOX_YES_NO)%2==0){
                             sair = true;
                             estado = estSaida;
                         }
+                        al_start_timer(timerAlt);
                         break;
                 }
                 break;
@@ -304,6 +306,7 @@ void menu(){
 
 void cutscene(){
     caixaDialogo = al_load_bitmap("./bin/misc/UI/caixaDialogo.png");
+    int dialogo = 0;
     bool sair = false;
     al_start_timer(timer);
     while(!sair){
@@ -311,7 +314,8 @@ void cutscene(){
         al_wait_for_event(filaEventos,&evento);
         switch (evento.type){
             case ALLEGRO_EVENT_TIMER:
-                al_draw_bitmap(caixaDialogo, 0, 0, ALLEGRO_ALIGN_LEFT);
+                al_draw_bitmap(caixaDialogo, LARGURA / 15, ALTURA / 15, 0);
+                al_draw_bitmap(caixaDialogo, LARGURA - (al_get_bitmap_width(caixaDialogo) + LARGURA / 15), ALTURA * 14/15 - al_get_bitmap_height(caixaDialogo), 0);
                 al_flip_display();
                 al_clear_to_color(al_map_rgb(0, 0, 0));
                 break;
