@@ -822,17 +822,18 @@ int initBloco(){ //template pra qualquer geração de blocos, bem hardcoded mas 
     i=0;
     //porco1 mudar altura e largura
     for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
-        int psx[1]={0};
-        int psy[1]={0};
-        blocos[j].sprite=al_load_bitmap("./bin/entities/Char/Vendor.png");
+        int psx[1]={1060};
+        int psy[1]={940};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Char/vendor1.png");
+        al_convert_mask_to_alpha(blocos[j].sprite,al_map_rgb(255,255,255));
         if(!blocos[j].sprite){
             msgErro("Deu ruim nos blocos!");
             return 0;
         }
         blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
         blocos[j].escalaEntidade=2;
-        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/5; 
-        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/5;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
         blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
         blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
         blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
@@ -841,36 +842,38 @@ int initBloco(){ //template pra qualquer geração de blocos, bem hardcoded mas 
     i=0;
     //porco2 mudar altura e largura
     for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
-        int psx[1]={0};
-        int psy[1]={0};
-        blocos[j].sprite=al_load_bitmap("./bin/entities/Char/Vendor.png");
+        int psx[1]={1060};
+        int psy[1]={1004};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Char/vendor2.png");
+        al_convert_mask_to_alpha(blocos[j].sprite,al_map_rgb(255,255,255));
         if(!blocos[j].sprite){
             msgErro("Deu ruim nos blocos!");
             return 0;
         }
         blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
         blocos[j].escalaEntidade=2;
-        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/5; 
-        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/5;
+        blocos[j].alturaHitbox=2*al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade; 
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
         blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
-        blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].alturaSprite=2*al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
         blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
         blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
     }
     i=0;
     //porco3 mudar altura e largura
     for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
-        int psx[1]={0};
-        int psy[1]={0};
-        blocos[j].sprite=al_load_bitmap("./bin/entities/Char/Vendor.png");
+        int psx[1]={1733};
+        int psy[1]={1133};
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Char/vendor3.png");
+        al_convert_mask_to_alpha(blocos[j].sprite,al_map_rgb(255,255,255));
         if(!blocos[j].sprite){
             msgErro("Deu ruim nos blocos!");
             return 0;
         }
         blocos[j].px = 2*psx[i]; blocos[j].py = 2*psy[i];
         blocos[j].escalaEntidade=2;
-        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade/5; 
-        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade/5;
+        blocos[j].alturaHitbox=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
+        blocos[j].larguraHitbox=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
         blocos[j].larguraSprite=al_get_bitmap_width(blocos[j].sprite)*blocos[j].escalaEntidade;
         blocos[j].alturaSprite=al_get_bitmap_height(blocos[j].sprite)*blocos[j].escalaEntidade;
         blocos[j].py+=(blocos[j].alturaSprite-blocos[j].alturaHitbox)/2;
@@ -896,7 +899,7 @@ int initBloco(){ //template pra qualquer geração de blocos, bem hardcoded mas 
         blocos[j].px+=(blocos[j].larguraSprite-blocos[j].larguraHitbox)/2;
     }
     i=0;
-    //mansao, caso especial
+    //mansao, caso especial .
     for (i; i < 1 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
         int psx[1]={836};
         int psy[1]={0};
@@ -957,7 +960,8 @@ int initBloco(){ //template pra qualquer geração de blocos, bem hardcoded mas 
     for (i; i < 2 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
         int psx[2]={810,1387};
         int psy[2]={0,0};
-        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/cercaMV.png");
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/cercaV.png");
+        al_convert_mask_to_alpha(blocos[j].sprite,al_map_rgb(255,255,255));
         if(!blocos[j].sprite){
             msgErro("Deu ruim nos blocos!");
             return 0;
@@ -976,7 +980,8 @@ int initBloco(){ //template pra qualquer geração de blocos, bem hardcoded mas 
     for (i; i < 2 ; i++, j++){ //template da geração de blocos, depois eu explico por que fiz assim
         int psx[2]={811,1162};
         int psy[2]={416,416};
-        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/cercaMH.png");
+        blocos[j].sprite=al_load_bitmap("./bin/entities/Buildings/cercaH.png");
+        al_convert_mask_to_alpha(blocos[j].sprite,al_map_rgb(255,255,255));
         if(!blocos[j].sprite){
             msgErro("Deu ruim nos blocos!");
             return 0;
@@ -1075,7 +1080,7 @@ void colisaoBalasE(){
                 balasPlayer.atingiu=true;
                 entidades[i].dano=true;
             }
-            
+
         }
 
     }
