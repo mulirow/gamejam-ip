@@ -33,7 +33,11 @@ extern int estado;
 //o numero de entidades e o numero de blocos
 extern int nEntidades; extern int nBlocos; 
 extern int nBalas;
-extern int limEntidades; //total de fases
+extern float limEntidades; //total de fases
+extern int nPassivos;
+extern bool mostrarCaixa;
+extern int bCaixa;
+extern float dificuldade;
 //( ͡° ͜ʖ ͡°)
 extern bool sexo;
 extern bool atirando;
@@ -98,8 +102,7 @@ typedef struct{
     float raio;
     //aqui sabemos se a entidade está ou não na tela
     bool atingiu;
-    //se for inimigo = true
-    bool inimigo;
+
     // escala do bitmap
     float escalaEntidade;
     //bool que diz em qual (ou quais) direções o player se move
@@ -116,6 +119,7 @@ typedef struct{
     bool naTela;
     // escala do bitmap
     float escalaEntidade;
+    bool interac;
 
 } Bloco; //um tipo de entidade que não se move
 
@@ -124,9 +128,10 @@ extern Balas balasPlayer;
 extern Entidade *entidades;
 extern Balas *balasEntidades;
 extern Bloco *blocos;
-bool criaEnt; // aqui é um boleano que responde se deve ou nao ser criada uma entidade ou um bloco
-bool mostraHitbox; //boleano que diz se deve ou nao demonstrar as hitboxes
-bool reinicio; //boleano que pergunta se o jogo esta reiniciando
+extern bool criaEnt; // aqui é um boleano que responde se deve ou nao ser criada uma entidade ou um bloco
+extern bool mostraHitbox; //boleano que diz se deve ou nao demonstrar as hitboxes
+extern bool reinicio; //boleano que pergunta se o jogo esta reiniciando
+extern bool interac;
 
 void destroi();
 int min();
@@ -154,6 +159,7 @@ void jogadorAtaque();
 void colisaoBalasP();
 void colisaoBalasE();
 void colisaoEntidades(int i);
+void caixaTexto(int j);
 void colisaoJogador();
 void atualizaBalas();
 void atualizaJogador(bool anda);

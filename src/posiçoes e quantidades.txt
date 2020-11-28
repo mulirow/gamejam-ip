@@ -1,70 +1,14 @@
-total = 69
-totalD = 18
-
-
-tree3 - 13
-px1 =  py1 =  
-px2 =  py2 =  
-px3 =  py3 =  
-px4 =  py4 = 
-px5 =  py5 =  
-px6 =  py6 =  
-px7 =  py7 =  
-px8 =  py8 =  
-px9 =  py9 =
-px10 =  py10 =  
-px11 =  py11 =  
-px12 =  py12 =  
-px13 =  py13 = 
-
-tree2 - 2
-px1 =  py1 =  
-px2 =  py2 =
-
-tree1 - 25
-px1 =  py1 =  
-px2 =  py2 =  
-px3 =  py3 =  
-px4 =  py4 = 
-px5 =  py5 =  
-px6 =  py6 =  
-px7 =  py7 =  
-px8 =  py8 =  
-px9 =  py9 =
-px10 =  py10 =  
-px11 =  py11 =  
-px12 =  py12 =  
-px13 =  py13 =
-px14 =  py14 =  
-px15 =  py15 =  
-px16 =  py16 =  
-px17 =  py17 = 
-px18 =  py18 =  
-px19 =  py19 =  
-px20 =  py20 =  
-px21 =  py21 =  
-px22 =  py22 =
-px23 =  py23 =  
-px24 =  py24 =  
-px25 =  py25 =  
- 
-
-//
-
 placas - 9 (interação)
-px1 =  py1 =  
-px2 =  py2 =  
-px3 =  py3 =  
-px4 =  py4 = 
-px5 =  py5 =  
-px6 =  py6 =  
-px7 =  py7 =  
-px8 =  py8 =  
-px9 =  py9 =  
+px1 =617  py1 =552 
+px2 =776  py2 =616         
+px3 =1097  py3 =361      
+px4 =1193  py4 =841 
+px5 =969  py5 =1193  
+px6 =1001  py6 =1193  
+px7 =1033  py7 =1193  
+px8 =1065  py8 =1129    
+px9 =2152  py9 =521
+px10 2025 py9=873   
 
 barril - 1 (interação)
-px1 =  py1 =  
-
-
-
-
+px1 =612  py1 =2  
