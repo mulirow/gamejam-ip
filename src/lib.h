@@ -7,7 +7,7 @@
 
 #define FPS 60.0
 
-enum ESTADO{estSaida, estPreMenu, estMenu, estPreJogo, estCutscene, estJogo}; //Organizar num enum porque esse monte de define ficaria feio
+enum ESTADO{estSaida, estPreMenu, estMenu, estPreJogo, estCutscene, estJogo, estFinal}; //Organizar num enum porque esse monte de define ficaria feio
 enum DIRECOES{dBaixo,dCima,dDireita,dEsquerda}; //esse enum é pra nao ter que ficar lembrando que numero é cada posição no vetor do struct de entidades
 
 //velocidade das entidades no geral
@@ -22,7 +22,7 @@ extern const float DEFESA;
 
 //raio de procura do player
 extern const float RAIO_P;
-
+extern bool obj1; extern bool obj2; extern bool obj3; extern bool obj4;
 extern int LARGURA; extern int ALTURA;
 
 //diz respeito à opção no menu
@@ -74,7 +74,7 @@ typedef struct{
     //pulo de linha pra uma direcao pra outra e pulo de coluna de um sprite pro outro
     int puloLinha; int puloColuna;
     //quantos frames tem a animação do sprite
-    int totalFrames;
+    int totalFrames; int frameAtual;
     //talvez seja reduntante, mas pra deixar mais legivel, guarda em que linha cada sprite de direção se encontra
     int nDirecao[4];
     //posiçao x e y do desenho do sprime no bitmap(bmp) original
@@ -94,7 +94,6 @@ typedef struct{
 typedef struct{
     float vx; float vy; //velocidades
     float px; float py; //posiçoes
-    float dano;
     ALLEGRO_BITMAP *sprite; //sprite da entidade
     //auto-explicativos
     float alturaSprite; float larguraSprite;
@@ -149,7 +148,7 @@ void geraMundo();
 int cria();
 
 //Funções de atualização
-
+void UI();
 void geraEntidades();
 void aumentaEntidades();
 void aumentaBlocos();
@@ -162,7 +161,7 @@ void colisaoEntidades(int i);
 void caixaTexto(int j);
 void colisaoJogador();
 void atualizaBalas();
-void atualizaJogador(bool anda);
+void atualizaJogador();
 void atualizaEntidades();
 
 //Funções dos estados
@@ -173,5 +172,6 @@ void cutscene();
 void pauseJogo();
 void fimDeJogo();
 void jogo();
+void final();
 
 #endif

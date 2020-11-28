@@ -38,10 +38,10 @@ int main(){
             cutscene();
         else if (estado == estPreJogo)
             preJogo();
-        else if (estado == estJogo){
+        else if (estado == estJogo)
             jogo();
-        
-        }
+        else if(estado == estFinal)
+            final();
     }
     destroi();
     return 0;

@@ -1,5 +1,5 @@
 Fazer um mapa com tiles e blocos pré setados. :: CHECK
-Entidades podem ser random, sem problema. ::ALMOST CHECK
+Entidades podem ser random, sem problema. ::CHECK
 Ja definir os tipos de entidades por fase. :: CHECK
 Ja definir os tipos de blocos por fase. ::CHECK 
 Fazer uma UI básica.
@@ -9,14 +9,20 @@ Resolver o problema da colisão. ::CHECK
 Desenhar a partir do canto inferior. ::CHECK
 Definir uma colisão decente das entidades com os blocos. ::CHECK
 Definir mecânica de ataque. (provavelmente análoga a de dano por contato?). WASD ::CHECK
-Limite de entidades (até por escolha do usuário na difículdade, why not). ::ALMOST CHECK
+Limite de entidades (até por escolha do usuário na difículdade, why not). ::CHECK
 Ja começar a implementar a história. ::ALMOST CHECK
-Terminar de pegar as posições dos blocos ::ALMOST CHECK
+Terminar de pegar as posições dos blocos ::CHECK
 Terminar os objetivos
 Melhorar sprites
-Fazer colisão bala/bloco (?)
+Fazer colisão bala/bloco ::CHECK
 Colocar audios
-Colocar caixas de texto
+Colocar caixas de texto :: ALMOST CHECK
 
+Levar um certo numero de pacificos pra casa.
+Jogar clororquina num certo numero de Inimigos.
+Acabar com as fábricas e a distribuição dos kits gays
+
+
+Resolver a UI, resolver a escala da caixa de texto, terminar os objetivos, resolver o crash.
 
 
