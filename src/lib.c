@@ -14,17 +14,19 @@
 //comentarios sobre globais estao todos no header
 
 const float VELOCIDADE = 5.0;
-const float HP=100.0;
-const float ATAQUE=10.0;
-const float DEFESA=2;
+const float HP=150.0;
+const float ATAQUE=8.0;
+const float DEFESA=3;
 //removido
 const float RAIO_P=150;
 
 bool obj1; bool obj2; bool obj3; bool obj4;
 //numero de passivos em casa, numero necessario
-int numObj1; int limObj1;
+int numObj1; int limObj1; int completou1=0;
 //numero de transformados, numero necessario
-int numObj2; int limObj2;
+int numObj2; int limObj2; int completou2=0;
+int completou3=0;
+int completou4=0;
 
 int LARGURA, ALTURA;
 
@@ -43,7 +45,7 @@ bool atirando=false;
 
 int largFase; int altFase;
 float pxFundo = 0; float pyFundo = 0;
-float escala = 1.6f; float escalaVelocidade = 0.0f;
+float escala = 1.4f; float escalaVelocidade = 0.0f;
 
 ALLEGRO_DISPLAY *janela = NULL;
 ALLEGRO_EVENT_QUEUE *filaEventos = NULL;
@@ -435,9 +437,11 @@ void preJogo(){
         entidades=NULL;
         balasEntidades=NULL;
     }
+    escalaVelocidade=0;
+    escala=1.4;
     obj1=false; obj3=false;
     obj2=false; obj4=false;
-    numObj1=0; limObj1=6*dificuldade;
+    numObj1=0; limObj1=24*dificuldade;
     numObj2=0; limObj2=24*dificuldade;
     srand(al_get_timer_count(timer));
     if(!player.sprite) msgErro("Erro no sprite do player");
@@ -528,11 +532,33 @@ void colisaoEntidades(int i){
                 if (entidades[i].px+entidades[i].larguraSprite > blocos[j].px && entidades[i].px < blocos[j].px+blocos[j].larguraHitbox && entidades[i].py+entidades[i].alturaSprite > blocos[j].py && entidades[i].py < blocos[j].py+blocos[j].alturaHitbox) colisao=true;
                 else colisao=false;
             }
+            bool entrou=false;
             if((entidades[i].direcao[dCima] || entidades[i].direcao[dBaixo]) && colisao && temHity){
                     entidades[i].py-=entidades[i].vy;
+                    if(!entidades[i].inimigo){
+                        if((j<5) || (j>17 && j<22) || j==28){
+                            entrou=true;
+                        }
+                    }
             } 
             if((entidades[i].direcao[dDireita] || entidades[i].direcao[dEsquerda]) && colisao && temHitx){
                     entidades[i].px-=entidades[i].vx;
+                    if(!entidades[i].inimigo){
+                        if((j<5) || (j>17 && j<22) || j==28){
+                            entrou=true;
+                        }
+                    }
+            }
+            if(entrou){
+                entidades[i].hp=0;
+                entidades[i].naTela=false;
+                numObj2++;
+                player.atk+=0.2;
+                if(numObj2>=limObj2){
+                    obj2=true;
+                    completou2++;
+                }
+                j=nBlocos;
             }
     }
 }
@@ -678,8 +704,8 @@ void colisaoJogador(){
                     entidades[i].vy=+VELOCIDADE*dificuldade*seno/1.7;
                 }
                 else{
-                    entidades[i].vx=-(VELOCIDADE*cosseno/1.7)*dificuldade; //geometria 
-                    entidades[i].vy=-(VELOCIDADE*seno/1.7)*dificuldade;
+                    entidades[i].vx=-(VELOCIDADE*cosseno/1.5)/dificuldade; //geometria 
+                    entidades[i].vy=-(VELOCIDADE*seno/1.5)/dificuldade;
                 }
                 if(balasEntidades[i].atingiu==true && entidades[i].inimigo == true){
                     balasEntidades[i].px=entidades[i].px;
@@ -1282,6 +1308,9 @@ void colisaoBalasP(){
             float distancia = sqrt(pow(player.px+player.larguraSprite/2-balasEntidades[i].px-balasEntidades[i].larguraSprite/2,2)+pow(player.py+player.alturaSprite/2-balasEntidades[i].py-balasEntidades[i].alturaSprite/2,2));
             if(distancia<=player.raio+balasEntidades[i].raio){
                 player.hp-=entidades[i].atk/player.def;
+                player.def-=0.2*dificuldade;
+                entidades[i].def+=0.2*dificuldade;
+                if(player.def<1.1) player.def=1.1;
                 balasEntidades[i].atingiu=true;
                 player.dano=true;
             }
@@ -1300,8 +1329,41 @@ void colisaoBalasE(){
     for (int i = 0; i < nEntidades && !balasPlayer.atingiu; i++){
         if(entidades[i].naTela && entidades[i].inimigo && entidades[i].hp>0){
             float distancia = sqrt(pow(entidades[i].px+entidades[i].larguraSprite/2-balasPlayer.px-balasPlayer.larguraSprite/2,2)+pow(entidades[i].py+entidades[i].alturaSprite/2-balasPlayer.py-balasPlayer.alturaSprite/2,2));
-            if(distancia<=entidades[i].raio+balasPlayer.raio){
+            if(distancia<=entidades[i].raio+balasPlayer.raio && entidades[i].hp>0){
                 entidades[i].hp-=player.atk/entidades[i].def;
+                if(entidades[i].hp<=0){
+                    //transforma;
+                    entidades[i].sprite=al_load_bitmap("./bin/entities/Char/NPC.png");
+                    if(!entidades[i].sprite){
+                        msgErro("Deu ruim nos blocos!");
+                    } //inicializando tudo (obs, nada definitivo)
+                    entidades[i].larguraSprite = 1.7*al_get_bitmap_width(entidades[i].sprite); 
+                    entidades[i].alturaSprite =  1.7*al_get_bitmap_height(entidades[i].sprite);
+                    entidades[i].pDesenhox=0; entidades[i].pDesenhoy=0;
+                    entidades[i].inimigo=false;
+                    entidades[i].dano=false;
+                    entidades[i].escalaEntidade=1.7;
+                    entidades[i].raio=entidades[i].larguraSprite/4+entidades[i].alturaSprite/4;
+                    entidades[i].hp = 10*dificuldade;
+                    for (int j = 0; j < 4; j++){
+                        entidades[i].direcao[j]=false;
+                    }
+                    //inicializa balas
+                    entidades[i].atk=ATAQUE*dificuldade;
+                    entidades[i].def=DEFESA*dificuldade;
+                    nPassivos++;
+                    numObj1++;
+                    if(numObj1>=limObj1){
+                        numObj1=limObj1;
+                        obj1=true;
+                        completou1++;
+                    }
+                    continue;
+                }
+                entidades[i].def-=0.2*dificuldade;
+                if(entidades[i].def<1.1) entidades[i].def=1.1;
+                player.hp+=1*dificuldade;
+                if(player.hp>HP/dificuldade) player.hp=HP/dificuldade;
                 balasPlayer.atingiu=true;
                 entidades[i].dano=true;
             }
@@ -1448,9 +1510,11 @@ void atualizaJogador(){ //desenha e anima o jogador
 void UI(){
 
     ALLEGRO_FONT *fonteUI = al_load_font("./fonts/retroGaming.ttf",25/escala,0);
-    al_draw_textf(fonteUI,al_map_rgb(255,255,255),pxFundo,pyFundo,ALLEGRO_ALIGN_LEFT,"HP: %.0f",player.hp);
+    al_draw_textf(fonteUI,al_map_rgb(255,255,255),pxFundo,pyFundo,ALLEGRO_ALIGN_LEFT,"HP: %.0f/%.0f",player.hp,HP/dificuldade);
     al_draw_textf(fonteUI,al_map_rgb(255,255,255),pxFundo,pyFundo+30,ALLEGRO_ALIGN_LEFT,"DEF: %.1f",player.def);
     al_draw_textf(fonteUI,al_map_rgb(255,255,255),pxFundo,pyFundo+60,ALLEGRO_ALIGN_LEFT,"ATK: %.1f",player.atk);
+    al_draw_textf(fonteUI,al_map_rgb(255,255,255),pxFundo,pyFundo+90,ALLEGRO_ALIGN_LEFT,"OBJ1: %d/%d",numObj1,limObj1);
+    al_draw_textf(fonteUI,al_map_rgb(255,255,255),pxFundo,pyFundo+120,ALLEGRO_ALIGN_LEFT,"OBJ1: %d/%d",numObj2,limObj2);
     al_destroy_font(fonteUI);
 }
 
@@ -1591,10 +1655,10 @@ void jogo(){
                          
                         break;
                     case ALLEGRO_KEY_Q:
-                        escalaVelocidade-= 0.1f;
+                        if(escalaVelocidade!=0) escalaVelocidade-= 0.1f;
                         break;
                     case ALLEGRO_KEY_E:
-                        escalaVelocidade+= 0.1f;
+                        if(escalaVelocidade!=0) escalaVelocidade+= 0.1f;
                         break;
                     case ALLEGRO_KEY_W:
                         balasPlayer.direcao[dCima]=false;
@@ -1650,22 +1714,24 @@ void jogo(){
                 al_translate_transform(&camera,-pxFundo+(player.px+player.larguraSprite/2),-pyFundo+(player.py+player.larguraSprite/2)); 
                 al_use_transform(&camera); //simplesmente torna a transformação "canonica"
                 if(player.hp<=0) fimDeJogo();
-                if(obj1){
+                if(obj1 && completou1==1){
                     caixaTexto(59+69);
                     player.hp=HP/dificuldade;
                     player.def=DEFESA/dificuldade;
+                    completou1++;
                 }
-                if(obj2){
+                if(obj2 && completou2==1){
                     caixaTexto(59+70);
                     player.hp=HP/dificuldade;
                     player.def=DEFESA/dificuldade;
+                    completou2++;
                 }
-                if(obj3){
+                if(obj3 && completou3==1){
                     caixaTexto(59+71);
                     player.hp=HP/dificuldade;
                     player.def=DEFESA/dificuldade;
                 }
-                if(obj4){
+                if(obj4 && completou4==1){
                     caixaTexto(59+72);
                     player.hp=HP/dificuldade;
                     player.def=DEFESA/dificuldade;

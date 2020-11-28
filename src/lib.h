@@ -23,6 +23,10 @@ extern const float DEFESA;
 //raio de procura do player
 extern const float RAIO_P;
 extern bool obj1; extern bool obj2; extern bool obj3; extern bool obj4;
+extern int completou1;
+extern int completou2;
+extern int completou3;
+extern int completou4;
 extern int LARGURA; extern int ALTURA;
 
 //diz respeito à opção no menu
