@@ -184,7 +184,7 @@ int inic(){
         return 0;
     }
 
-    if(!al_reserve_samples(20)){
+    if(!al_reserve_samples(256)){
         msgErro("Erro ao reservar samples");
         return 0;
     }
