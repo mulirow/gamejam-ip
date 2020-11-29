@@ -23,7 +23,17 @@ extern const float DEFESA;
 
 //raio de procura do player
 extern const float RAIO_P;
-extern bool obj1; extern bool obj2; extern bool obj3; extern bool obj4;
+extern bool obj1; extern bool obj2; extern bool obj3;
+extern bool comecou;
+extern int completou1;
+extern int completou2;
+extern int completou3;
+extern int numObj1;
+extern int numObj2;
+extern int numObj3;
+extern int limObj1;
+extern int limObj2;
+
 extern int LARGURA; extern int ALTURA;
 
 //diz respeito à opção no menu
@@ -49,6 +59,7 @@ extern int largFase; extern int altFase;
 extern float pxFundo; extern float pyFundo;
 //escala da camera e velocidade com que ela escala
 extern float escala; extern float escalaVelocidade;
+extern int contaFrames;
 
 extern ALLEGRO_DISPLAY *janela; //janela de saida padrao
 extern ALLEGRO_EVENT_QUEUE *filaEventos; //fila de eventos padrao
@@ -93,6 +104,7 @@ typedef struct{
     bool direcao[4];
     //se esta tomando dano ou não
     bool dano;
+    bool boss;
 } Entidade;
 
 typedef struct{
@@ -153,6 +165,7 @@ int cria();
 
 //Funções de atualização
 void UI();
+void UIent(int i);
 void geraEntidades();
 void aumentaEntidades();
 void aumentaBlocos();
