@@ -464,7 +464,7 @@ void tutorial(){
                     al_draw_multiline_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA / 2, 100, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.15, ALLEGRO_ALIGN_CENTER, "1 - A primeira missão é de levar grupos de risco pras suas casas, de quarentena. Mas cuidado, eles são teimosos!\n\n2 - Sua segunda missão é jogar hidroxialerquina nos inimigos vermelhos pra consertar a visão de mundo deles. Eles viram grupo de risco depois que percebem o peso da derrota.\n\n3 - A 3ª missão exige que você derrote os dois \"cabeças\" da organização.");
                 }
                 else if(i == 1){
-                    al_draw_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA/2, 30, ALLEGRO_ALIGN_CENTER, "Conroles:");
+                    al_draw_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA/2, 30, ALLEGRO_ALIGN_CENTER, "Controles:");
                     al_draw_multiline_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA / 2, 100, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.15, ALLEGRO_ALIGN_CENTER, "Os controles são: Setas pra andar, WASD pra atirar. Zoom no Q e E (mas não recomendado por bugs gráficos).\n\nEntregar grupos de risco em casa deixa você com um sentimento de dever cumprido, aumentando seu ataque.\n\nReceber um ataque vermelho te deixa com vontade de compartilhar, doando sua defesa para o inimigo.\n\nJogar hidroxialerquina no inimigo o deixa em choque, diminuindo sua defesa.\n\nDerrotar inimigos e completar missões te deixa determinado, regenerando HP.");
                 }
                 else if(i == 2){
@@ -506,7 +506,7 @@ void preJogo(){
     }
     geraMundo();
     //pergunta como a pessoa quer jogar
-    if(al_show_native_message_box(janela,"É azul ou rosa?","Escolha seu covideiro","Um ou outro, ta ok?","Solnorabo|Salnaraba",ALLEGRO_MESSAGEBOX_OK_CANCEL)%2!=0){
+    if(al_show_native_message_box(janela,"É azul ou rosa?","Escolha seu covideiro","Um ou outro, ta ok?","Solnorabo|Salnaraba",ALLEGRO_MESSAGEBOX_OK_CANCEL)<2){
         sexo=1;
     }
     else sexo=0;
@@ -663,16 +663,20 @@ void colisaoEntidades(int i){
             else if(entidades[i].px>largFase) entidades[i].px=largFase;
             if(entidades[i].py<0) entidades[i].py=0;
             if(entidades[i].py>2550) entidades[i].py=2550;
-            if(entrou){
+            if(entrou && numObj1<limObj1){
                 entidades[i].hp=0;
                 entidades[i].naTela=false;
                 numObj1++;
                 player.atk+=0.3*dificuldade;
-                if(numObj1>=limObj1){
+                if(numObj1==limObj1){
                     obj1=true;
                     completou1++;
                 }
 
+            }
+            else if(entrou){
+                entidades[i].hp=0;
+                entidades[i].naTela=false;
             }
     }
 }
@@ -680,71 +684,67 @@ void caixaTexto(int i){
     i=i-59;
     al_flush_event_queue(filaEventos);
     ALLEGRO_BITMAP *janelaTexto;
-    retroFont = al_load_font("./fonts/retroGaming.ttf", 30/escala, 0);
-    janelaTexto=al_load_bitmap("./bin/misc/UI/TextBox.bmp"); //carrega um bitmap de uma caixa de texto
+    retroFont = al_load_font("./fonts/retroGaming.ttf", 30, 0);
+    janelaTexto=al_load_bitmap("./bin/misc/UI/caixaTexto.png"); //carrega um bitmap de uma caixa de texto
     if(!janelaTexto || !retroFont){
         msgErro("Deu ruim no texto!");
     }
     int alturaPause=al_get_bitmap_height(janelaTexto);
     int larguraPause=al_get_bitmap_width(janelaTexto);
-    float pxPause=(player.px-5*larguraPause/(2*escala));
-    if(pxPause<0) pxPause=0;
-    float pyPause=(player.py-5*alturaPause/(2*escala));
-    if(pyPause<0) pyPause=0;
-    al_draw_scaled_bitmap(janelaTexto,0,0, //essa função desenha um bitmap na escala desejada
-                        larguraPause,alturaPause,pxPause,pyPause, //largura do bitmap, altura do bitmap,posicao x na tela, posicao y na tela
-                        5*larguraPause/escala,5*alturaPause/escala,0); //tamanho desejado, altura desejada, flag
+    float pxPause =(pxFundo);
+    float pyPause= pyFundo+(ALTURA-alturaPause/2)/2;
+    al_draw_scaled_bitmap(janelaTexto,0,0,larguraPause,alturaPause,pxPause,pyPause,LARGURA+10,alturaPause/2,0);
     switch(i){
         case 0: //placa deserto
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Esse lote foi comprado em 2010 para a construção de um shopping center, mas até agora só foi construída dívida pública.");
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Esse lote foi comprado em 2010 para a construção de um shopping center, mas até agora só foi construída dívida pública.");
             break;
         case 1: //placa campo
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Sagrada plantação de mandioca, responsável por toda a renda da nossa cidade. Amém.");
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Sagrada plantação de mandioca, responsável por toda a renda da nossa cidade. Amém.");
             break;
         case 2: //placa mansao
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Humilde casebre do nosso protagonista.");
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Humilde casebre do nosso protagonista.");
             break;
         case 3: //placa praça
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"SAÚDEM A MANDIOCA!");
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"SAÚDEM A MANDIOCA!");
             break;
         case 4: //placa praia 1
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
             break;
         case 5: //placa praia 2
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
             break;
         case 6: //placa praia 3
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
             break;
         case 7: //placa porco
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Reza a lenda que, por achar que estudar Física não compensa, os estudantes da Área II resolveram seguir o conselho dos seus amiguinhos do CAC e ir abrir negócio na praia. Não mais abençoados pelo espírito protetor Copelli, os mais novos vendedores ambulantes de pastel quebraram as leis da física e passaram a ocupar o mesmo lugar no espaço. Agora, eles estão presos em seus carrinhos, fadados a eternamente vender pastel na frente da praia. F.");
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Reza a lenda que, por achar que estudar Física não compensa, os estudantes da Área II resolveram seguir o conselho dos seus amiguinhos do CAC e ir abrir negócio na praia. Não mais abençoados pelo espírito protetor Copelli, os mais novos vendedores ambulantes de pastel quebraram as leis da física e passaram a ocupar o mesmo lugar no espaço. Agora, eles estão presos em seus carrinhos, fadados a eternamente vender pastel na frente da praia. F.");
             break;
         case 8: //placa fabrica
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Ué, a fábrica... Não tem profundidade? Hmm... Isso tem cheiro de fachada para esquemas comunistas de desvio de Guaraná Jesus.");
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Ué, a fábrica... Não tem profundidade? Hmm... Isso tem cheiro de fachada para esquemas comunistas de desvio de Guaraná Jesus.");
             break;
         case 9: //placa escola
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Parece-me que essa escola foi posicionada de tal forma que os estudantes passassem o dia inalando Guaraná Jesus. Claramente um esquema comunista para alienar nossas crianças.");
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Parece-me que essa escola foi posicionada de tal forma que os estudantes passassem o dia inalando Guaraná Jesus. Claramente um esquema comunista para alienar nossas crianças.");
             break;
         case 10: //placa 10, canto inferior direito na praia
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"O jogo é inclusivo com todos, então reservamos uma área especialmente aos bugs gráficos:");
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"O jogo é inclusivo com todos, então reservamos uma área especialmente aos bugs gráficos:");
             break;
         case 11: //barril
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Barril do Zeca Urubu, o maior programador do país.");
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Barril do Zeca Urubu, o maior programador do país.");
             break;
         case 13: //lim inf
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Você devia ter prestado atenção nos comerciais da marinha.");
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Você devia ter prestado atenção nos comerciais da marinha.");
             break;
         case 69: //obj 1
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Objetivo 1 completo");            
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Objetivo 1 completo");            
             break;
         case 70:
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Objetivo 2 completo");            
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Objetivo 2 completo");            
             break; //obj 2
         case 71: //obj 3
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Objetivo 3 completo");            
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Objetivo 3 completo");            
             break;
         case 72: //obj 4
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Objetivo 4 completo");            
+            al_draw_multiline_text(retroFont,al_map_rgb(255,255,255),pxPause+20+LARGURA/2,pyPause+20,(larguraPause-20),35,ALLEGRO_ALIGN_CENTRE,"Objetivo 4 completo");            
             break;
     }
     al_flip_display(); //atualiza a tela
@@ -1670,8 +1670,8 @@ void atualizaBalas(){
 void UIent(int i){
     float pxUI=entidades[i].px+entidades[i].larguraSprite/2-10;
     float pyUI=entidades[i].py-50;
-    al_draw_textf(retroFont,al_map_rgb(0,0,0),pxUI+10,pyUI,ALLEGRO_ALIGN_CENTER,"HP: %.0f",entidades[i].hp);
-    al_draw_textf(retroFont,al_map_rgb(0,0,0),pxUI+10,pyUI+25,ALLEGRO_ALIGN_CENTER,"DEF: %.0f",entidades[i].def);
+    al_draw_textf(retroFont,al_map_rgb(255,0,0),pxUI+10,pyUI,ALLEGRO_ALIGN_CENTER,"HP: %.1f",entidades[i].hp);
+    al_draw_textf(retroFont,al_map_rgb(0,0,0),pxUI+10,pyUI+25,ALLEGRO_ALIGN_CENTER,"DEF: %.1f",entidades[i].def);
 }
 
 void atualizaEntidades(){
@@ -2040,6 +2040,7 @@ void jogo(){
                     caixaTexto(59+71);
                     player.hp=HP/dificuldade;
                     player.def=DEFESA/dificuldade;
+                    completou3++;
                 }
 
                 break;
