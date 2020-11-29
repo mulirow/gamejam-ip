@@ -57,6 +57,9 @@ ALLEGRO_FONT *retroFont32 = NULL;
 ALLEGRO_FONT *fonteUI;
 ALLEGRO_BITMAP *fundo = NULL;
 ALLEGRO_BITMAP *caixaDialogo = NULL;
+ALLEGRO_BITMAP *barracaPastel = NULL;
+ALLEGRO_BITMAP *solnoraboPastel = NULL;
+ALLEGRO_BITMAP *capuz = NULL;
 ALLEGRO_TRANSFORM camera;
 ALLEGRO_VIDEO *marinha = NULL;
 ALLEGRO_VOICE *voice;
@@ -105,6 +108,9 @@ void destroi(){
     al_destroy_bitmap(balasPlayer.sprite);
     al_destroy_bitmap(player.sprite);
     al_destroy_bitmap(caixaDialogo);
+    al_destroy_bitmap(barracaPastel);
+    al_destroy_bitmap(solnoraboPastel);
+    al_destroy_bitmap(capuz);
     al_destroy_mixer(mixer);
     al_destroy_voice(voice);
 }
@@ -362,7 +368,7 @@ void menu(){
     }
 }
 
-char dialogo1A[150] = "Vejo que você tem um espírito nobre, eu escolhi você para salvar a humanidade. Se escolher aceitar a missão, compareça a [LUGAR] em [HORÁRIO].";
+char dialogo1A[184] = "Vejo que você tem um espírito nobre, eu escolhi você para salvar a humanidade. Se escolher aceitar a missão, compareça à barraca de pastel e cana daqui a uma caixa de diálogo.";
 char dialogo1B[37] = "E então, o que você tem para mim?";
 char dialogo1C[203] = "Eu investiguei toda sua vida, sei das suas convicções e do seu histórico de atleta, e é por isso que eu sei, que você é o único adequado para essa missão. Solnorabo, você é imune ao vírus...";
 char dialogo1D[9] = "Vírus?";
@@ -372,6 +378,9 @@ char dialogo1G[88] = "Vá e leve esse comunicador, eu manterei contato e avisare
 
 void cutscene(){
     caixaDialogo = al_load_bitmap("./bin/misc/UI/caixaDialogo.png");
+    barracaPastel = al_load_bitmap("./bin/misc/UI/barracaPastel.png");
+    solnoraboPastel = al_load_bitmap("./bin/misc/UI/solnoraboPastel.png");
+    capuz = al_load_bitmap("./bin/misc/UI/capuz.png");
     int i = 0;
     int xCaixaSup = LARGURA / 15, yCaixaSup = ALTURA / 15;
     int xCaixaInf = LARGURA - (al_get_bitmap_width(caixaDialogo) + LARGURA / 15), yCaixaInf = ALTURA * 14/15 - al_get_bitmap_height(caixaDialogo);
@@ -384,6 +393,13 @@ void cutscene(){
         switch (evento.type){
             case ALLEGRO_EVENT_TIMER:
                 al_draw_filled_rectangle(0,0,LARGURA,ALTURA,al_map_rgb(0,0,0));
+                if(dialogo != 0) al_draw_scaled_bitmap(barracaPastel,0,0,LARGURA*5/7-20,ALTURA*5/7-20, 0,0,LARGURA,ALTURA,0);
+                if(dialogo % 2 == 0){
+                    al_draw_bitmap(capuz, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
+                }
+                else{
+                    al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
+                }
                 al_draw_bitmap(caixaDialogo, xCaixaSup, yCaixaSup, 0);
                 al_draw_bitmap(caixaDialogo, xCaixaInf, yCaixaInf, 0);
 
@@ -418,6 +434,44 @@ void cutscene(){
                 break;
         }
         al_flip_display();
+    }
+    al_stop_timer(timer);
+    al_flush_event_queue(filaEventos);
+    estado = estTutorial;
+}
+
+void tutorial(){
+    int i = 0;
+    bool sair = false;
+    al_start_timer(timer);
+    while(!sair){
+        ALLEGRO_EVENT evento;
+        al_wait_for_event(filaEventos,&evento);
+        switch (evento.type){
+            case ALLEGRO_EVENT_TIMER:
+                if(i == 0){
+                    al_draw_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA/2, 30, ALLEGRO_ALIGN_CENTER, "Objetivos:");
+                    al_draw_multiline_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA / 2, 100, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.15, ALLEGRO_ALIGN_CENTER, "1 - A primeira missão é de levar grupos de risco pras suas casas, de quarentena. Mas cuidado, eles são teimosos!\n\n2 - Sua segunda missão é jogar hidroxialerquina nos inimigos vermelhos pra consertar a visão de mundo deles. Eles viram grupo de risco depois que percebem o peso da derrota.\n\n3 - A 3ª missão exige que você derrote os dois \"cabeças\" da organização.");
+                }
+                else if(i == 1){
+                    al_draw_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA/2, 30, ALLEGRO_ALIGN_CENTER, "Conroles:");
+                    al_draw_multiline_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA / 2, 100, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.15, ALLEGRO_ALIGN_CENTER, "Os controles são: Setas pra andar, WASD pra atirar. Zoom no Q e E (mas não recomendado por bugs gráficos).\n\nEntregar grupos de risco em casa deixa você com um sentimento de dever cumprido, aumentando seu ataque.\n\nReceber um ataque vermelho te deixa com vontade de compartilhar, doando sua defesa para o inimigo.\n\nJogar hidroxialerquina no inimigo o deixa em choque, diminuindo sua defesa.\n\nDerrotar inimigos e completar missões te deixa determinado, regenerando HP.");
+                }
+                else if(i == 2){
+                    al_draw_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA/2, ALTURA/2, ALLEGRO_ALIGN_CENTER, "Que a força do pastel de cloroquina com cana esteja com você!");
+                }
+                al_flip_display();
+                al_clear_to_color(al_map_rgb(0, 0, 0));
+                break;
+            case ALLEGRO_EVENT_KEY_DOWN: //aperta uma tecla
+                switch(evento.keyboard.keycode){
+                    case ALLEGRO_KEY_ENTER:
+                        i++;
+                        if(i == 3) sair = true;
+                        break;
+                }
+                break;
+        }
     }
     al_stop_timer(timer);
     al_flush_event_queue(filaEventos);
