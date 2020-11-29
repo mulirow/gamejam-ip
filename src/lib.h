@@ -86,6 +86,7 @@ extern ALLEGRO_SAMPLE *passos;
 extern ALLEGRO_SAMPLE_ID passosJ;
 extern ALLEGRO_SAMPLE_ID passosE;
 extern ALLEGRO_SAMPLE *tiro;
+extern ALLEGRO_SAMPLE *pamonha;
 extern ALLEGRO_AUDIO_STREAM *loopMenu;
 extern ALLEGRO_AUDIO_STREAM *creditos;
 extern ALLEGRO_AUDIO_STREAM *audiojogo;

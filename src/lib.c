@@ -72,7 +72,7 @@ ALLEGRO_SAMPLE *lancha = NULL;
 ALLEGRO_SAMPLE *objetivo = NULL;
 ALLEGRO_SAMPLE *passos = NULL;
 ALLEGRO_SAMPLE_ID passosJ;
-
+ALLEGRO_SAMPLE *pamonha = NULL;
 ALLEGRO_SAMPLE *tiro = NULL;
 ALLEGRO_AUDIO_STREAM *loopMenu = NULL;
 ALLEGRO_AUDIO_STREAM *creditos = NULL;
@@ -184,7 +184,7 @@ int inic(){
         return 0;
     }
 
-    if(!al_reserve_samples(20)){
+    if(!al_reserve_samples(256)){
         msgErro("Erro ao reservar samples");
         return 0;
     }
@@ -194,7 +194,8 @@ int inic(){
     objetivo = al_load_sample("./bin/samples/objetivoCompleto.wav");
     tiro = al_load_sample("./bin/samples/tiro.wav");
     passos = al_load_sample("./bin/samples/passos.wav");
-    if(!blip || !lancha || !objetivo || !tiro || !passos){
+    pamonha = al_load_sample("./bin/samples/pamonha.wav");
+    if(!blip || !lancha || !objetivo || !tiro || !passos || !pamonha){
         msgErro("Erro ao carregar arquivo de audio");
         return 0;
     }
@@ -413,7 +414,7 @@ void menu(){
     al_flush_event_queue(filaEventos);
     al_set_audio_stream_playing(loopMenu, 0);
     if(opcao % 2 == 0){
-        estado = estCutscene;
+        estado = estFinal;
     }
     else{
         estado = estSaida;
@@ -2135,7 +2136,7 @@ void jogo(){
             atualizaEntidades();
             UI();
 
-            if(obj1 || obj2 || obj3){
+            if(obj1 && obj2 && obj3){
                 sair = 1;
                 al_flush_event_queue(filaEventos);
                 al_stop_timer(timer);
@@ -2217,70 +2218,76 @@ void final(){
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
                 else if(i == 4){
+                    al_play_sample(pamonha,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
+                    al_rest(15.0);
+                    al_flush_event_queue(filaEventos);
+                    i++;
+                }
+                else if(i == 5){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2D);
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
-                else if(i == 5){
+                else if(i == 6){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2E);
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
-                else if(i == 6){
+                else if(i == 7){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2F);
                     al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 7){
+                else if(i == 8){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2G);
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
-                else if(i == 8){
+                else if(i == 9){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2H);
                     al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 9){
+                else if(i == 10){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2I);
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
-                else if(i == 10){
+                else if(i == 11){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2J);
                     al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 11){
+                else if(i == 12){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2K);
                     al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 12){
+                else if(i == 13){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2L);
                     al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 13){
+                else if(i == 14){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2M);
                     al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 14){
+                else if(i == 15){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2N);
                     al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 15){
+                else if(i == 16){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2O);
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
-                else if(i == 16){
+                else if(i == 17){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2P);
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
-                else if(i == 17){
+                else if(i == 18){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2Q);
                     al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 18){
+                else if(i == 19){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2R);
                     al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 19){
+                else if(i == 20){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2S);
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
-                else if(i == 20){
+                else if(i == 21){
                     al_draw_filled_rectangle(0,0,LARGURA,ALTURA,al_map_rgb(0,0,0));
                     al_draw_multiline_text(retroFont32, al_map_rgb(j, j, j), LARGURA / 2, ALTURA - scroll, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.1, ALLEGRO_ALIGN_CENTER, "Após nossa dupla dinâmica almoçar um sushi com pamonha, um problema ainda persistia: o vírus que o peixe implantou em Solnorabo havia se espalhado por toda a humanidade. Solnorabo e Polvo, juntos, começaram uma pesquisa para entender mais sobre o vírus. Em pouco tempo, eles descobriram que a morte de Fish Trump retardou bastante a ação do vírus, mas não o eliminou por completo, de tal forma que, em mais ou menos 40 anos, toda a humanidade já estaria extinta. Solnorabo, como primeiro infectado pelo vírus, já estava bem fraco e não viveria por muito tempo. Entretanto, daquela pesquisa não surgiu apenas essa descoberta, mas uma bela amizade, que com o tempo tornou-se um romance, de onde se originou a última esperança da humanidade.\n\nDestinado a infiltrar-se no povo de Fish Trump e trazer a cura ou morrer tentando, MoroSelgio nasce.\n\n\n\nTO BE CONTINUED.");
                     if(scroll >= 1.5 * ALTURA) {
@@ -2303,9 +2310,10 @@ void final(){
                             al_flush_event_queue(filaEventos);
                             al_stop_timer(timer);
                             al_start_timer(timerAlt);
-                            al_set_audio_stream_playing(creditos, 1);
                         }
-                        if(i >= 21) sair = true;
+                        if(i == 21)
+                            al_set_audio_stream_playing(creditos, 1);
+                        if(i >= 22) sair = true;
                 }
                 break;
         }
