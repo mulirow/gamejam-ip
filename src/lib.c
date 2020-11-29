@@ -70,9 +70,12 @@ ALLEGRO_SAMPLE *blip = NULL;
 ALLEGRO_SAMPLE *lancha = NULL;
 ALLEGRO_SAMPLE *objetivo = NULL;
 ALLEGRO_SAMPLE *passos = NULL;
+ALLEGRO_SAMPLE_ID passosJ;
+ALLEGRO_SAMPLE_ID passosE;
 ALLEGRO_SAMPLE *tiro = NULL;
 ALLEGRO_AUDIO_STREAM *loopMenu = NULL;
 ALLEGRO_AUDIO_STREAM *creditos = NULL;
+ALLEGRO_AUDIO_STREAM *audiojogo=NULL;
 
 Entidade player;
 Balas balasPlayer;
@@ -129,6 +132,7 @@ void destroi(){
     al_destroy_sample(passos);
     al_destroy_audio_stream(loopMenu);
     al_destroy_audio_stream(creditos);
+    al_destroy_audio_stream(audiojogo);
 }
 
 //mensagem de erro, deve ser usado na verificação de inicializações
@@ -196,15 +200,19 @@ int inic(){
 
     loopMenu = al_load_audio_stream("./bin/samples/loopMenu.wav", 4, 1024);
     creditos = al_load_audio_stream("./bin/samples/creditos.wav", 4, 1024);
+    audiojogo = al_load_audio_stream("./bin/samples/audio.wav",4, 1024);
 
     al_attach_audio_stream_to_mixer(loopMenu, mixer);
     al_attach_audio_stream_to_mixer(creditos, mixer);
+    al_attach_audio_stream_to_mixer(audiojogo,mixer);
 
     al_set_audio_stream_playmode(loopMenu, ALLEGRO_PLAYMODE_LOOP);
     al_set_audio_stream_playmode(creditos, ALLEGRO_PLAYMODE_LOOP);
+    al_set_audio_stream_playmode(audiojogo,ALLEGRO_PLAYMODE_LOOP);
 
     al_set_audio_stream_playing(loopMenu, 0);
     al_set_audio_stream_playing(creditos, 0);
+    al_set_audio_stream_playing(audiojogo,0);
 
     if(!al_init_video_addon()){
         msgErro("Falha ao inicializar o addon de video");
@@ -710,6 +718,7 @@ void colisaoEntidades(int i){
                 player.atk+=0.3*dificuldade;
                 if(numObj1==limObj1){
                     obj1=true;
+                    al_play_sample(objetivo,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
                     completou1++;
                 }
 
@@ -810,6 +819,7 @@ void caixaTexto(int i){
 
     al_flip_display();
     if(i==13){
+        al_play_sample(lancha,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
         fimDeJogo();
     }
 }
@@ -868,6 +878,7 @@ void colisaoJogador(){
                     entidades[i].vy=-VELOCIDADE*seno/2;
                 }
                 if(balasEntidades[i].atingiu==true && entidades[i].inimigo == true && !entidades[i].boss && distancia>(player.raio+entidades[i].raio+80)){
+                    al_play_sample(tiro,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
                     balasEntidades[i].px=entidades[i].px;
                     balasEntidades[i].py=entidades[i].py;
                     balasEntidades[i].vx=3*entidades[i].vx;
@@ -875,6 +886,7 @@ void colisaoJogador(){
                     balasEntidades[i].atingiu=false;
                 }
                 else if(entidades[i].boss && balasEntidades[i].atingiu==true){
+                    al_play_sample(tiro,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
                     balasEntidades[i].px=entidades[i].px;
                     balasEntidades[i].py=entidades[i].py;
                     balasEntidades[i].vx=7*entidades[i].vx;
@@ -1564,6 +1576,7 @@ void geraEntidades(){ //gera as entidades, pode ser preciso usar varios casos
 }
 void jogadorAtaque(){
     if(balasPlayer.atingiu==true){
+        al_play_sample(tiro,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
         balasPlayer.px = player.px; balasPlayer.py = player.py;
         if(balasPlayer.direcao[dCima]) balasPlayer.vy=-VELOCIDADE*8;
         if(balasPlayer.direcao[dBaixo]) balasPlayer.vy=VELOCIDADE*8;
@@ -1636,6 +1649,7 @@ void colisaoBalasE(){
                     numObj2++;
                     if(numObj2>=limObj2){
                         numObj2=limObj2;
+                        al_play_sample(objetivo,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
                         obj2=true;
                         completou2++;
                     }
@@ -1645,6 +1659,7 @@ void colisaoBalasE(){
                     numObj3++;
                     if(numObj3==2){
                         obj3=true;
+                        al_play_sample(objetivo,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
                         completou3++;
                     }
                 }
@@ -1674,7 +1689,7 @@ void colisaoBalasE(){
 void atualizaBalas(){
     if(balasPlayer.atingiu==false){
         if(balasPlayer.px<pxFundo || balasPlayer.px>pxFundo+LARGURA || balasPlayer.py<pyFundo || balasPlayer.py>pyFundo+ALTURA) balasPlayer.atingiu=true;
-            else al_draw_scaled_bitmap(balasPlayer.sprite,0,0,
+        else al_draw_scaled_bitmap(balasPlayer.sprite,0,0,
                                    balasPlayer.larguraSprite/balasPlayer.escalaEntidade,balasPlayer.alturaSprite/balasPlayer.escalaEntidade,
                                    balasPlayer.px,balasPlayer.py,
                                    balasPlayer.larguraSprite,
@@ -1714,6 +1729,7 @@ void UIent(int i){
     al_draw_textf(retroFont,al_map_rgb(0,0,0),pxUI+10,pyUI+25,ALLEGRO_ALIGN_CENTER,"DEF: %.1f",entidades[i].def);
 }
 
+
 void atualizaEntidades(){
     int naTela=0; 
     int *iNaTela=NULL;
@@ -1730,7 +1746,9 @@ void atualizaEntidades(){
                     }
                     entidades[i].pDesenhox=entidades[i].frameAtual*entidades[i].puloColuna;
                 }
-                else if(entidades[i].vx==0 && entidades[i].vy==0) entidades[i].pDesenhox=8*entidades[i].puloColuna;
+                else if(entidades[i].vx==0 && entidades[i].vy==0){
+                    entidades[i].pDesenhox=8*entidades[i].puloColuna;
+                }
                 if(entidades[i].direcao[dCima]){
                         entidades[i].pDesenhoy=entidades[i].puloLinha*entidades[i].nDirecao[dCima];
                 }
@@ -1770,11 +1788,13 @@ void atualizaEntidades(){
                                  entidades[i].alturaSprite,0);
                 if(entidades[i].frameAtual%3==0) entidades[i].dano=false;
             }
-            else al_draw_scaled_bitmap(entidades[i].sprite,0,0,
+            else{
+                al_draw_scaled_bitmap(entidades[i].sprite,0,0,
                                  entidades[i].larguraSprite/entidades[i].escalaEntidade,entidades[i].alturaSprite/entidades[i].escalaEntidade,
                                  entidades[i].px,entidades[i].py,
                                  entidades[i].larguraSprite,
                                  entidades[i].alturaSprite,0);
+            }
             
             iNaTela[naTela]=i;
             naTela++;
@@ -1807,8 +1827,13 @@ void atualizaEntidades(){
     }
 }
 int contaFrames=1;
+bool toca=false;
 void atualizaJogador(){ //desenha e anima o jogador
     if((player.vx!=0 || player.vy!=0) && contaFrames%5==0){ //anima o sprite usando vx, vy, e a estrutura do player (dps eu implemento)
+        if(!toca){
+            al_play_sample(passos,0.5,0,1,ALLEGRO_PLAYMODE_LOOP,&passosJ);
+            toca=true;
+        }
         contaFrames=1;
         player.frameAtual++;
         if(player.frameAtual==player.totalFrames){
@@ -1816,7 +1841,11 @@ void atualizaJogador(){ //desenha e anima o jogador
         }
         player.pDesenhox=player.frameAtual*player.puloColuna;
     }
-    else if(player.vx==0 && player.vy==0) player.pDesenhox=8*player.puloColuna;
+    else if(player.vx==0 && player.vy==0){
+        player.pDesenhox=8*player.puloColuna;
+        toca=false;
+        al_stop_sample(&passosJ);
+    }
     contaFrames++;
     if(player.direcao[dCima]){
             player.pDesenhoy=player.puloLinha*player.nDirecao[dCima];
@@ -1867,6 +1896,7 @@ void UI(){
 
 //fluxo do jogo
 void jogo(){
+    al_set_audio_stream_playing(audiojogo,1);
     al_flush_event_queue(filaEventos);
     al_start_timer(timer);
     comecou=true;
@@ -2107,6 +2137,7 @@ void jogo(){
             desenhe=0;
         }
     }
+     al_set_audio_stream_playing(audiojogo,0);
 }
 
 char dialogo2A[22] = "HAHAHAHAHAHAHAHAHA!";
