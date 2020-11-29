@@ -736,6 +736,29 @@ void colisaoEntidades(int i){
             }
     }
 }
+
+void playVideo(){
+    ALLEGRO_BITMAP *frame = NULL;
+    al_flush_event_queue(filaEventos);
+    al_start_video(marinha, mixer);
+    bool sair = false;
+    while (!sair){
+        ALLEGRO_EVENT evento;
+        al_wait_for_event(filaEventos,&evento);
+        switch (evento.type) {
+            case ALLEGRO_EVENT_VIDEO_FRAME_SHOW:
+                al_set_target_backbuffer(janela);
+                frame = al_get_video_frame(marinha);
+                al_draw_bitmap(frame, 0, 0, 0);
+                al_flip_display();
+                al_draw_filled_rectangle(0,0,LARGURA,ALTURA,al_map_rgb(0,0,0));
+                break;
+            case ALLEGRO_EVENT_VIDEO_FINISHED:
+                sair = true;
+        }
+    }
+}
+
 void caixaTexto(int i){
     i=i-59;
     al_flush_event_queue(filaEventos);
@@ -826,7 +849,9 @@ void caixaTexto(int i){
 
     al_flip_display();
     if(i==13){
-        al_play_sample(lancha,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
+        al_set_audio_stream_playing(audiojogo, 0);
+        al_destroy_sample(passos);
+        playVideo();
         fimDeJogo();
     }
 }
