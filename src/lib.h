@@ -4,6 +4,7 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
+#include <allegro5/allegro_video.h>
 
 #define FPS 60.0
 
@@ -69,6 +70,9 @@ extern ALLEGRO_FONT *retroFont32; //fonte tamanho 32
 extern ALLEGRO_BITMAP *fundo; //fundo do jogo
 extern ALLEGRO_BITMAP *caixaDialogo;
 extern ALLEGRO_TRANSFORM camera; //usado pra movimentar a camera
+extern ALLEGRO_VIDEO *marinha;
+extern ALLEGRO_VOICE *voice;
+extern ALLEGRO_MIXER *mixer;
 
 //estrutura geral das entidades do jogo, talvez seja alterado
 typedef struct{

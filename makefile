@@ -12,7 +12,7 @@ GAMENAME := game
 CFLAGS := 
 
 # add load flags, others like -pthread
-LDLIB := -lm -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec -lallegro_dialog
+LDLIB := -lm -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec -lallegro_dialog -lallegro_video
 
 CC := gcc -std=c17
 RM := rm -f

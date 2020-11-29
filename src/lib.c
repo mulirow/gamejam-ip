@@ -8,6 +8,7 @@
 #include <allegro5/color.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_video.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -54,9 +55,12 @@ ALLEGRO_TIMER *timerTeste=NULL;
 ALLEGRO_FONT *retroFont = NULL;
 ALLEGRO_FONT *retroFont32 = NULL;
 ALLEGRO_FONT *fonteUI;
-ALLEGRO_BITMAP *fundo;
-ALLEGRO_BITMAP *caixaDialogo;
+ALLEGRO_BITMAP *fundo = NULL;
+ALLEGRO_BITMAP *caixaDialogo = NULL;
 ALLEGRO_TRANSFORM camera;
+ALLEGRO_VIDEO *marinha = NULL;
+ALLEGRO_VOICE *voice;
+ALLEGRO_MIXER *mixer;
 
 Entidade player;
 Balas balasPlayer;
@@ -101,7 +105,8 @@ void destroi(){
     al_destroy_bitmap(balasPlayer.sprite);
     al_destroy_bitmap(player.sprite);
     al_destroy_bitmap(caixaDialogo);
-    
+    al_destroy_mixer(mixer);
+    al_destroy_voice(voice);
 }
 
 //mensagem de erro, deve ser usado na verificação de inicializações
@@ -126,6 +131,34 @@ int inic(){
     }
     if (!al_init_image_addon()){
         msgErro("Falha ao inicializar o addon de imagens");
+        return 0;
+    }
+    if(!al_init_acodec_addon()){
+        msgErro("Falha ao inicializar o acodec");
+        return 0;
+    }
+    if (!al_install_audio()){
+        msgErro("Falha ao inicializar o audio");
+        return 0;
+    }
+
+    voice = al_create_voice(44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
+    if(!voice){
+        msgErro("Falha ao criar ALLEGRO_VOICE");
+        return 0;
+    }
+    mixer = al_create_mixer(44100, ALLEGRO_AUDIO_DEPTH_FLOAT32, ALLEGRO_CHANNEL_CONF_2);
+    if(!voice){
+        msgErro("Falha ao criar ALLEGRO_MIXER");
+        return 0;
+    }
+    if(!al_attach_mixer_to_voice(mixer, voice)){
+        msgErro("Erro de attach mixer-voice");
+        return 0;
+    }
+
+    if(!al_init_video_addon()){
+        msgErro("Falha ao inicializar o addon de video");
         return 0;
     }
     if (!al_install_keyboard()){
@@ -194,11 +227,19 @@ int cria(){
         msgErro("Falha ao carregar fonte");
         return 0;
     }
+
+    marinha = al_open_video("./bin/samples/segurancaMar.ogv");
+    if(marinha == NULL){
+        msgErro("Falha ao carregar video");
+        return 0;
+    }
+
     al_register_event_source(filaEventos, al_get_display_event_source(janela));
     al_register_event_source(filaEventos, al_get_timer_event_source(timer));
     al_register_event_source(filaEventos, al_get_timer_event_source(timerAlt));
-    al_register_event_source(filaEventos,al_get_timer_event_source(timerTeste));
+    al_register_event_source(filaEventos, al_get_timer_event_source(timerTeste));
     al_register_event_source(filaEventos, al_get_keyboard_event_source());
+    al_register_event_source(filaEventos, al_get_video_event_source(marinha));
     
     return 1;
 }
@@ -591,40 +632,40 @@ void caixaTexto(int i){
                         5*larguraPause/escala,5*alturaPause/escala,0); //tamanho desejado, altura desejada, flag
     switch(i){
         case 0: //placa deserto
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"PAUSADO");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Esse lote foi comprado em 2010 para a construção de um shopping center, mas até agora só foi construída dívida pública.");
             break;
         case 1: //placa campo
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"PAUSADO");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Sagrada plantação de mandioca, responsável por toda a renda da nossa cidade. Amém.");
             break;
         case 2: //placa mansao
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"PAUSADO");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Humilde casebre do nosso protagonista.");
             break;
         case 3: //placa praça
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"PAUSADO");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"SAÚDEM A MANDIOCA!");
             break;
         case 4: //placa praia 1
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"PAUSADO");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
             break;
         case 5: //placa praia 2
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"PAUSADO");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
             break;
         case 6: //placa praia 3
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"PAUSADO");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
             break;
         case 7: //placa porco
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"PAUSADO");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Reza a lenda que, por achar que estudar Física não compensa, os estudantes da Área II resolveram seguir o conselho dos seus amiguinhos do CAC e ir abrir negócio na praia. Não mais abençoados pelo espírito protetor Copelli, os mais novos vendedores ambulantes de pastel quebraram as leis da física e passaram a ocupar o mesmo lugar no espaço. Agora, eles estão presos em seus carrinhos, fadados a eternamente vender pastel na frente da praia. F.");
             break;
         case 8: //placa fabrica
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"PAUSADO");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Ué, a fábrica... Não tem profundidade? Hmm... Isso tem cheiro de fachada para esquemas comunistas de desvio de Guaraná Jesus.");
             break;
         case 9: //placa escola
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Parece-me que essa escola foi posicionada de tal forma que os estudantes passassem o dia inalando Guaraná Jesus. Claramente um esquema comunista para alienar nossas crianças.");
             break;
         case 10: //placa 10, canto inferior direito na praia
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"O jogo é inclusivo com todos,então reservamos uma área especialmente aos bugs gráficos:");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"O jogo é inclusivo com todos, então reservamos uma área especialmente aos bugs gráficos:");
             break;
         case 11: //barril
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Barril do Zeca Urubu,o maior programador do país");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Barril do Zeca Urubu, o maior programador do país.");
             break;
         case 13: //lim inf
             al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Você devia ter prestado atenção nos comerciais da marinha.");
