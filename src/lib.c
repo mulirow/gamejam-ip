@@ -2135,7 +2135,7 @@ void jogo(){
             atualizaEntidades();
             UI();
 
-            if(obj1 || obj2 || obj3){
+            if(obj1 && obj2 && obj3){
                 sair = 1;
                 al_flush_event_queue(filaEventos);
                 al_stop_timer(timer);
