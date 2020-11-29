@@ -27,6 +27,7 @@ int numObj1; int limObj1; int completou1=0;
 //numero de transformados, numero necessario
 int numObj2; int limObj2; int completou2=0;
 int numObj3; int completou3=0; int bosses=0;
+bool *acertou=NULL;
 
 int LARGURA, ALTURA;
 
@@ -71,7 +72,7 @@ ALLEGRO_SAMPLE *lancha = NULL;
 ALLEGRO_SAMPLE *objetivo = NULL;
 ALLEGRO_SAMPLE *passos = NULL;
 ALLEGRO_SAMPLE_ID passosJ;
-ALLEGRO_SAMPLE_ID passosE;
+
 ALLEGRO_SAMPLE *tiro = NULL;
 ALLEGRO_AUDIO_STREAM *loopMenu = NULL;
 ALLEGRO_AUDIO_STREAM *creditos = NULL;
@@ -308,6 +309,7 @@ void aumentaEntidades(){
     else{
         entidades = (Entidade*)realloc(entidades,nEntidades*sizeof(Entidade));
         balasEntidades = (Balas*)realloc(balasEntidades,nBalas*sizeof(Balas));
+        acertou = (bool*)realloc(acertou,nEntidades*sizeof(bool));
         if(entidades==NULL || balasEntidades==NULL){
             msgErro("Deu ruim na alocação!");
             estado=estSaida;
@@ -596,7 +598,7 @@ void preJogo(){
     escala=1.4;
     obj1=false; obj3=false;
     obj2=false;
-    numObj1=0; limObj1=12*dificuldade;
+    numObj1=0; limObj1=20*dificuldade;
     numObj2=0; limObj2=30*dificuldade;
     bosses=0; numObj3=0;
     completou1=0; completou2=0;
@@ -694,7 +696,7 @@ void colisaoEntidades(int i){
             if((entidades[i].direcao[dCima] || entidades[i].direcao[dBaixo]) && colisao && temHity){
                     entidades[i].py-=entidades[i].vy;
                     if(!entidades[i].inimigo){
-                        if((j<5) || (j>17 && j<22)){
+                        if(((j<5) || (j>17 && j<22)) && i!=(nEntidades-1)){
                             entrou=true;
                         }
                     }
@@ -702,7 +704,7 @@ void colisaoEntidades(int i){
             if((entidades[i].direcao[dDireita] || entidades[i].direcao[dEsquerda]) && colisao && temHitx){
                     entidades[i].px-=entidades[i].vx;
                     if(!entidades[i].inimigo){
-                        if((j<5) || (j>17 && j<22)){
+                        if(((j<5) || (j>17 && j<22)) && i!=(nEntidades-1)){
                             entrou=true;
                         }
                     }
@@ -878,7 +880,8 @@ void colisaoJogador(){
                     entidades[i].vy=-VELOCIDADE*seno/2;
                 }
                 if(balasEntidades[i].atingiu==true && entidades[i].inimigo == true && !entidades[i].boss && distancia>(player.raio+entidades[i].raio+80)){
-                    al_play_sample(tiro,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
+                    if(acertou[i]) al_play_sample(tiro,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
+                    acertou[i]=false;
                     balasEntidades[i].px=entidades[i].px;
                     balasEntidades[i].py=entidades[i].py;
                     balasEntidades[i].vx=3*entidades[i].vx;
@@ -886,7 +889,8 @@ void colisaoJogador(){
                     balasEntidades[i].atingiu=false;
                 }
                 else if(entidades[i].boss && balasEntidades[i].atingiu==true){
-                    al_play_sample(tiro,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
+                    if(acertou[i]) al_play_sample(tiro,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
+                    acertou[i]=false;
                     balasEntidades[i].px=entidades[i].px;
                     balasEntidades[i].py=entidades[i].py;
                     balasEntidades[i].vx=7*entidades[i].vx;
@@ -1086,8 +1090,7 @@ int initEntidade(){ //aqui é tudo hardcoded msm, n tem jeito
         entidades[nEntidades-1].alturaSprite =  1.7*al_get_bitmap_height(entidades[nEntidades-1].sprite);
         entidades[nEntidades-1].px=player.px+((rand()%2?-1:1)*rand()%LARGURA); entidades[nEntidades-1].py=player.py+((rand()%2?-1:1)*rand()%ALTURA);
         entidades[nEntidades-1].pDesenhox=0; entidades[nEntidades-1].pDesenhoy=0;
-        entidades[nEntidades-1].vx=VELOCIDADE; entidades[nEntidades-1].vy=VELOCIDADE;
-        colisaoEntidades(nEntidades-1);
+
         entidades[nEntidades-1].naTela=true;
         entidades[nEntidades-1].vx=VELOCIDADE; entidades[nEntidades-1].vy=VELOCIDADE;
         colisaoEntidades(nEntidades-1);
@@ -1150,6 +1153,7 @@ int initEntidade(){ //aqui é tudo hardcoded msm, n tem jeito
         if(!initBalas()) msgErro("Erro ao iniciar balas!");
 
     }
+    acertou[nEntidades-1]=false;
     return 1;
     //aqui teoricamente deveriam ficar todas as possibilidades e tal
 }
@@ -1592,6 +1596,7 @@ void colisaoBalasP(){
             float distancia = sqrt(pow(player.px+player.larguraSprite/2-balasEntidades[i].px-balasEntidades[i].larguraSprite/2,2)+pow(player.py+player.alturaSprite/2-balasEntidades[i].py-balasEntidades[i].alturaSprite/2,2));
             if(distancia<=player.raio+balasEntidades[i].raio){
                 player.hp-=entidades[i].atk/player.def;
+                acertou[i]=true;
                 player.def-=0.2*dificuldade;
                 entidades[i].def+=0.5*dificuldade;
                 if(player.def<1.1) player.def=1.1;
@@ -1647,7 +1652,7 @@ void colisaoBalasE(){
                     entidades[i].pDesenhox=0; entidades[i].pDesenhoy=0;
                     nPassivos++;
                     numObj2++;
-                    if(numObj2>=limObj2){
+                    if(numObj2>=limObj2 && !obj2){
                         numObj2=limObj2;
                         al_play_sample(objetivo,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
                         obj2=true;
@@ -1703,7 +1708,10 @@ void atualizaBalas(){
     al_hold_bitmap_drawing(true);
     for (int i = 0; i < nBalas; i++){
         if(balasEntidades[i].atingiu==false && entidades[i].hp>0){
-            if(balasEntidades[i].px<pxFundo || balasEntidades[i].px>pxFundo+LARGURA || balasEntidades[i].py<pyFundo || balasEntidades[i].py>pyFundo+ALTURA) balasEntidades[i].atingiu=true;
+            if(balasEntidades[i].px<pxFundo || balasEntidades[i].px>pxFundo+LARGURA || balasEntidades[i].py<pyFundo || balasEntidades[i].py>pyFundo+ALTURA){
+                balasEntidades[i].atingiu=true;
+                if(!entidades[i].boss) acertou[i]=true;
+            }
             else al_draw_scaled_bitmap( balasEntidades[i].sprite,0,0,
                                    balasEntidades[i].larguraSprite/balasEntidades[i].escalaEntidade,balasEntidades[i].alturaSprite/balasEntidades[i].escalaEntidade,
                                    balasEntidades[i].px,balasEntidades[i].py,
@@ -1843,8 +1851,8 @@ void atualizaJogador(){ //desenha e anima o jogador
     }
     else if(player.vx==0 && player.vy==0){
         player.pDesenhox=8*player.puloColuna;
+        if(toca) al_stop_sample(&passosJ);
         toca=false;
-        al_stop_sample(&passosJ);
     }
     contaFrames++;
     if(player.direcao[dCima]){
@@ -2126,12 +2134,22 @@ void jogo(){
             atualizaBalas();
             atualizaEntidades();
             UI();
-            
-            if(obj1 && obj2 && obj3){
-                sair=1;
+
+            if(obj1 || obj2 || obj3){
+                sair = 1;
                 al_flush_event_queue(filaEventos);
                 al_stop_timer(timer);
                 estado = estFinal;
+                pxFundo=0;
+                pyFundo=0;
+                player.px=0;
+                player.py=0;
+                escala=1;
+                al_identity_transform(&camera);
+                al_translate_transform(&camera,-(player.px+player.larguraSprite/2),-(player.py+player.larguraSprite/2)); //basicamente transforma tudo que ta na tela de acordo com esses parametros, eu vou mandar os videos que eu vi ensinando isso pq admito que nem eu entendi direito kkkkkk 
+                al_scale_transform(&camera,escala,escala); //esse é o mais simples
+                al_translate_transform(&camera,-pxFundo+(player.px+player.larguraSprite/2),-pyFundo+(player.py+player.larguraSprite/2)); 
+                al_use_transform(&camera); //simplesmente torna a transformação "canonica"
             }
             al_flip_display();
             desenhe=0;
@@ -2161,6 +2179,7 @@ char dialogo2R[121] = "Agora chegou a minha vez... Vou liberar a técnica proibi
 char dialogo2S[15] = "AAAAAAAAARGH!";
 
 void final(){
+    al_flip_display();
     caixaDialogo = al_load_bitmap("./bin/misc/UI/caixaDialogo.png");
     barracaPastel = al_load_bitmap("./bin/misc/UI/barracaPastel.png");
     solnoraboPastel = al_load_bitmap("./bin/misc/UI/solnoraboPastel.png");

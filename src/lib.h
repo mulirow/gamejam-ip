@@ -33,6 +33,7 @@ extern int numObj2;
 extern int numObj3;
 extern int limObj1;
 extern int limObj2;
+extern bool *acertou;
 
 extern int LARGURA; extern int ALTURA;
 
