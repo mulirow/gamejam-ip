@@ -763,7 +763,7 @@ void colisaoJogador(){
                     entidades[i].vx=-VELOCIDADE*cosseno/2; //geometria 
                     entidades[i].vy=-VELOCIDADE*seno/2;
                 }
-                if(balasEntidades[i].atingiu==true && entidades[i].inimigo == true && !entidades[i].boss){
+                if(balasEntidades[i].atingiu==true && entidades[i].inimigo == true && !entidades[i].boss && distancia>(player.raio+entidades[i].raio+80)){
                     balasEntidades[i].px=entidades[i].px;
                     balasEntidades[i].py=entidades[i].py;
                     balasEntidades[i].vx=3*entidades[i].vx;
@@ -1500,7 +1500,7 @@ void colisaoBalasE(){
                 entidades[i].hp-=player.atk/entidades[i].def;
                 entidades[i].dano=true;
                 if(entidades[i].hp<=0 && !entidades[i].boss){
-                    player.hp+=8*dificuldade*player.atk/(0.5*ATAQUE);
+                    player.hp+=3*dificuldade*player.atk/(0.5*ATAQUE);
                     if(player.hp>HP/dificuldade) player.hp=HP/dificuldade;
                     //transforma;
                     entidades[i].sprite=al_load_bitmap("./bin/entities/Char/NPC.png");
