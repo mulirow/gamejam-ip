@@ -1974,11 +1974,11 @@ void jogo(){
                         al_start_timer(timer);
                         break;
 
-                    case ALLEGRO_KEY_C:
+                    case ALLEGRO_KEY_F11:
                         if(!mostraHitbox) mostraHitbox=true;
                         else mostraHitbox=false;
                         break;
-                    case ALLEGRO_KEY_T: //entra no modo de teste, bom pra desbugar as coisas
+                    case ALLEGRO_KEY_F12: //entra no modo de teste, bom pra desbugar as coisas
                         if(!teste){
                             al_stop_timer(timer);
                             al_flush_event_queue(filaEventos);
@@ -2126,7 +2126,7 @@ void jogo(){
             atualizaBalas();
             atualizaEntidades();
             UI();
-            if(nEntidades>2)al_draw_textf(retroFont,al_map_rgb(0,0,0),player.px+player.larguraSprite/2,player.py+player.alturaSprite,ALLEGRO_ALIGN_CENTER,"b1x=%.0f b1y%.0f b2x%.0f b2y%.0f",entidades[0].px,entidades[0].py,entidades[1].px,entidades[1].py);
+            
             if(obj1 && obj2 && obj3){
                 sair=1;
                 al_flush_event_queue(filaEventos);
