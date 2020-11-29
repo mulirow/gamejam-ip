@@ -935,6 +935,8 @@ int initEntidade(){ //aqui é tudo hardcoded msm, n tem jeito
         entidades[nEntidades-1].alturaSprite =  64;
         entidades[nEntidades-1].px=player.px+((rand()%2?-1:1)*rand()%LARGURA); entidades[nEntidades-1].py=player.py+((rand()%2?-1:1)*rand()%ALTURA);
         entidades[nEntidades-1].pDesenhox=0; entidades[nEntidades-1].pDesenhoy=0;
+        entidades[nEntidades-1].vx=VELOCIDADE; entidades[nEntidades-1].vy=VELOCIDADE;
+        colisaoEntidades(nEntidades-1);
         entidades[nEntidades-1].vx=0; entidades[nEntidades-1].vy=0;
         entidades[nEntidades-1].inimigo=true;
         entidades[nEntidades-1].dano=false;
@@ -967,6 +969,8 @@ int initEntidade(){ //aqui é tudo hardcoded msm, n tem jeito
         entidades[nEntidades-1].alturaSprite =  1.7*al_get_bitmap_height(entidades[nEntidades-1].sprite);
         entidades[nEntidades-1].px=player.px+((rand()%2?-1:1)*rand()%LARGURA); entidades[nEntidades-1].py=player.py+((rand()%2?-1:1)*rand()%ALTURA);
         entidades[nEntidades-1].pDesenhox=0; entidades[nEntidades-1].pDesenhoy=0;
+        entidades[nEntidades-1].vx=VELOCIDADE; entidades[nEntidades-1].vy=VELOCIDADE;
+        colisaoEntidades(nEntidades-1);
         entidades[nEntidades-1].vx=0; entidades[nEntidades-1].vy=0;
         entidades[nEntidades-1].inimigo=false;
         entidades[nEntidades-1].dano=false;
@@ -1000,6 +1004,8 @@ int initEntidade(){ //aqui é tudo hardcoded msm, n tem jeito
         entidades[nEntidades-1].alturaSprite =  64;
         entidades[nEntidades-1].px=player.px+((rand()%2?-1:1)*rand()%LARGURA); entidades[nEntidades-1].py=player.py+((rand()%2?-1:1)*rand()%ALTURA);
         entidades[nEntidades-1].pDesenhox=0; entidades[nEntidades-1].pDesenhoy=0;
+        entidades[nEntidades-1].vx=VELOCIDADE; entidades[nEntidades-1].vy=VELOCIDADE;
+        colisaoEntidades(nEntidades-1);
         entidades[nEntidades-1].vx=0; entidades[nEntidades-1].vy=0;
         entidades[nEntidades-1].inimigo=true;
         entidades[nEntidades-1].dano=false;
