@@ -57,6 +57,11 @@ ALLEGRO_FONT *retroFont32 = NULL;
 ALLEGRO_FONT *fonteUI;
 ALLEGRO_BITMAP *fundo = NULL;
 ALLEGRO_BITMAP *caixaDialogo = NULL;
+ALLEGRO_BITMAP *barracaPastel = NULL;
+ALLEGRO_BITMAP *solnoraboPastel = NULL;
+ALLEGRO_BITMAP *capuz = NULL;
+ALLEGRO_BITMAP *salmao = NULL;
+ALLEGRO_BITMAP *lula = NULL;
 ALLEGRO_TRANSFORM camera;
 ALLEGRO_VIDEO *marinha = NULL;
 ALLEGRO_VOICE *voice;
@@ -105,6 +110,9 @@ void destroi(){
     al_destroy_bitmap(balasPlayer.sprite);
     al_destroy_bitmap(player.sprite);
     al_destroy_bitmap(caixaDialogo);
+    al_destroy_bitmap(barracaPastel);
+    al_destroy_bitmap(solnoraboPastel);
+    al_destroy_bitmap(capuz);
     al_destroy_mixer(mixer);
     al_destroy_voice(voice);
 }
@@ -362,7 +370,7 @@ void menu(){
     }
 }
 
-char dialogo1A[150] = "Vejo que você tem um espírito nobre, eu escolhi você para salvar a humanidade. Se escolher aceitar a missão, compareça a [LUGAR] em [HORÁRIO].";
+char dialogo1A[184] = "Vejo que você tem um espírito nobre, eu escolhi você para salvar a humanidade. Se escolher aceitar a missão, compareça à barraca de pastel e cana daqui a uma caixa de diálogo.";
 char dialogo1B[37] = "E então, o que você tem para mim?";
 char dialogo1C[203] = "Eu investiguei toda sua vida, sei das suas convicções e do seu histórico de atleta, e é por isso que eu sei, que você é o único adequado para essa missão. Solnorabo, você é imune ao vírus...";
 char dialogo1D[9] = "Vírus?";
@@ -372,6 +380,9 @@ char dialogo1G[88] = "Vá e leve esse comunicador, eu manterei contato e avisare
 
 void cutscene(){
     caixaDialogo = al_load_bitmap("./bin/misc/UI/caixaDialogo.png");
+    barracaPastel = al_load_bitmap("./bin/misc/UI/barracaPastel.png");
+    solnoraboPastel = al_load_bitmap("./bin/misc/UI/solnoraboPastel.png");
+    capuz = al_load_bitmap("./bin/misc/UI/capuz.png");
     int i = 0;
     int xCaixaSup = LARGURA / 15, yCaixaSup = ALTURA / 15;
     int xCaixaInf = LARGURA - (al_get_bitmap_width(caixaDialogo) + LARGURA / 15), yCaixaInf = ALTURA * 14/15 - al_get_bitmap_height(caixaDialogo);
@@ -384,40 +395,93 @@ void cutscene(){
         switch (evento.type){
             case ALLEGRO_EVENT_TIMER:
                 al_draw_filled_rectangle(0,0,LARGURA,ALTURA,al_map_rgb(0,0,0));
-                al_draw_bitmap(caixaDialogo, xCaixaSup, yCaixaSup, 0);
-                al_draw_bitmap(caixaDialogo, xCaixaInf, yCaixaInf, 0);
-
+                if((dialogo != 0) && (dialogo != 2)) {
+                    al_draw_scaled_bitmap(barracaPastel,0,0,LARGURA*5/7-20,ALTURA*5/7-20, 0,0,LARGURA,ALTURA,0);
+                    al_draw_bitmap(caixaDialogo, xCaixaSup, yCaixaSup, 0);
+                    al_draw_bitmap(caixaDialogo, xCaixaInf, yCaixaInf, 0);
+                }
                 if(dialogo == 0){
-                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1A);
+                    al_draw_multiline_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA / 2, ALTURA * 0.4, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.15, ALLEGRO_ALIGN_CENTER, "Solnorabo, cheio de problemas, sai para comer um pastel e tomar um caldo de cana. Enquanto ele estava na frente da barraca, uma figura encapuzada se aproxima e sussurra:");
                 }
                 else if(dialogo == 1){
-                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1B);
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1A);
+                    al_draw_bitmap(capuz, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
                 else if(dialogo == 2){
-                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1C);
+                    al_draw_multiline_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA / 2, ALTURA * 1/3, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.15, ALLEGRO_ALIGN_CENTER, "Por ter um estranho complexo de Messias, Solnorabo prontamente se digire ao local na hora marcada. No local, a figura, ainda não revelada, explica tudo sobre a Ameaça Vermelha e por que só Solnorabo é confiável para essa missão - claro, em decorrência do seu histórico de atleta.");
                 }
                 else if(dialogo == 3){
-                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1D);
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1B);
+                    al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
                 }
                 else if(dialogo == 4){
-                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1E);
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1C);
+                    al_draw_bitmap(capuz, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
                 else if(dialogo == 5){
-                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1F);
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1D);
+                    al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
                 }
                 else if(dialogo == 6){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1E);
+                    al_draw_bitmap(capuz, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
+                }
+                else if(dialogo == 7){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1F);
+                    al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
+                }
+                else if(dialogo == 8){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo1G);
+                    al_draw_bitmap(capuz, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
                 break;
             case ALLEGRO_EVENT_KEY_DOWN: //aperta uma tecla
                 switch(evento.keyboard.keycode){
                     case ALLEGRO_KEY_ENTER:
                         dialogo++;
-                        if(dialogo >= 7) sair = true;
+                        if(dialogo >= 9) sair = true;
                 }
                 break;
         }
         al_flip_display();
+    }
+    al_stop_timer(timer);
+    al_flush_event_queue(filaEventos);
+    estado = estTutorial;
+}
+
+void tutorial(){
+    int i = 0;
+    bool sair = false;
+    al_start_timer(timer);
+    while(!sair){
+        ALLEGRO_EVENT evento;
+        al_wait_for_event(filaEventos,&evento);
+        switch (evento.type){
+            case ALLEGRO_EVENT_TIMER:
+                if(i == 0){
+                    al_draw_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA/2, 30, ALLEGRO_ALIGN_CENTER, "Objetivos:");
+                    al_draw_multiline_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA / 2, 100, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.15, ALLEGRO_ALIGN_CENTER, "1 - A primeira missão é de levar grupos de risco pras suas casas, de quarentena. Mas cuidado, eles são teimosos!\n\n2 - Sua segunda missão é jogar hidroxialerquina nos inimigos vermelhos pra consertar a visão de mundo deles. Eles viram grupo de risco depois que percebem o peso da derrota.\n\n3 - A 3ª missão exige que você derrote os dois \"cabeças\" da organização.");
+                }
+                else if(i == 1){
+                    al_draw_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA/2, 30, ALLEGRO_ALIGN_CENTER, "Conroles:");
+                    al_draw_multiline_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA / 2, 100, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.15, ALLEGRO_ALIGN_CENTER, "Os controles são: Setas pra andar, WASD pra atirar. Zoom no Q e E (mas não recomendado por bugs gráficos).\n\nEntregar grupos de risco em casa deixa você com um sentimento de dever cumprido, aumentando seu ataque.\n\nReceber um ataque vermelho te deixa com vontade de compartilhar, doando sua defesa para o inimigo.\n\nJogar hidroxialerquina no inimigo o deixa em choque, diminuindo sua defesa.\n\nDerrotar inimigos e completar missões te deixa determinado, regenerando HP.");
+                }
+                else if(i == 2){
+                    al_draw_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA/2, ALTURA/2, ALLEGRO_ALIGN_CENTER, "Que a força do pastel de cloroquina com cana esteja com você!");
+                }
+                al_flip_display();
+                al_clear_to_color(al_map_rgb(0, 0, 0));
+                break;
+            case ALLEGRO_EVENT_KEY_DOWN: //aperta uma tecla
+                switch(evento.keyboard.keycode){
+                    case ALLEGRO_KEY_ENTER:
+                        i++;
+                        if(i == 3) sair = true;
+                        break;
+                }
+                break;
+        }
     }
     al_stop_timer(timer);
     al_flush_event_queue(filaEventos);
@@ -2004,6 +2068,158 @@ void jogo(){
     }
 }
 
+char dialogo2A[22] = "HAHAHAHAHAHAHAHAHA!";
+char dialogo2B[52] = "O... O que está acontecendo? Q-Quem é você?";
+char dialogo2C[20] = "HAHAHAHA! EU SOU-";
+char dialogo2D[33] = "*limpa a... Garganta? Guelra?*";
+char dialogo2E[161] = "Tolo! Eu só precisava de alguém para se livrar daqueles que tinham conhecimento do meu plano! Agora toda a humanidade irá sucumbir! MAKE OCEAN GREAT AGAIN!";
+char dialogo2F[41] = "Então, os vermelhos… Eram inocentes?";
+char dialogo2G[168] = "Não apenas inocentes, como os únicos que sabiam como impedir meu vírus! Mas chega de conversa fiada, você agora irá morrer perante a fúria do meu corn-ificator!";
+char dialogo2H[33] = "Não tão rápido, companheiro.";
+char dialogo2I[25] = "O QUÊ? QUEM ESTÁ AÍ?";
+char dialogo2J[30] = "Pol... Polvo-Senpai é você?";
+char dialogo2K[40] = "Sim, Solnorabo-chan. Eu vim te ajudar.";
+char dialogo2L[57] = "Ma... Mas eu destruí tudo que era mais valioso para ti!";
+char dialogo2M[196] = "Eu te segui até aqui e ouvi toda a conversa, vi que estamos com problemas se não derrotarmos esse... Esse... Esse, o que esse cara é mesmo? Ah, não importa, companheiro, juntos conseguiremos.";
+char dialogo2N[40] = "Tudo bem, só dessa vez, vamos juntos.";
+char dialogo2O[87] = "BASTA! Você ousou me interromper, então lhe darei a honra de morrer primeiro! *zap*";
+char dialogo2P[42] = "O... O QUÊ? VOCÊ NÃO FOI AFETADO?";
+char dialogo2Q[126] = "Humpf! Você não pode me afetar assim sem antes ter um contrato, meus direitos trabalhistas me protegem contra a sua arma!";
+char dialogo2R[121] = "Agora chegou a minha vez... Vou liberar a técnica proibida do mestre Dindin... Suma, companheiro! BREAD IN THE SKY!";
+char dialogo2S[15] = "AAAAAAAAARGH!";
+
 void final(){
-    estado=estSaida;
+    caixaDialogo = al_load_bitmap("./bin/misc/UI/caixaDialogo.png");
+    barracaPastel = al_load_bitmap("./bin/misc/UI/barracaPastel.png");
+    solnoraboPastel = al_load_bitmap("./bin/misc/UI/solnoraboPastel.png");
+    salmao = al_load_bitmap("./bin/misc/UI/salmao.png");
+    lula = al_load_bitmap("./bin/misc/UI/squid.png");
+    int i = 0, scroll = 0, j = 252;
+    int xCaixaSup = LARGURA / 15, yCaixaSup = ALTURA / 15;
+    int xCaixaInf = LARGURA - (al_get_bitmap_width(caixaDialogo) + LARGURA / 15), yCaixaInf = ALTURA * 14/15 - al_get_bitmap_height(caixaDialogo);
+    bool sair = false;
+    al_start_timer(timer);
+    while(!sair){
+        ALLEGRO_EVENT evento;
+        al_wait_for_event(filaEventos,&evento);
+        switch (evento.type){
+            case ALLEGRO_EVENT_TIMER:
+                al_draw_filled_rectangle(0,0,LARGURA,ALTURA,al_map_rgb(0,0,0));
+                if(i != 0){
+                al_draw_scaled_bitmap(barracaPastel,0,0,LARGURA*5/7-20,ALTURA*5/7-20, 0,0,LARGURA,ALTURA,0);
+                al_draw_bitmap(caixaDialogo, xCaixaSup, yCaixaSup, 0);
+                al_draw_bitmap(caixaDialogo, xCaixaInf, yCaixaInf, 0);
+                }
+                else{
+                    al_draw_multiline_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA / 2, ALTURA * 1/3, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.15, ALLEGRO_ALIGN_CENTER, "Após ter completado todas as suas missões, nossa personagem recebe uma notificação no seu transmissor, dizendo-lhe que deveria retornar à mesma barraca de pastel para reclamar sua recompensa. Chegando lá, ele encontrou não a mesma figura encapuzada, mas...");
+                }
+                if(i == 1){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2A);
+                    al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
+                }
+                else if(i == 2){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2B);
+                    al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
+                }
+                else if(i == 3){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2C);
+                    al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
+                }
+                else if(i == 4){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2D);
+                    al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
+                }
+                else if(i == 5){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2E);
+                    al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
+                }
+                else if(i == 6){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2F);
+                    al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
+                }
+                else if(i == 7){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2G);
+                    al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
+                }
+                else if(i == 8){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2H);
+                    al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
+                }
+                else if(i == 9){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2I);
+                    al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
+                }
+                else if(i == 10){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2J);
+                    al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
+                }
+                else if(i == 11){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2K);
+                    al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
+                }
+                else if(i == 12){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2L);
+                    al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
+                }
+                else if(i == 13){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2M);
+                    al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
+                }
+                else if(i == 14){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2N);
+                    al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
+                }
+                else if(i == 15){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2O);
+                    al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
+                }
+                else if(i == 16){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2P);
+                    al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
+                }
+                else if(i == 17){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2Q);
+                    al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
+                }
+                else if(i == 18){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2R);
+                    al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
+                }
+                else if(i == 19){
+                    al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2S);
+                    al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
+                }
+                else if(i == 20){
+                    al_draw_filled_rectangle(0,0,LARGURA,ALTURA,al_map_rgb(0,0,0));
+                    al_draw_multiline_text(retroFont32, al_map_rgb(j, j, j), LARGURA / 2, ALTURA - scroll, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.1, ALLEGRO_ALIGN_CENTER, "Após nossa dupla dinâmica almoçar um sushi com pamonha, um problema ainda persistia: o vírus que o peixe implantou em Solnorabo havia se espalhado por toda a humanidade. Solnorabo e Polvo, juntos, começaram uma pesquisa para entender mais sobre o vírus. Em pouco tempo, eles descobriram que a morte de Fish Trump retardou bastante a ação do vírus, mas não o eliminou por completo, de tal forma que, em mais ou menos 40 anos, toda a humanidade já estaria extinta. Solnorabo, como primeiro infectado pelo vírus, já estava bem fraco e não viveria por muito tempo. Entretanto, daquela pesquisa não surgiu apenas essa descoberta, mas uma bela amizade, que com o tempo tornou-se um romance, de onde se originou a última esperança da humanidade.\n\nDestinado a infiltrar-se no povo de Fish Trump e trazer a cura ou morrer tentando, MoroSelgio nasce.\n\n\n\nTO BE CONTINUED.");
+                    if(scroll >= 1.5 * ALTURA) {
+                        if(j > 0){
+                            j -= 6;
+                        }
+                    }
+                    else scroll += 3;
+                    if(j <= 0) {
+                        sair = true;
+                        estado = estSaida;
+                    }
+                }
+                break;
+            case ALLEGRO_EVENT_KEY_DOWN: //aperta uma tecla
+                switch(evento.keyboard.keycode){
+                    case ALLEGRO_KEY_ENTER:
+                        i++;
+                        if(i == 20){
+                            al_flush_event_queue(filaEventos);
+                            al_stop_timer(timer);
+                            al_start_timer(timerAlt);
+                        }
+                        if(i >= 21) sair = true;
+                }
+                break;
+        }
+        al_flip_display();
+    }
+    al_stop_timer(timerAlt);
+    al_flush_event_queue(filaEventos);
+    estado = estSaida;
 }
