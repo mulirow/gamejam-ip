@@ -632,40 +632,40 @@ void caixaTexto(int i){
                         5*larguraPause/escala,5*alturaPause/escala,0); //tamanho desejado, altura desejada, flag
     switch(i){
         case 0: //placa deserto
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Esse lote foi comprado em 2010 para a construção de um shopping center, mas até agora só foi construída dívida pública.");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Esse lote foi comprado em 2010 para a construção de um shopping center, mas até agora só foi construída dívida pública.");
             break;
         case 1: //placa campo
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Sagrada plantação de mandioca, responsável por toda a renda da nossa cidade. Amém.");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Sagrada plantação de mandioca, responsável por toda a renda da nossa cidade. Amém.");
             break;
         case 2: //placa mansao
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Humilde casebre do nosso protagonista.");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Humilde casebre do nosso protagonista.");
             break;
         case 3: //placa praça
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"SAÚDEM A MANDIOCA!");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"SAÚDEM A MANDIOCA!");
             break;
         case 4: //placa praia 1
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
             break;
         case 5: //placa praia 2
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
             break;
         case 6: //placa praia 3
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Praia de Coca Nabapa. Cuidado, a partir deste ponto, os carros são como as lanchas, as motos são como os jet skis e os pedestres são como os banhistas. Deseja mesmo continuar?");
             break;
         case 7: //placa porco
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Reza a lenda que, por achar que estudar Física não compensa, os estudantes da Área II resolveram seguir o conselho dos seus amiguinhos do CAC e ir abrir negócio na praia. Não mais abençoados pelo espírito protetor Copelli, os mais novos vendedores ambulantes de pastel quebraram as leis da física e passaram a ocupar o mesmo lugar no espaço. Agora, eles estão presos em seus carrinhos, fadados a eternamente vender pastel na frente da praia. F.");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Reza a lenda que, por achar que estudar Física não compensa, os estudantes da Área II resolveram seguir o conselho dos seus amiguinhos do CAC e ir abrir negócio na praia. Não mais abençoados pelo espírito protetor Copelli, os mais novos vendedores ambulantes de pastel quebraram as leis da física e passaram a ocupar o mesmo lugar no espaço. Agora, eles estão presos em seus carrinhos, fadados a eternamente vender pastel na frente da praia. F.");
             break;
         case 8: //placa fabrica
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Ué, a fábrica... Não tem profundidade? Hmm... Isso tem cheiro de fachada para esquemas comunistas de desvio de Guaraná Jesus.");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Ué, a fábrica... Não tem profundidade? Hmm... Isso tem cheiro de fachada para esquemas comunistas de desvio de Guaraná Jesus.");
             break;
         case 9: //placa escola
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Parece-me que essa escola foi posicionada de tal forma que os estudantes passassem o dia inalando Guaraná Jesus. Claramente um esquema comunista para alienar nossas crianças.");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Parece-me que essa escola foi posicionada de tal forma que os estudantes passassem o dia inalando Guaraná Jesus. Claramente um esquema comunista para alienar nossas crianças.");
             break;
         case 10: //placa 10, canto inferior direito na praia
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"O jogo é inclusivo com todos, então reservamos uma área especialmente aos bugs gráficos:");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"O jogo é inclusivo com todos, então reservamos uma área especialmente aos bugs gráficos:");
             break;
         case 11: //barril
-            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+200/escala,pyPause+200/escala,2*larguraPause*escala,30/escala,ALLEGRO_ALIGN_LEFT,"Barril do Zeca Urubu, o maior programador do país.");
+            al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Barril do Zeca Urubu, o maior programador do país.");
             break;
         case 13: //lim inf
             al_draw_multiline_text(retroFont,al_map_rgb(0,0,0),pxPause+30/escala,pyPause+30/escala,5*larguraPause-50/escala,30/escala,ALLEGRO_ALIGN_LEFT,"Você devia ter prestado atenção nos comerciais da marinha.");
