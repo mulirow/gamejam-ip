@@ -78,6 +78,13 @@ extern ALLEGRO_TRANSFORM camera; //usado pra movimentar a camera
 extern ALLEGRO_VIDEO *marinha;
 extern ALLEGRO_VOICE *voice;
 extern ALLEGRO_MIXER *mixer;
+extern ALLEGRO_SAMPLE *blip;
+extern ALLEGRO_SAMPLE *lancha;
+extern ALLEGRO_SAMPLE *objetivo;
+extern ALLEGRO_SAMPLE *passos;
+extern ALLEGRO_SAMPLE *tiro;
+extern ALLEGRO_AUDIO_STREAM *loopMenu;
+extern ALLEGRO_AUDIO_STREAM *creditos;
 
 //estrutura geral das entidades do jogo, talvez seja alterado
 typedef struct{

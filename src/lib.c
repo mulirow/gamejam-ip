@@ -66,6 +66,13 @@ ALLEGRO_TRANSFORM camera;
 ALLEGRO_VIDEO *marinha = NULL;
 ALLEGRO_VOICE *voice;
 ALLEGRO_MIXER *mixer;
+ALLEGRO_SAMPLE *blip = NULL;
+ALLEGRO_SAMPLE *lancha = NULL;
+ALLEGRO_SAMPLE *objetivo = NULL;
+ALLEGRO_SAMPLE *passos = NULL;
+ALLEGRO_SAMPLE *tiro = NULL;
+ALLEGRO_AUDIO_STREAM *loopMenu = NULL;
+ALLEGRO_AUDIO_STREAM *creditos = NULL;
 
 Entidade player;
 Balas balasPlayer;
@@ -115,6 +122,13 @@ void destroi(){
     al_destroy_bitmap(capuz);
     al_destroy_mixer(mixer);
     al_destroy_voice(voice);
+    al_destroy_sample(blip);
+    al_destroy_sample(lancha);
+    al_destroy_sample(objetivo);
+    al_destroy_sample(tiro);
+    al_destroy_sample(passos);
+    al_destroy_audio_stream(loopMenu);
+    al_destroy_audio_stream(creditos);
 }
 
 //mensagem de erro, deve ser usado na verificação de inicializações
@@ -156,7 +170,7 @@ int inic(){
         return 0;
     }
     mixer = al_create_mixer(44100, ALLEGRO_AUDIO_DEPTH_FLOAT32, ALLEGRO_CHANNEL_CONF_2);
-    if(!voice){
+    if(!mixer){
         msgErro("Falha ao criar ALLEGRO_MIXER");
         return 0;
     }
@@ -164,6 +178,33 @@ int inic(){
         msgErro("Erro de attach mixer-voice");
         return 0;
     }
+
+    if(!al_reserve_samples(20)){
+        msgErro("Erro ao reservar samples");
+        return 0;
+    }
+
+    blip = al_load_sample("./bin/samples/blip.wav");
+    lancha = al_load_sample("./bin/samples/lancha.wav");
+    objetivo = al_load_sample("./bin/samples/objetivoCompleto.wav");
+    tiro = al_load_sample("./bin/samples/tiro.wav");
+    passos = al_load_sample("./bin/samples/passos.wav");
+    if(!blip || !lancha || !objetivo || !tiro || !passos){
+        msgErro("Erro ao carregar arquivo de audio");
+        return 0;
+    }
+
+    loopMenu = al_load_audio_stream("./bin/samples/loopMenu.wav", 4, 1024);
+    creditos = al_load_audio_stream("./bin/samples/creditos.wav", 4, 1024);
+
+    al_attach_audio_stream_to_mixer(loopMenu, mixer);
+    al_attach_audio_stream_to_mixer(creditos, mixer);
+
+    al_set_audio_stream_playmode(loopMenu, ALLEGRO_PLAYMODE_LOOP);
+    al_set_audio_stream_playmode(creditos, ALLEGRO_PLAYMODE_LOOP);
+
+    al_set_audio_stream_playing(loopMenu, 0);
+    al_set_audio_stream_playing(creditos, 0);
 
     if(!al_init_video_addon()){
         msgErro("Falha ao inicializar o addon de video");
@@ -173,10 +214,7 @@ int inic(){
         msgErro("Falha ao inicializar o teclado");
         return 0;
     }
-    //addon de audio aparentemente bugado
-    //if(!al_install_audio()){ msgErro("Falha ao inicializar o audio"); return 0;}
-    //if(!al_init_acodec_addon()){msgErro("Falha ao inicializar o codec de audio");return 0;}
-     if(!al_install_mouse()){
+    if(!al_install_mouse()){
         msgErro("Falha ao iniciar o mouse");
         return 0;
     }
@@ -280,6 +318,7 @@ void aumentaBlocos(){
 
 //seta tudo antes do fluxo do menu
 void preMenu(){
+    al_set_audio_stream_playing(loopMenu, 1);
     int i = 0, j = 252;
     bool sair = false;
     al_start_timer(timerAlt);
@@ -362,6 +401,7 @@ void menu(){
     }
     al_stop_timer(timer);
     al_flush_event_queue(filaEventos);
+    al_set_audio_stream_playing(loopMenu, 0);
     if(opcao % 2 == 0){
         estado = estCutscene;
     }
@@ -2212,6 +2252,7 @@ void final(){
                             al_flush_event_queue(filaEventos);
                             al_stop_timer(timer);
                             al_start_timer(timerAlt);
+                            al_set_audio_stream_playing(creditos, 1);
                         }
                         if(i >= 21) sair = true;
                 }
@@ -2221,5 +2262,6 @@ void final(){
     }
     al_stop_timer(timerAlt);
     al_flush_event_queue(filaEventos);
+    al_set_audio_stream_playing(creditos, 0);
     estado = estSaida;
 }
