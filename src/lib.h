@@ -72,6 +72,8 @@ extern ALLEGRO_BITMAP *caixaDialogo;
 extern ALLEGRO_BITMAP *barracaPastel;
 extern ALLEGRO_BITMAP *solnoraboPastel;
 extern ALLEGRO_BITMAP *capuz;
+extern ALLEGRO_BITMAP *salmao;
+extern ALLEGRO_BITMAP *lula;
 extern ALLEGRO_TRANSFORM camera; //usado pra movimentar a camera
 extern ALLEGRO_VIDEO *marinha;
 extern ALLEGRO_VOICE *voice;
