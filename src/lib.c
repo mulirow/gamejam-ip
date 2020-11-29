@@ -397,14 +397,17 @@ void menu(){
                         temp = i;
                         i = j;
                         j = temp;
+                        al_play_sample(blip,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
                         break;
                     case ALLEGRO_KEY_UP: 
                         opcao++;
                         temp = i;
                         i = j;
                         j = temp;
+                        al_play_sample(blip,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
                         break;
                     case ALLEGRO_KEY_ENTER:
+                        al_play_sample(objetivo,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
                         sair = true;
                 }
                 break;
@@ -414,7 +417,7 @@ void menu(){
     al_flush_event_queue(filaEventos);
     al_set_audio_stream_playing(loopMenu, 0);
     if(opcao % 2 == 0){
-        estado = estFinal;
+        estado = estCutscene;
     }
     else{
         estado = estSaida;
@@ -528,6 +531,7 @@ void tutorial(){
                 switch(evento.keyboard.keycode){
                     case ALLEGRO_KEY_ENTER:
                         i++;
+                        al_play_sample(blip,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
                         if(i == 3) sair = true;
                         break;
                 }
