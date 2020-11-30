@@ -197,7 +197,6 @@ int inic(){
     tiro = al_load_sample("./bin/samples/tiro.wav");
     passos = al_load_sample("./bin/samples/passos.wav");
     tururu = al_load_sample("./bin/samples/sad.wav");
-    if(!blip || !lancha || !objetivo || !tiro || !passos){
     pamonha = al_load_sample("./bin/samples/pamonha.wav");
     if(!blip || !lancha || !objetivo || !tiro || !passos || !pamonha){
         msgErro("Erro ao carregar arquivo de audio");
@@ -239,8 +238,8 @@ int inic(){
     return 1;
 }
 
-void geraMundo(){ 
-    
+void geraMundo(){
+
     fundo=al_load_bitmap("./bin/backgrounds/mapa0.png");
      //apenas um teste
     if(!initBloco()) msgErro("Erro ao gerar os blocos!");
