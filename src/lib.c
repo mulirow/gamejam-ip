@@ -380,7 +380,8 @@ void preMenu(){
 //fluxo do menu
 void menu(){
     opcao = 0; //indica qual botão que tá com highlight
-    int i = 255, j = 120, temp;
+    int i = 255, j = 120, k = 0, temp;
+    retroFont = al_load_font("./fonts/retroGaming.ttf", 60, 0);
     bool sair = false;
     al_start_timer(timer);
     while(!sair){
@@ -388,6 +389,14 @@ void menu(){
         al_wait_for_event(filaEventos,&evento);
         switch (evento.type){
             case ALLEGRO_EVENT_TIMER:
+                for(k = 0; k < 6; k++){
+                    al_draw_text(retroFont, al_map_rgb(200, 0, 0), LARGURA / 2-k, 200+k, ALLEGRO_ALIGN_CENTER, "A AMEAÇA VERMELHA");
+                }
+                al_draw_text(retroFont, al_map_rgb(255, 255, 255), LARGURA / 2, 200, ALLEGRO_ALIGN_CENTER, "A AMEAÇA VERMELHA");
+                for(k = 0; k < 4; k++){
+                    al_draw_text(retroFont32, al_map_rgb(200, 0, 0), LARGURA / 2-k, 280+k, ALLEGRO_ALIGN_CENTER, "- Virus Edition -");
+                }
+                al_draw_text(retroFont32, al_map_rgb(255, 255, 255), LARGURA / 2, 280, ALLEGRO_ALIGN_CENTER, "- Virus Edition -");
                 al_draw_text(retroFont32, al_map_rgb(i, i, i), LARGURA / 2, ALTURA / 2, ALLEGRO_ALIGN_CENTER, "Jogar");
                 al_draw_text(retroFont32, al_map_rgb(j, j, j), LARGURA / 2, ALTURA / 2 + al_get_font_line_height(retroFont32), ALLEGRO_ALIGN_CENTER, "Sair");
                 al_flip_display();
@@ -419,6 +428,7 @@ void menu(){
     al_stop_timer(timer);
     al_flush_event_queue(filaEventos);
     al_set_audio_stream_playing(loopMenu, 0);
+    retroFont = al_load_font("./fonts/retroGaming.ttf", 20, 0);
     if(opcao % 2 == 0){
         estado = estCutscene;
     }
