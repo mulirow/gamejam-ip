@@ -68,10 +68,12 @@ ALLEGRO_VIDEO *marinha = NULL;
 ALLEGRO_VOICE *voice;
 ALLEGRO_MIXER *mixer;
 ALLEGRO_SAMPLE *blip = NULL;
+ALLEGRO_SAMPLE *tururu=NULL;
 ALLEGRO_SAMPLE *lancha = NULL;
 ALLEGRO_SAMPLE *objetivo = NULL;
 ALLEGRO_SAMPLE *passos = NULL;
 ALLEGRO_SAMPLE_ID passosJ;
+ALLEGRO_SAMPLE_ID idtururu;
 ALLEGRO_SAMPLE *pamonha = NULL;
 ALLEGRO_SAMPLE *tiro = NULL;
 ALLEGRO_AUDIO_STREAM *loopMenu = NULL;
@@ -184,7 +186,7 @@ int inic(){
         return 0;
     }
 
-    if(!al_reserve_samples(256)){
+    if(!al_reserve_samples(1024)){
         msgErro("Erro ao reservar samples");
         return 0;
     }
@@ -194,6 +196,8 @@ int inic(){
     objetivo = al_load_sample("./bin/samples/objetivoCompleto.wav");
     tiro = al_load_sample("./bin/samples/tiro.wav");
     passos = al_load_sample("./bin/samples/passos.wav");
+    tururu = al_load_sample("./bin/samples/sad.wav");
+    if(!blip || !lancha || !objetivo || !tiro || !passos){
     pamonha = al_load_sample("./bin/samples/pamonha.wav");
     if(!blip || !lancha || !objetivo || !tiro || !passos || !pamonha){
         msgErro("Erro ao carregar arquivo de audio");
@@ -631,6 +635,9 @@ void preJogo(){
     estado = estJogo;
 }
 void fimDeJogo(){
+    al_stop_sample(&passosJ);
+    al_set_audio_stream_playing(audiojogo,0);
+    al_play_sample(tururu,1,0,1,ALLEGRO_PLAYMODE_LOOP,&idtururu);
     //bem besta
     if(al_show_native_message_box(janela,"Você morreu!","Que pena", "Os inimigos venceram, tentar novamente?","Claro!|Tô Fora",ALLEGRO_MESSAGEBOX_YES_NO)%2==0){
         estado = estSaida;
@@ -641,6 +648,7 @@ void fimDeJogo(){
         reinicio=1;
         estado= estPreJogo;
     }
+    al_stop_sample(&idtururu);
 }
 
 void pauseJogo(){
@@ -722,7 +730,7 @@ void colisaoEntidades(int i){
                 entidades[i].hp=0;
                 entidades[i].naTela=false;
                 numObj1++;
-                player.atk+=0.3*dificuldade;
+                player.atk+=0.4*dificuldade;
                 if(numObj1==limObj1){
                     obj1=true;
                     al_play_sample(objetivo,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
@@ -849,9 +857,13 @@ void caixaTexto(int i){
 
     al_flip_display();
     if(i==13){
+        al_play_sample(lancha,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
+        //roda video
         al_set_audio_stream_playing(audiojogo, 0);
         al_destroy_sample(passos);
+      
         playVideo();
+      
         fimDeJogo();
     }
 }
@@ -1063,7 +1075,7 @@ int initEntidade(){ //aqui é tudo hardcoded msm, n tem jeito
             entidades[nEntidades-1].direcao[j]=false;
         }
         //inicializa balas
-        entidades[nEntidades-1].atk=20*ATAQUE*dificuldade;
+        entidades[nEntidades-1].atk=15*ATAQUE*dificuldade;
         entidades[nEntidades-1].def=8*DEFESA*dificuldade;
         entidades[nEntidades-1].puloColuna=0;
         entidades[nEntidades-1].puloLinha=0;
@@ -1085,6 +1097,16 @@ int initEntidade(){ //aqui é tudo hardcoded msm, n tem jeito
         entidades[nEntidades-1].alturaSprite =  64;
         entidades[nEntidades-1].px=player.px+((rand()%2?-1:1)*rand()%LARGURA); entidades[nEntidades-1].py=player.py+((rand()%2?-1:1)*rand()%ALTURA);
         entidades[nEntidades-1].pDesenhox=0; entidades[nEntidades-1].pDesenhoy=0;
+        if (entidades[nEntidades-1].px+entidades[nEntidades-1].larguraSprite > 0 && entidades[nEntidades-1].px < 1280 && entidades[nEntidades-1].py+entidades[nEntidades-1].alturaSprite > 0 && entidades[nEntidades-1].py < 256){
+            entidades[nEntidades-1].py+=255;
+        }
+        else if (entidades[nEntidades-1].px+entidades[nEntidades-1].larguraSprite > 0 && entidades[nEntidades-1].px < 1280 && entidades[nEntidades-1].py+entidades[nEntidades-1].alturaSprite > 528 && entidades[nEntidades-1].py < 784){
+            entidades[nEntidades-1].py+=255;
+        }
+        else if (entidades[nEntidades-1].px+entidades[nEntidades-1].larguraSprite > 1620 && entidades[nEntidades-1].px < 2794 && entidades[nEntidades-1].py+entidades[nEntidades-1].alturaSprite > 0 && entidades[nEntidades-1].py < 896){
+            entidades[nEntidades-1].py+=896;
+            entidades[nEntidades-1].px+=1174;
+        }
         entidades[nEntidades-1].naTela=true;
         entidades[nEntidades-1].vx=VELOCIDADE; entidades[nEntidades-1].vy=VELOCIDADE;
         colisaoEntidades(nEntidades-1);
@@ -1120,7 +1142,16 @@ int initEntidade(){ //aqui é tudo hardcoded msm, n tem jeito
         entidades[nEntidades-1].alturaSprite =  1.7*al_get_bitmap_height(entidades[nEntidades-1].sprite);
         entidades[nEntidades-1].px=player.px+((rand()%2?-1:1)*rand()%LARGURA); entidades[nEntidades-1].py=player.py+((rand()%2?-1:1)*rand()%ALTURA);
         entidades[nEntidades-1].pDesenhox=0; entidades[nEntidades-1].pDesenhoy=0;
-
+        if (entidades[nEntidades-1].px+entidades[nEntidades-1].larguraSprite > 0 && entidades[nEntidades-1].px < 1280 && entidades[nEntidades-1].py+entidades[nEntidades-1].alturaSprite > 0 && entidades[nEntidades-1].py < 256){
+            entidades[nEntidades-1].py+=255;
+        }
+        else if (entidades[nEntidades-1].px+entidades[nEntidades-1].larguraSprite > 0 && entidades[nEntidades-1].px < 1280 && entidades[nEntidades-1].py+entidades[nEntidades-1].alturaSprite > 528 && entidades[nEntidades-1].py < 784){
+            entidades[nEntidades-1].py+=255;
+        }
+        else if (entidades[nEntidades-1].px+entidades[nEntidades-1].larguraSprite > 1620 && entidades[nEntidades-1].px < 2794 && entidades[nEntidades-1].py+entidades[nEntidades-1].alturaSprite > 0 && entidades[nEntidades-1].py < 896){
+            entidades[nEntidades-1].py+=896;
+            entidades[nEntidades-1].px+=1174;
+        }
         entidades[nEntidades-1].naTela=true;
         entidades[nEntidades-1].vx=VELOCIDADE; entidades[nEntidades-1].vy=VELOCIDADE;
         colisaoEntidades(nEntidades-1);
@@ -1157,6 +1188,16 @@ int initEntidade(){ //aqui é tudo hardcoded msm, n tem jeito
         entidades[nEntidades-1].alturaSprite =  64;
         entidades[nEntidades-1].px=player.px+((rand()%2?-1:1)*rand()%LARGURA); entidades[nEntidades-1].py=player.py+((rand()%2?-1:1)*rand()%ALTURA);
         entidades[nEntidades-1].pDesenhox=0; entidades[nEntidades-1].pDesenhoy=0;
+        if (entidades[nEntidades-1].px+entidades[nEntidades-1].larguraSprite > 0 && entidades[nEntidades-1].px < 1280 && entidades[nEntidades-1].py+entidades[nEntidades-1].alturaSprite > 0 && entidades[nEntidades-1].py < 256){
+            entidades[nEntidades-1].py+=255;
+        }
+        else if (entidades[nEntidades-1].px+entidades[nEntidades-1].larguraSprite > 0 && entidades[nEntidades-1].px < 1280 && entidades[nEntidades-1].py+entidades[nEntidades-1].alturaSprite > 528 && entidades[nEntidades-1].py < 784){
+            entidades[nEntidades-1].py+=255;
+        }
+        else if (entidades[nEntidades-1].px+entidades[nEntidades-1].larguraSprite > 1620 && entidades[nEntidades-1].px < 2794 && entidades[nEntidades-1].py+entidades[nEntidades-1].alturaSprite > 0 && entidades[nEntidades-1].py < 896){
+            entidades[nEntidades-1].py+=896;
+            entidades[nEntidades-1].px+=1174;
+        }
         entidades[nEntidades-1].naTela=true;
         entidades[nEntidades-1].vx=VELOCIDADE; entidades[nEntidades-1].vy=VELOCIDADE;
         colisaoEntidades(nEntidades-1);
@@ -1627,7 +1668,7 @@ void colisaoBalasP(){
             if(distancia<=player.raio+balasEntidades[i].raio){
                 player.hp-=entidades[i].atk/player.def;
                 acertou[i]=true;
-                player.def-=0.2*dificuldade;
+                player.def-=0.3/dificuldade;
                 entidades[i].def+=0.5*dificuldade;
                 if(player.def<1.1) player.def=1.1;
                 balasEntidades[i].atingiu=true;
@@ -1652,7 +1693,8 @@ void colisaoBalasE(){
                 entidades[i].hp-=player.atk/entidades[i].def;
                 entidades[i].dano=true;
                 if(entidades[i].hp<=0 && !entidades[i].boss){
-                    player.hp+=3*dificuldade*player.atk/(0.5*ATAQUE);
+                    player.hp+=2*player.atk/(ATAQUE);
+                    player.def+=0.06/dificuldade;
                     if(player.hp>HP/dificuldade) player.hp=HP/dificuldade;
                     //transforma;
                     entidades[i].sprite=al_load_bitmap("./bin/entities/Char/NPC.png");
@@ -1994,8 +2036,7 @@ void jogo(){
                                 al_translate_transform(&camera,-pxFundo+(player.px+player.larguraSprite/2),-pyFundo+(player.py+player.larguraSprite/2)); 
                                 al_use_transform(&camera); //simplesmente torna a transformação "canonica"
                                 break;
-                            defaut:
-                                break;
+                            
                         }
                         player.vx=0;player.vy=0;escalaVelocidade=0;
                         al_flush_event_queue(filaEventos);
@@ -2168,6 +2209,13 @@ void jogo(){
             if(obj1 && obj2 && obj3){
                 sair = 1;
                 al_flush_event_queue(filaEventos);
+                FILE *scores;
+                scores = fopen("./scores.txt","a+");
+                char dif[11]="COVIDÃO";
+                char norm[11]="GRIPEZINHA";
+                char fac[11]="RESFRIADO";
+                fprintf(scores,"TEMPO: %ld, DIFICULDADE:%s, SCORE:%lf\n",al_get_timer_count(timer),dificuldade==0.5?fac:(dificuldade==1?norm:dif),dificuldade*al_get_timer_count(timer));
+                fclose(scores);
                 al_stop_timer(timer);
                 estado = estFinal;
                 pxFundo=0;
@@ -2180,6 +2228,7 @@ void jogo(){
                 al_scale_transform(&camera,escala,escala); //esse é o mais simples
                 al_translate_transform(&camera,-pxFundo+(player.px+player.larguraSprite/2),-pyFundo+(player.py+player.larguraSprite/2)); 
                 al_use_transform(&camera); //simplesmente torna a transformação "canonica"
+
             }
             al_flip_display();
             desenhe=0;
