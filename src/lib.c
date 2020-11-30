@@ -197,9 +197,8 @@ int inic(){
     tiro = al_load_sample("./bin/samples/tiro.wav");
     passos = al_load_sample("./bin/samples/passos.wav");
     tururu = al_load_sample("./bin/samples/sad.wav");
-    if(!blip || !lancha || !objetivo || !tiro || !passos){
     pamonha = al_load_sample("./bin/samples/pamonha.wav");
-    if(!blip || !lancha || !objetivo || !tiro || !passos || !pamonha){
+    if(!blip || !lancha || !objetivo || !tiro || !passos || !pamonha || !tururu){
         msgErro("Erro ao carregar arquivo de audio");
         return 0;
     }
