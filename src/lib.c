@@ -74,7 +74,7 @@ ALLEGRO_SAMPLE *objetivo = NULL;
 ALLEGRO_SAMPLE *passos = NULL;
 ALLEGRO_SAMPLE_ID passosJ;
 ALLEGRO_SAMPLE_ID idtururu;
-
+ALLEGRO_SAMPLE *pamonha = NULL;
 ALLEGRO_SAMPLE *tiro = NULL;
 ALLEGRO_AUDIO_STREAM *loopMenu = NULL;
 ALLEGRO_AUDIO_STREAM *creditos = NULL;
@@ -198,6 +198,8 @@ int inic(){
     passos = al_load_sample("./bin/samples/passos.wav");
     tururu = al_load_sample("./bin/samples/sad.wav");
     if(!blip || !lancha || !objetivo || !tiro || !passos){
+    pamonha = al_load_sample("./bin/samples/pamonha.wav");
+    if(!blip || !lancha || !objetivo || !tiro || !passos || !pamonha){
         msgErro("Erro ao carregar arquivo de audio");
         return 0;
     }
@@ -340,7 +342,7 @@ void preMenu(){
         al_wait_for_event(filaEventos,&evento);
         switch (evento.type){
             case ALLEGRO_EVENT_TIMER:
-                al_draw_multiline_text(retroFont32, al_map_rgb(j, j, j), LARGURA / 2, ALTURA - i, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.1, ALLEGRO_ALIGN_CENTER, "O ano é 20XX, e o mundo está no mais completo caos. Há meses, surgiram boatos de que a infame [...]--uma organização criminosa vinda do outro lado do mundo--havia liberado a Ameaça Vermelha, um vírus altamente contagioso que causava fome e frio em tamanha magnitude que chegava a ser letal. Entretanto, como ela havia sido extinta há quase 30 anos, a população desconsiderou o risco, pensando que aquela era apenas mais uma fake news.\n\nA solução para tal crise se encontra em Brasilia, onde o primeiro-ministro Adolf Solnorabo Mussolini é secretamente recrutado para proteger seus queridos cidadãos da terrível Ameaça. Ao questionar sobre o motivo de ser escolhido para realizar árdua tarefa, nosso bravo herói descobre que seu histórico de atleta o imunizou contra a nefária doença, tornando-o a pessoa mais qualificada para combatê-la.\n\n\n\nCabe a você salvar o mundo dessa terrível ameaça.");
+                al_draw_multiline_text(retroFont32, al_map_rgb(j, j, j), LARGURA / 2, ALTURA - i, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.1, ALLEGRO_ALIGN_CENTER, "O ano é 20XX, e o mundo está no mais completo caos. Há meses, surgiram boatos de que a infame URSAL--uma organização que escondia seus verdadeiros intuitos atrás de ursos fofos--havia liberado a Ameaça Vermelha, um vírus altamente contagioso que causava fome e frio em tamanha magnitude que chegava a ser letal. Entretanto, como ela havia sido extinta há quase 30 anos, a população desconsiderou o risco, pensando que aquela era apenas mais uma fake news.\n\nA solução para tal crise se encontra em Brasilia, onde o primeiro-ministro Adolf Solnorabo Mussolini é secretamente recrutado para proteger seus queridos cidadãos da terrível Ameaça. Ao questionar sobre o motivo de ser escolhido para realizar árdua tarefa, nosso bravo herói descobre que seu histórico de atleta o imunizou contra a nefária doença, tornando-o a pessoa mais qualificada para combatê-la.\n\n\n\nCabe a você salvar o mundo dessa terrível ameaça.");
                 al_flip_display();
                 al_clear_to_color(al_map_rgb(0, 0, 0));
                 if(i >= 1.5 * ALTURA) {
@@ -399,14 +401,17 @@ void menu(){
                         temp = i;
                         i = j;
                         j = temp;
+                        al_play_sample(blip,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
                         break;
                     case ALLEGRO_KEY_UP: 
                         opcao++;
                         temp = i;
                         i = j;
                         j = temp;
+                        al_play_sample(blip,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
                         break;
                     case ALLEGRO_KEY_ENTER:
+                        al_play_sample(objetivo,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
                         sair = true;
                 }
                 break;
@@ -530,6 +535,7 @@ void tutorial(){
                 switch(evento.keyboard.keycode){
                     case ALLEGRO_KEY_ENTER:
                         i++;
+                        al_play_sample(blip,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
                         if(i == 3) sair = true;
                         break;
                 }
@@ -738,6 +744,29 @@ void colisaoEntidades(int i){
             }
     }
 }
+
+void playVideo(){
+    ALLEGRO_BITMAP *frame = NULL;
+    al_flush_event_queue(filaEventos);
+    al_start_video(marinha, mixer);
+    bool sair = false;
+    while (!sair){
+        ALLEGRO_EVENT evento;
+        al_wait_for_event(filaEventos,&evento);
+        switch (evento.type) {
+            case ALLEGRO_EVENT_VIDEO_FRAME_SHOW:
+                al_set_target_backbuffer(janela);
+                frame = al_get_video_frame(marinha);
+                al_draw_bitmap(frame, 0, 0, 0);
+                al_flip_display();
+                al_draw_filled_rectangle(0,0,LARGURA,ALTURA,al_map_rgb(0,0,0));
+                break;
+            case ALLEGRO_EVENT_VIDEO_FINISHED:
+                sair = true;
+        }
+    }
+}
+
 void caixaTexto(int i){
     i=i-59;
     al_flush_event_queue(filaEventos);
@@ -830,6 +859,11 @@ void caixaTexto(int i){
     if(i==13){
         al_play_sample(lancha,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
         //roda video
+        al_set_audio_stream_playing(audiojogo, 0);
+        al_destroy_sample(passos);
+      
+        playVideo();
+      
         fimDeJogo();
     }
 }
@@ -2208,7 +2242,7 @@ char dialogo2B[52] = "O... O que está acontecendo? Q-Quem é você?";
 char dialogo2C[20] = "HAHAHAHA! EU SOU-";
 char dialogo2D[33] = "*limpa a... Garganta? Guelra?*";
 char dialogo2E[161] = "Tolo! Eu só precisava de alguém para se livrar daqueles que tinham conhecimento do meu plano! Agora toda a humanidade irá sucumbir! MAKE OCEAN GREAT AGAIN!";
-char dialogo2F[41] = "Então, os vermelhos… Eram inocentes?";
+char dialogo2F[44] = "Então, os vermelhos... Eram inocentes?";
 char dialogo2G[168] = "Não apenas inocentes, como os únicos que sabiam como impedir meu vírus! Mas chega de conversa fiada, você agora irá morrer perante a fúria do meu corn-ificator!";
 char dialogo2H[33] = "Não tão rápido, companheiro.";
 char dialogo2I[25] = "O QUÊ? QUEM ESTÁ AÍ?";
@@ -2262,70 +2296,76 @@ void final(){
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
                 else if(i == 4){
+                    al_play_sample(pamonha,1,0,1,ALLEGRO_PLAYMODE_ONCE,NULL);
+                    al_rest(15.0);
+                    al_flush_event_queue(filaEventos);
+                    i++;
+                }
+                else if(i == 5){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2D);
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
-                else if(i == 5){
+                else if(i == 6){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2E);
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
-                else if(i == 6){
+                else if(i == 7){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2F);
                     al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 7){
+                else if(i == 8){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2G);
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
-                else if(i == 8){
+                else if(i == 9){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2H);
                     al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 9){
+                else if(i == 10){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2I);
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
-                else if(i == 10){
+                else if(i == 11){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2J);
                     al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 11){
+                else if(i == 12){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2K);
                     al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 12){
+                else if(i == 13){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2L);
                     al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 13){
+                else if(i == 14){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2M);
                     al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 14){
+                else if(i == 15){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2N);
                     al_draw_bitmap(solnoraboPastel, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 15){
+                else if(i == 16){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2O);
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
-                else if(i == 16){
+                else if(i == 17){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2P);
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
-                else if(i == 17){
+                else if(i == 18){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2Q);
                     al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 18){
+                else if(i == 19){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaInf + 20, yCaixaInf + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2R);
                     al_draw_bitmap(lula, xCaixaInf-220, yCaixaInf-20, 0);
                 }
-                else if(i == 19){
+                else if(i == 20){
                     al_draw_multiline_textf(retroFont, al_map_rgb(255, 255, 255), xCaixaSup + 20, yCaixaSup + 20, al_get_bitmap_width(caixaDialogo)-40, 30, ALLEGRO_ALIGN_LEFT, "%s", dialogo2S);
                     al_draw_bitmap(salmao, xCaixaSup + al_get_bitmap_width(caixaDialogo), yCaixaSup-20, 0);
                 }
-                else if(i == 20){
+                else if(i == 21){
                     al_draw_filled_rectangle(0,0,LARGURA,ALTURA,al_map_rgb(0,0,0));
                     al_draw_multiline_text(retroFont32, al_map_rgb(j, j, j), LARGURA / 2, ALTURA - scroll, LARGURA * 0.9, al_get_font_line_height(retroFont32) * 1.1, ALLEGRO_ALIGN_CENTER, "Após nossa dupla dinâmica almoçar um sushi com pamonha, um problema ainda persistia: o vírus que o peixe implantou em Solnorabo havia se espalhado por toda a humanidade. Solnorabo e Polvo, juntos, começaram uma pesquisa para entender mais sobre o vírus. Em pouco tempo, eles descobriram que a morte de Fish Trump retardou bastante a ação do vírus, mas não o eliminou por completo, de tal forma que, em mais ou menos 40 anos, toda a humanidade já estaria extinta. Solnorabo, como primeiro infectado pelo vírus, já estava bem fraco e não viveria por muito tempo. Entretanto, daquela pesquisa não surgiu apenas essa descoberta, mas uma bela amizade, que com o tempo tornou-se um romance, de onde se originou a última esperança da humanidade.\n\nDestinado a infiltrar-se no povo de Fish Trump e trazer a cura ou morrer tentando, MoroSelgio nasce.\n\n\n\nTO BE CONTINUED.");
                     if(scroll >= 1.5 * ALTURA) {
@@ -2348,9 +2388,10 @@ void final(){
                             al_flush_event_queue(filaEventos);
                             al_stop_timer(timer);
                             al_start_timer(timerAlt);
-                            al_set_audio_stream_playing(creditos, 1);
                         }
-                        if(i >= 21) sair = true;
+                        if(i == 21)
+                            al_set_audio_stream_playing(creditos, 1);
+                        if(i >= 22) sair = true;
                 }
                 break;
         }
