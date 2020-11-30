@@ -131,6 +131,7 @@ void destroi(){
     al_destroy_sample(blip);
     al_destroy_sample(lancha);
     al_destroy_sample(objetivo);
+    al_destroy_sample(tururu);
     al_destroy_sample(tiro);
     al_destroy_sample(passos);
     al_destroy_audio_stream(loopMenu);
@@ -298,8 +299,9 @@ int cria(){
     al_register_event_source(filaEventos, al_get_timer_event_source(timerAlt));
     al_register_event_source(filaEventos, al_get_timer_event_source(timerTeste));
     al_register_event_source(filaEventos, al_get_keyboard_event_source());
-    al_register_event_source(filaEventos, al_get_video_event_source(marinha));
+    //tirei daqui
     
+
     return 1;
 }
 
@@ -747,8 +749,19 @@ void colisaoEntidades(int i){
 void playVideo(){
     ALLEGRO_BITMAP *frame = NULL;
     al_flush_event_queue(filaEventos);
+    al_register_event_source(filaEventos, al_get_video_event_source(marinha));
     al_start_video(marinha, mixer);
     bool sair = false;
+    pxFundo=0;
+    pyFundo=0;
+    player.px=0;
+    player.py=0;
+    escala=1;
+    al_identity_transform(&camera);
+    al_translate_transform(&camera,-(player.px+player.larguraSprite/2),-(player.py+player.larguraSprite/2)); //basicamente transforma tudo que ta na tela de acordo com esses parametros, eu vou mandar os videos que eu vi ensinando isso pq admito que nem eu entendi direito kkkkkk 
+    al_scale_transform(&camera,escala,escala); //esse é o mais simples
+    al_translate_transform(&camera,-pxFundo+(player.px+player.larguraSprite/2),-pyFundo+(player.py+player.larguraSprite/2)); 
+    al_use_transform(&camera); //simplesmente torna a transformação "canonica"
     while (!sair){
         ALLEGRO_EVENT evento;
         al_wait_for_event(filaEventos,&evento);
@@ -756,12 +769,14 @@ void playVideo(){
             case ALLEGRO_EVENT_VIDEO_FRAME_SHOW:
                 al_set_target_backbuffer(janela);
                 frame = al_get_video_frame(marinha);
-                al_draw_bitmap(frame, 0, 0, 0);
+                al_draw_scaled_bitmap(frame,0,0,al_get_bitmap_width(frame),al_get_bitmap_height(frame),0,0,LARGURA,ALTURA,0);
                 al_flip_display();
                 al_draw_filled_rectangle(0,0,LARGURA,ALTURA,al_map_rgb(0,0,0));
                 break;
             case ALLEGRO_EVENT_VIDEO_FINISHED:
                 sair = true;
+                estado = estSaida;
+                break;
         }
     }
 }
@@ -863,7 +878,7 @@ void caixaTexto(int i){
       
         playVideo();
       
-        fimDeJogo();
+
     }
 }
 
